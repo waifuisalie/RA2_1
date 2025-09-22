@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
     %% Main execution flow
     Main["main()<br/>Parameters: command line args<br/>Returns: exit code"] --> InputFile[["Input: Token file<br/>(from Phase 1)"]]
@@ -78,3 +79,5 @@ flowchart TD
     style ErrorHandler fill:#ffebee
     style TreeOutput fill:#e8f5e8
     style ErrorOutput fill:#ffcdd2
+```
+
