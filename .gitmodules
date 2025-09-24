@@ -1,0 +1,3 @@
+[submodule "src/RA1/LFC---Analisador-Lexico"]
+	path = src/RA1/LFC---Analisador-Lexico
+	url = https://github.com/waifuisalie/LFC---Analisador-Lexico.git
