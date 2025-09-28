@@ -247,8 +247,8 @@ RPAREN = ')'              # Right parenthesis
 ### Example 1: Factorial Calculation
 ```
 // factorial(n) using FOR loop
-(1 RESULT ASSIGN)
-(1 N I FOR ((RESULT I *) RESULT ASSIGN))
+ASSIGN (1 RESULT)
+FOR (1 N I ASSIGN ((RESULT I *) RESULT))
 (RESULT PRINT)
 ```
 
