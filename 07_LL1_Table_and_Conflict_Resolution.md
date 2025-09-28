@@ -311,8 +311,8 @@ class LL1Parser:
         # OPERAND productions
         table[('OPERAND', 'NUMBER')] = ['NUMBER']
         table[('OPERAND', 'IDENTIFIER')] = ['IDENTIFIER']
-        table[('OPERAND', '(')] = ['EXPRESSION']
-        table[('OPERAND', 'MEM')] = ['MEMORY_REF']
+        table[('OPERAND', '(')] = ['(', 'EXPRESSION', ')']
+        table[('OPERAND', 'MEM')] = ['MEM', '(', 'IDENTIFIER', ')']
 
         # Control structure productions
         table[('FOR_STATEMENT', 'FOR')] = ['FOR', '(', 'OPERAND', 'OPERAND', 'IDENTIFIER', 'STATEMENT', ')']
@@ -325,8 +325,6 @@ class LL1Parser:
         # ASSIGN_STATEMENT production
         table[('ASSIGN_STATEMENT', 'ASSIGN')] = ['ASSIGN', '(', 'OPERAND', 'IDENTIFIER', ')']
 
-        # MEMORY_REF production
-        table[('MEMORY_REF', 'MEM')] = ['MEM', '(', 'IDENTIFIER', ')']
 
         # OPERATOR productions
         operators = ['+', '-', '*', '|', '/', '%', '^', '>', '<', '>=', '<=', '==', '!=']
@@ -389,7 +387,7 @@ class LL1Parser:
         return {
             'PROGRAM', 'STATEMENT_LIST', 'STATEMENT', 'EXPRESSION', 'OPERAND',
             'FOR_STATEMENT', 'WHILE_STATEMENT', 'IF_STATEMENT', 'IF_TAIL',
-            'ASSIGN_STATEMENT', 'MEMORY_REF', 'OPERATOR'
+            'ASSIGN_STATEMENT', 'OPERATOR'
         }
 
 # Usage example
@@ -442,13 +440,12 @@ def construirGramatica():
                      ['IF_STATEMENT'], ['ASSIGN_STATEMENT']],
         'EXPRESSION': [['(', 'OPERAND', 'OPERAND', 'OPERATOR', ')'],
                       ['OPERAND']],
-        'OPERAND': [['NUMBER'], ['IDENTIFIER'], ['EXPRESSION'], ['MEMORY_REF']],
+        'OPERAND': [['NUMBER'], ['IDENTIFIER'], ['(', 'EXPRESSION', ')'], ['MEM', '(', 'IDENTIFIER', ')']],
         'FOR_STATEMENT': [['FOR', '(', 'OPERAND', 'OPERAND', 'IDENTIFIER', 'STATEMENT', ')']],
         'WHILE_STATEMENT': [['WHILE', '(', 'EXPRESSION', 'STATEMENT', ')']],
         'IF_STATEMENT': [['IF', '(', 'EXPRESSION', 'STATEMENT', ')', 'IF_TAIL']],
         'IF_TAIL': [['ELSE', '(', 'STATEMENT', ')'], ['ε']],
         'ASSIGN_STATEMENT': [['ASSIGN', '(', 'OPERAND', 'IDENTIFIER', ')']],
-        'MEMORY_REF': [['MEM', '(', 'IDENTIFIER', ')']],
         'OPERATOR': [[op] for op in ['+', '-', '*', '|', '/', '%', '^', '>', '<', '>=', '<=', '==', '!=']]
     }
 
