@@ -1,0 +1,22 @@
+( ( ( 2 3 + ) ( 4 5 * ) - ) ( 6 7 / ) ^ )
+( ( ( A B + ) C * ) ( ( D E - ) F / ) > )
+( ( ( A B > ) ( C D < ) AND ) ( ( E F != ) ( G H == ) OR ) AND )
+( ( ( NESTED_COUNT 0 > ) WHILE ( ( NESTED_COUNT 1 - ) NESTED_COUNT MEM ) ) )
+( 1 5 I FOR ( 1 3 J FOR ( ( I J + ) OUTPUT ) ) )
+( ( ( COMPLEX_COND TRUE == ) ( OTHER_COND FALSE != ) AND ) IF SUCCESS_VAL ELSE ERROR_VAL )
+( 1 100 DEEP_LOOP FOR ( ( ( DEEP_LOOP 10 % ) 0 == ) IF ( BREAK FLAG MEM ) ELSE ( CONTINUE NEXT MEM ) ) )
+( ( ( VALUE1 VALUE2 >= ) ( VALUE3 VALUE4 <= ) AND ) ( VALUE5 VALUE6 != ) OR )
+( ( ( X Y + ) ( Z W * ) - ) RESULT MEM )
+( ( FINAL_CHECK COMPLETE == ) IF ( DONE STATUS MEM ) ELSE ( CONTINUE PROCESS MEM ) )
+( MEMORY_DUMP TOTAL MEM )
+( 5 RES )
+( A B C +
+( UNBALANCED IF ELSE
+( > A B )
+( A B IF )
+( 1 10 FOR )
+INCOMPLETE_EXPR
+( A B > C D < )
+( IF ELSE )
+( WHILE )
+( FOR )

@@ -54,10 +54,13 @@ class Token:
 
 def lerTokens(arquivo: str) -> List[Token]:
     """
-    Lê arquivo de tokens gerado na Fase 1 e adiciona novos tokens para estruturas de controle.
+    Lê arquivo de tokens gerado na Fase 1 ou arquivo de código fonte para RA2.
+
+    COMPATIBILIDADE RA1: Lê formato de saída da RA1 (tokens_gerados.txt)
+    EXTENSÃO RA2: Lê código fonte com estruturas de controle
 
     Args:
-        arquivo: Nome do arquivo contendo tokens da Fase 1
+        arquivo: Nome do arquivo (tokens da RA1 ou código fonte da RA2)
 
     Returns:
         Lista de tokens processados incluindo novos tokens de controle
@@ -66,10 +69,9 @@ def lerTokens(arquivo: str) -> List[Token]:
         FileNotFoundError: Se o arquivo não for encontrado
         ValueError: Se o formato dos tokens for inválido
 
-    Exemplo de uso:
-        tokens = lerTokens("teste1.txt")
-        for token in tokens:
-            print(token)
+    Formatos suportados:
+        RA1: "3 2 +" (uma expressão RPN por linha)
+        RA2: "( 3 2 + )" ou "( A B > IF X ELSE Y )" (estruturas de controle)
     """
     tokens = []
 
@@ -92,7 +94,7 @@ def lerTokens(arquivo: str) -> List[Token]:
         raise ValueError(f"Erro ao ler arquivo de tokens: {e}")
 
     # Adicionar token de fim de arquivo
-    tokens.append(Token(Tipo_de_Token.FIM, "$", len(tokens), 0))
+    tokens.append(Token(Tipo_de_Token.FIM, "$"))
 
     return tokens
 
@@ -221,7 +223,6 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
                 return Token(Tipo_de_Token.NUMERO_REAL, elemento, linha, coluna)
             except ValueError:
                 # Token não reconhecido
-                print(f"Aviso: Token não reconhecido '{elemento}' na linha {linha}, coluna {coluna}")
                 return None
 
 def validarTokens(tokens: List[Token]) -> bool:
@@ -235,7 +236,6 @@ def validarTokens(tokens: List[Token]) -> bool:
         True se tokens são válidos, False caso contrário
     """
     if not tokens:
-        print("Erro: Lista de tokens vazia")
         return False
 
     # Verificar se há parênteses balanceados
@@ -246,16 +246,10 @@ def validarTokens(tokens: List[Token]) -> bool:
         elif token.tipo == Tipo_de_Token.FECHA_PARENTESES:
             contador_parenteses -= 1
             if contador_parenteses < 0:
-                print(f"Erro: Parênteses desbalanceados na linha {token.linha}")
                 return False
 
     if contador_parenteses != 0:
-        print("Erro: Parênteses não balanceados no arquivo")
         return False
-
-    # Verificar se último token é FIM
-    if tokens[-1].tipo != Tipo_de_Token.FIM:
-        print("Aviso: Token FIM não encontrado no final")
 
     return True
 
@@ -276,10 +270,8 @@ def exibirEstatisticasTokens(tokens: List[Token]) -> None:
         if token.tipo in [Tipo_de_Token.RELATIONAL_OP, Tipo_de_Token.CONTROL_STRUCT, Tipo_de_Token.LOGICAL_OP]:
             novos_tokens += 1
 
-    print(f"\n=== ESTATÍSTICAS DOS TOKENS ===")
     print(f"Total de tokens: {len(tokens)}")
-    print(f"Novos tokens (RA2): {novos_tokens}")
-    print(f"\nDistribuição por tipo:")
+    print(f"Novos tokens RA2: {novos_tokens}")
 
     for tipo, quantidade in sorted(contadores.items()):
         print(f"  {tipo}: {quantidade}")
@@ -292,9 +284,6 @@ def testarLerTokens():
     """
     Função de teste para demonstrar e validar a funcionalidade de lerTokens.
     """
-    print("=== TESTE DA FUNÇÃO lerTokens ===")
-
-    # Criar arquivo de teste temporário
     conteudo_teste = """# Teste de tokens para RA2
 ( 3 4 + )
 ( A B > IF X ELSE Y )
@@ -309,48 +298,70 @@ VAR MEM
     arquivo_teste = "teste_tokens_temp.txt"
 
     try:
-        # Escrever arquivo de teste
         with open(arquivo_teste, 'w', encoding='utf-8') as f:
             f.write(conteudo_teste)
 
-        # Testar função lerTokens
-        print(f"Lendo tokens do arquivo: {arquivo_teste}")
         tokens = lerTokens(arquivo_teste)
 
-        print(f"\nTokens processados ({len(tokens)} total):")
+        print(f"Tokens processados: {len(tokens)}")
         for i, token in enumerate(tokens, 1):
             print(f"  {i:2d}: {token}")
 
-        # Validar tokens
         if validarTokens(tokens):
-            print("\nValidação: Tokens estão corretos")
+            print("Validação: OK")
         else:
-            print("\nValidação: Problemas encontrados nos tokens")
+            print("Validação: Problemas encontrados")
 
-        # Exibir estatísticas
         exibirEstatisticasTokens(tokens)
 
-        # Limpar arquivo temporário
         Path(arquivo_teste).unlink(missing_ok=True)
 
     except Exception as e:
         print(f"Erro durante teste: {e}")
-        # Limpar arquivo temporário mesmo em caso de erro
         Path(arquivo_teste).unlink(missing_ok=True)
 
+def main():
+    """
+    Função principal do Analisador Sintático LL(1) - conforme especificação PDF.
+
+    Interface de linha de comando: python AnalisadorSintatico.py teste1.txt
+    """
+    if len(sys.argv) < 2:
+        print("Uso: python AnalisadorSintatico.py <arquivo_de_teste>")
+        print("Exemplo: python AnalisadorSintatico.py teste1.txt")
+        sys.exit(1)
+
+    arquivo_teste = sys.argv[1]
+
+    try:
+        print("ANALISADOR SINTÁTICO LL(1) - RA2")
+        print(f"Arquivo de entrada: {arquivo_teste}")
+
+        # PASSO 1: Ler e processar tokens
+        tokens = lerTokens(arquivo_teste)
+        print(f"Tokens processados: {len(tokens)}")
+
+        # Validar tokens
+        validarTokens(tokens)
+
+        # PASSO 2: Construir gramática (NÃO IMPLEMENTADO)
+        print("AVISO: construirGramatica() não implementada")
+
+        # PASSO 3: Análise sintática (NÃO IMPLEMENTADO)
+        print("AVISO: parsear() não implementada")
+
+        # PASSO 4: Gerar árvore sintática (NÃO IMPLEMENTADO)
+        print("AVISO: gerarArvore() não implementada")
+
+    except FileNotFoundError as e:
+        print(f"ERRO: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"ERRO: {e}")
+        sys.exit(1)
+
 if __name__ == "__main__":
-    """
-    Execução direta do módulo para testes.
-    """
-    if len(sys.argv) > 1:
-        arquivo = sys.argv[1]
-        print(f"Testando lerTokens com arquivo: {arquivo}")
-        try:
-            tokens = lerTokens(arquivo)
-            print(f"Sucesso! {len(tokens)} tokens processados.")
-            exibirEstatisticasTokens(tokens)
-        except Exception as e:
-            print(f"Erro: {e}")
-    else:
-        # Executar teste automatizado
+    if len(sys.argv) > 1 and sys.argv[1] == "--test":
         testarLerTokens()
+    else:
+        main()
