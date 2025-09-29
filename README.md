@@ -36,7 +36,7 @@ python AnalisadorSintatico.py teste3.txt
 ```
 RA2_1/
 ├── README.md                    # Este arquivo
-├── AnalisadorSintatico.py      # Implementação principal (todas as 4 funções)
+├── AnalisadorSintatico.py      # Implementação principal (apenas a função main())
 ├── teste1.txt                  # Arquivo de teste 1 (operações básicas)
 ├── teste2.txt                  # Arquivo de teste 2 (estruturas de controle)  
 ├── teste3.txt                  # Arquivo de teste 3 (casos complexos/inválidos)
@@ -60,6 +60,7 @@ RA2_1/
 ```
 
 **Notas importantes:** 
+- o AnalisadorSintatico.py vai ter uma main() que vai incorporar o RA1 e RA2.
 - Conforme especificação do PDF, os arquivos de teste devem estar no mesmo diretório do código-fonte
 - O diretório `src/RA1/` contém o código da Fase 1 (Analisador Léxico) como git submodule para reuso e integração
 - Para clonar este repositório com o submodule: `git clone --recurse-submodules <repo-url>`
