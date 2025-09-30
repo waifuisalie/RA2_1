@@ -1,4 +1,9 @@
 docs/
 flowcharts/
+src\__pycache__
 src/functions/__pycache__/
+src/functions/__init__.py
+__pycache__
 LICENSE
+
+
