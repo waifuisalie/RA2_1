@@ -318,7 +318,6 @@ if __name__ == "__main__":
             print(f"=== TESTANDO COM ARQUIVO: {arquivo} ===")
             tokens = lerTokens(arquivo)
             print(f"Tokens processados: {len(tokens)}")
-            print("Primeiros 10 tokens:")
             for i in range( len(tokens)):
                 token = tokens[i]
                 print(f"  {i+1:2d}: Token({token.tipo}, {token.valor})")
