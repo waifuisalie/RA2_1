@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-"""
-Função lerTokens para RA2 - Analisador Sintático LL(1)
-Student 3 Responsibility
-
-Esta função lê arquivo de tokens gerado na Fase 1 e adiciona novos tokens
-para estruturas de controle (loops e decisões) e operadores relacionais.
-"""
 
 import sys
 from pathlib import Path
@@ -15,32 +8,42 @@ from typing import List, Optional
 # Usando definições locais para evitar problemas de import
 
 class Tipo_de_Token:
-    # Números
+    
     NUMERO_REAL = "NUMERO_REAL"
-
-    # Operadores aritméticos originais
-    SOMA = "SOMA"
-    SUBTRACAO = "SUBTRACAO"
-    MULTIPLICACAO = "MULT"
-    DIVISAO = "DIV"
-    RESTO = "RESTO"
-    POTENCIA = "POT"
-
-    # Símbolos de agrupamento
-    ABRE_PARENTESES = "ABRE_PARENTESES"
-    FECHA_PARENTESES = "FECHA_PARENTESES"
-
-    # Comandos especiais originais
+    SOMA = "SOMA"                      # +
+    SUBTRACAO = "SUBTRACAO"            # -
+    MULTIPLICACAO = "MULT"             # *
+    DIVISAO = "DIV"                    # / divisao inteira
+    RESTO = "RESTO"                    # %
+    POTENCIA = "POT"                   # ^
+    ABRE_PARENTESES = "ABRE_PARENTESES" # (
+    FECHA_PARENTESES = "FECHA_PARENTESES" # )
     RES = "RES"
     MEM = "MEM"
-
-    # NOVOS TOKENS para RA2 - Estruturas de controle
-    RELATIONAL_OP = "RELATIONAL_OP"
-    CONTROL_STRUCT = "CONTROL_STRUCT"
-    LOGICAL_OP = "LOGICAL_OP"
-
-    # Marcador de fim
     FIM = "FIM"
+
+    # Estruturas de controle
+    FOR = "FOR"
+    WHILE = "WHILE"
+    IF = "IF"
+    ELSE = "ELSE"
+    ASSIGN = "ASSIGN"
+    PRINT = "PRINT"
+
+    # Operadores relacionais
+    MAIOR = "MAIOR"                    # >
+    MENOR = "MENOR"                    # <
+    MAIOR_IGUAL = "MAIOR_IGUAL"        # >=
+    MENOR_IGUAL = "MENOR_IGUAL"        # <=
+    IGUAL = "IGUAL"                    # ==
+    DIFERENTE = "DIFERENTE"            # !=
+
+    # Fixed division operators (PORTUGUESE - matches RA1)
+    DIVISAO_REAL = "DIVISAO_REAL"      # | (real division)
+    # Keep DIVISAO = "DIV" for / (integer division)
+
+    # Identifiers (PORTUGUESE - matches RA1 pattern)
+    IDENTIFICADOR = "IDENTIFICADOR"    # Variable names
 
 class Token:
     def __init__(self, tipo: str, valor, linha: int = 0, coluna: int = 0):
@@ -136,47 +139,35 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
         Token reconhecido ou None se inválido
     """
 
-    # ===== NOVOS TOKENS PARA RA2 =====
+    # ===== RA2 TOKEN RECOGNITION =====
 
-    # Operadores relacionais (conforme especificação PDF)
-    operadores_relacionais = {
-        '>': 'MAIOR',
-        '<': 'MENOR',
-        '==': 'IGUAL',
-        '>=': 'MAIOR_IGUAL',
-        '<=': 'MENOR_IGUAL',
-        '!=': 'DIFERENTE'
-    }
+    # Operadores relacionais
+    if elemento == '>':
+        return Token(Tipo_de_Token.MAIOR, elemento, linha, coluna)
+    elif elemento == '<':
+        return Token(Tipo_de_Token.MENOR, elemento, linha, coluna)
+    elif elemento == '>=':
+        return Token(Tipo_de_Token.MAIOR_IGUAL, elemento, linha, coluna)
+    elif elemento == '<=':
+        return Token(Tipo_de_Token.MENOR_IGUAL, elemento, linha, coluna)
+    elif elemento == '==':
+        return Token(Tipo_de_Token.IGUAL, elemento, linha, coluna)
+    elif elemento == '!=':
+        return Token(Tipo_de_Token.DIFERENTE, elemento, linha, coluna)
 
-    # Estruturas de controle (padrão RPN pós-fixado)
-    estruturas_controle = {
-        'IF': 'IF',           # Condicional simples: (condição ação IF)
-        'IFELSE': 'IFELSE',   # Condicional com alternativa: (condição ação1 ação2 IFELSE)
-        'WHILE': 'WHILE',     # Loop while: (condição ação WHILE)
-        'FOR': 'FOR',         # Loop for: (início fim contador ação FOR)
-        'ELSE': 'ELSE'        # Alternativa (para sintaxes específicas)
-    }
-
-    # Operadores lógicos
-    operadores_logicos = {
-        'AND': 'AND',
-        'OR': 'OR',
-        'NOT': 'NOT'
-    }
-
-    # ===== VERIFICAÇÃO DE NOVOS TOKENS =====
-
-    # Verificar operadores relacionais
-    if elemento in operadores_relacionais:
-        return Token(Tipo_de_Token.RELATIONAL_OP, operadores_relacionais[elemento], linha, coluna)
-
-    # Verificar estruturas de controle
-    if elemento in estruturas_controle:
-        return Token(Tipo_de_Token.CONTROL_STRUCT, estruturas_controle[elemento], linha, coluna)
-
-    # Verificar operadores lógicos
-    if elemento in operadores_logicos:
-        return Token(Tipo_de_Token.LOGICAL_OP, operadores_logicos[elemento], linha, coluna)
+    # Estruturas de controle (separate IF and ELSE tokens)
+    elif elemento == 'IF':
+        return Token(Tipo_de_Token.IF, elemento, linha, coluna)
+    elif elemento == 'ELSE':
+        return Token(Tipo_de_Token.ELSE, elemento, linha, coluna)
+    elif elemento == 'WHILE':
+        return Token(Tipo_de_Token.WHILE, elemento, linha, coluna)
+    elif elemento == 'FOR':
+        return Token(Tipo_de_Token.FOR, elemento, linha, coluna)
+    elif elemento == 'ASSIGN':
+        return Token(Tipo_de_Token.ASSIGN, elemento, linha, coluna)
+    elif elemento == 'PRINT':
+        return Token(Tipo_de_Token.PRINT, elemento, linha, coluna)
 
     # ===== TOKENS ORIGINAIS DA RA1 =====
 
@@ -194,7 +185,7 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
     elif elemento == '*':
         return Token(Tipo_de_Token.MULTIPLICACAO, elemento, linha, coluna)
     elif elemento == '|':  # Divisão real
-        return Token(Tipo_de_Token.DIVISAO, elemento, linha, coluna)
+        return Token(Tipo_de_Token.DIVISAO_REAL, elemento, linha, coluna)
     elif elemento == '/':  # Divisão inteira
         return Token(Tipo_de_Token.DIVISAO, elemento, linha, coluna)
     elif elemento == '%':  # Resto (módulo)
@@ -205,10 +196,11 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
     # Comandos especiais
     elif elemento == 'RES':
         return Token(Tipo_de_Token.RES, elemento, linha, coluna)
-    elif elemento.upper() == 'MEM' or (elemento.isupper() and elemento.isalpha()):
-        # Aceita MEM ou qualquer sequência de letras maiúsculas como memória
-        # Conforme especificação: MEM pode ser qualquer conjunto de letras maiúsculas
+    elif elemento.upper() == 'MEM':
         return Token(Tipo_de_Token.MEM, elemento, linha, coluna)
+    elif elemento.isupper() and elemento.isalpha():
+        # Identificadores (variáveis) - sequência de letras maiúsculas
+        return Token(Tipo_de_Token.IDENTIFICADOR, elemento, linha, coluna)
 
     # Números (inteiros e reais)
     else:
@@ -222,6 +214,9 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
                 float(elemento)
                 return Token(Tipo_de_Token.NUMERO_REAL, elemento, linha, coluna)
             except ValueError:
+                # Verificar se é identificador (variável)
+                if elemento.isalpha():
+                    return Token(Tipo_de_Token.IDENTIFICADOR, elemento, linha, coluna)
                 # Token não reconhecido
                 return None
 
@@ -253,28 +248,6 @@ def validarTokens(tokens: List[Token]) -> bool:
 
     return True
 
-def exibirEstatisticasTokens(tokens: List[Token]) -> None:
-    """
-    Exibe estatísticas sobre os tokens processados.
-
-    Args:
-        tokens: Lista de tokens para analisar
-    """
-    contadores = {}
-    novos_tokens = 0
-
-    for token in tokens:
-        contadores[token.tipo] = contadores.get(token.tipo, 0) + 1
-
-        # Contar novos tokens da RA2
-        if token.tipo in [Tipo_de_Token.RELATIONAL_OP, Tipo_de_Token.CONTROL_STRUCT, Tipo_de_Token.LOGICAL_OP]:
-            novos_tokens += 1
-
-    print(f"Total de tokens: {len(tokens)}")
-    print(f"Novos tokens RA2: {novos_tokens}")
-
-    for tipo, quantidade in sorted(contadores.items()):
-        print(f"  {tipo}: {quantidade}")
 
 # ============================================================================
 # FUNÇÃO DE TESTE PARA lerTokens
@@ -288,7 +261,7 @@ def testarLerTokens():
 ( 3 4 + )
 ( A B > IF X ELSE Y )
 ( 1 10 I FOR )
-( X Y AND Z OR )
+( A B == )
 ( A B == )
 ( COUNTER 5 <= WHILE )
 RES
@@ -303,16 +276,27 @@ VAR MEM
 
         tokens = lerTokens(arquivo_teste)
 
+        print(f"\n=== RETORNO DA FUNÇÃO lerTokens ===")
+        print(f"Tipo do retorno: {type(tokens)}")
         print(f"Tokens processados: {len(tokens)}")
+        print(f"\n=== LISTA DE TOKENS RETORNADA ===")
         for i, token in enumerate(tokens, 1):
             print(f"  {i:2d}: {token}")
 
+        print(f"\n=== ESTRUTURA DOS OBJETOS TOKEN ===")
+        if tokens:
+            exemplo_token = tokens[0]
+            print(f"Exemplo - Token[0]:")
+            print(f"  .tipo: {exemplo_token.tipo}")
+            print(f"  .valor: {exemplo_token.valor}")
+            print(f"  .linha: {exemplo_token.linha}")
+            print(f"  .coluna: {exemplo_token.coluna}")
+
+        print(f"\n=== VALIDAÇÃO ===")
         if validarTokens(tokens):
             print("Validação: OK")
         else:
             print("Validação: Problemas encontrados")
-
-        exibirEstatisticasTokens(tokens)
 
         Path(arquivo_teste).unlink(missing_ok=True)
 
@@ -320,48 +304,35 @@ VAR MEM
         print(f"Erro durante teste: {e}")
         Path(arquivo_teste).unlink(missing_ok=True)
 
-def main():
-    """
-    Função principal do Analisador Sintático LL(1) - conforme especificação PDF.
-
-    Interface de linha de comando: python AnalisadorSintatico.py teste1.txt
-    """
-    if len(sys.argv) < 2:
-        print("Uso: python AnalisadorSintatico.py <arquivo_de_teste>")
-        print("Exemplo: python AnalisadorSintatico.py teste1.txt")
-        sys.exit(1)
-
-    arquivo_teste = sys.argv[1]
-
-    try:
-        print("ANALISADOR SINTÁTICO LL(1) - RA2")
-        print(f"Arquivo de entrada: {arquivo_teste}")
-
-        # PASSO 1: Ler e processar tokens
-        tokens = lerTokens(arquivo_teste)
-        print(f"Tokens processados: {len(tokens)}")
-
-        # Validar tokens
-        validarTokens(tokens)
-
-        # PASSO 2: Construir gramática (NÃO IMPLEMENTADO)
-        print("AVISO: construirGramatica() não implementada")
-
-        # PASSO 3: Análise sintática (NÃO IMPLEMENTADO)
-        print("AVISO: parsear() não implementada")
-
-        # PASSO 4: Gerar árvore sintática (NÃO IMPLEMENTADO)
-        print("AVISO: gerarArvore() não implementada")
-
-    except FileNotFoundError as e:
-        print(f"ERRO: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"ERRO: {e}")
-        sys.exit(1)
+# ============================================================================
+# TESTE INDEPENDENTE (sem main - apenas para desenvolvimento)
+# ============================================================================
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--test":
         testarLerTokens()
+    elif len(sys.argv) > 1:
+        # Permitir testar com arquivo específico
+        arquivo = sys.argv[1]
+        try:
+            print(f"=== TESTANDO COM ARQUIVO: {arquivo} ===")
+            tokens = lerTokens(arquivo)
+            print(f"Tokens processados: {len(tokens)}")
+            print("Primeiros 10 tokens:")
+            for i in range( len(tokens)):
+                token = tokens[i]
+                print(f"  {i+1:2d}: Token({token.tipo}, {token.valor})")
+
+            if validarTokens(tokens):
+                print("Validação: OK")
+            else:
+                print("Validação: Problemas encontrados")
+
+        except Exception as e:
+            print(f"Erro: {e}")
     else:
-        main()
+        print("Este arquivo contém apenas a implementação da função lerTokens.")
+        print("Uso:")
+        print("  python lerTokens.py --test           # Executar teste interno")
+        print("  python lerTokens.py <arquivo>        # Testar com arquivo específico")
+        print("  python lerTokens.py teste1.txt       # Exemplo")
