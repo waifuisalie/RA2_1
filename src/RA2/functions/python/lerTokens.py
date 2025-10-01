@@ -3,7 +3,12 @@
 import sys
 from pathlib import Path
 from typing import List, Optional
-from .tokens import Tipo_de_Token, Token
+
+# Suportar tanto importação relativa (como módulo) quanto absoluta (execução direta)
+try:
+    from .tokens import Tipo_de_Token, Token
+except ImportError:
+    from tokens import Tipo_de_Token, Token
 
 
 def lerTokens(arquivo: str) -> List[Token]:
@@ -90,84 +95,79 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
         Token reconhecido ou None se inválido
     """
 
-    # ===== RA2 TOKEN RECOGNITION =====
+    # ===== TOKENS DO RA2 =====
 
     # Operadores relacionais
     if elemento == '>':
-        return Token(Tipo_de_Token.MAIOR, elemento, linha, coluna)
+        return Token(Tipo_de_Token.MAIOR, elemento)
     elif elemento == '<':
-        return Token(Tipo_de_Token.MENOR, elemento, linha, coluna)
+        return Token(Tipo_de_Token.MENOR, elemento)
     elif elemento == '>=':
-        return Token(Tipo_de_Token.MAIOR_IGUAL, elemento, linha, coluna)
+        return Token(Tipo_de_Token.MAIOR_IGUAL, elemento)
     elif elemento == '<=':
-        return Token(Tipo_de_Token.MENOR_IGUAL, elemento, linha, coluna)
+        return Token(Tipo_de_Token.MENOR_IGUAL, elemento)
     elif elemento == '==':
-        return Token(Tipo_de_Token.IGUAL, elemento, linha, coluna)
+        return Token(Tipo_de_Token.IGUAL, elemento)
     elif elemento == '!=':
-        return Token(Tipo_de_Token.DIFERENTE, elemento, linha, coluna)
+        return Token(Tipo_de_Token.DIFERENTE, elemento)
 
-    # Estruturas de controle (separate IF and ELSE tokens)
-    elif elemento == 'IF':
-        return Token(Tipo_de_Token.IF, elemento, linha, coluna)
-    elif elemento == 'ELSE':
-        return Token(Tipo_de_Token.ELSE, elemento, linha, coluna)
+    # Estruturas de controle
+    elif elemento == 'IFELSE':
+        return Token(Tipo_de_Token.IFELSE, elemento)
     elif elemento == 'WHILE':
-        return Token(Tipo_de_Token.WHILE, elemento, linha, coluna)
+        return Token(Tipo_de_Token.WHILE, elemento)
     elif elemento == 'FOR':
-        return Token(Tipo_de_Token.FOR, elemento, linha, coluna)
-    elif elemento == 'ASSIGN':
-        return Token(Tipo_de_Token.ASSIGN, elemento, linha, coluna)
-    elif elemento == 'PRINT':
-        return Token(Tipo_de_Token.PRINT, elemento, linha, coluna)
+        return Token(Tipo_de_Token.FOR, elemento)
 
     # ===== TOKENS ORIGINAIS DA RA1 =====
 
     # Símbolos de agrupamento
     if elemento == '(':
-        return Token(Tipo_de_Token.ABRE_PARENTESES, elemento, linha, coluna)
+        return Token(Tipo_de_Token.ABRE_PARENTESES, elemento)
     elif elemento == ')':
-        return Token(Tipo_de_Token.FECHA_PARENTESES, elemento, linha, coluna)
+        return Token(Tipo_de_Token.FECHA_PARENTESES, elemento)
 
     # Operadores aritméticos
     elif elemento == '+':
-        return Token(Tipo_de_Token.SOMA, elemento, linha, coluna)
+        return Token(Tipo_de_Token.SOMA, elemento)
     elif elemento == '-':
-        return Token(Tipo_de_Token.SUBTRACAO, elemento, linha, coluna)
+        return Token(Tipo_de_Token.SUBTRACAO, elemento)
     elif elemento == '*':
-        return Token(Tipo_de_Token.MULTIPLICACAO, elemento, linha, coluna)
-    elif elemento == '|':  # Divisão real
-        return Token(Tipo_de_Token.DIVISAO_REAL, elemento, linha, coluna)
-    elif elemento == '/':  # Divisão inteira
-        return Token(Tipo_de_Token.DIVISAO, elemento, linha, coluna)
+        return Token(Tipo_de_Token.MULTIPLICACAO, elemento)
+    elif elemento == '/':  # Divisão
+        return Token(Tipo_de_Token.DIVISAO, elemento)
     elif elemento == '%':  # Resto (módulo)
-        return Token(Tipo_de_Token.RESTO, elemento, linha, coluna)
+        return Token(Tipo_de_Token.RESTO, elemento)
     elif elemento == '^':  # Potência
-        return Token(Tipo_de_Token.POTENCIA, elemento, linha, coluna)
+        return Token(Tipo_de_Token.POTENCIA, elemento)
 
     # Comandos especiais
     elif elemento == 'RES':
-        return Token(Tipo_de_Token.RES, elemento, linha, coluna)
-    elif elemento.upper() == 'MEM':
-        return Token(Tipo_de_Token.MEM, elemento, linha, coluna)
-    elif elemento.isupper() and elemento.isalpha():
-        # Identificadores (variáveis) - sequência de letras maiúsculas
-        return Token(Tipo_de_Token.IDENTIFICADOR, elemento, linha, coluna)
+        return Token(Tipo_de_Token.RES, elemento)
+
+    # Operadores lógicos
+    elif elemento == '!':
+        return Token(Tipo_de_Token.NOT, elemento)
+    elif elemento == '||':
+        return Token(Tipo_de_Token.OR, elemento)
+    elif elemento == '&&':
+        return Token(Tipo_de_Token.AND, elemento)
 
     # Números (inteiros e reais)
     else:
         try:
             # Verificar se é número inteiro
             int(elemento)
-            return Token(Tipo_de_Token.NUMERO_REAL, elemento, linha, coluna)
+            return Token(Tipo_de_Token.NUMERO_REAL, elemento)
         except ValueError:
             try:
                 # Verificar se é número real (ponto flutuante)
                 float(elemento)
-                return Token(Tipo_de_Token.NUMERO_REAL, elemento, linha, coluna)
+                return Token(Tipo_de_Token.NUMERO_REAL, elemento)
             except ValueError:
                 # Verificar se é identificador (variável)
                 if elemento.isalpha():
-                    return Token(Tipo_de_Token.IDENTIFICADOR, elemento, linha, coluna)
+                    return Token(Tipo_de_Token.VARIAVEL, elemento)
                 # Token não reconhecido
                 return None
 
@@ -240,8 +240,6 @@ VAR MEM
             print(f"Exemplo - Token[0]:")
             print(f"  .tipo: {exemplo_token.tipo}")
             print(f"  .valor: {exemplo_token.valor}")
-            print(f"  .linha: {exemplo_token.linha}")
-            print(f"  .coluna: {exemplo_token.coluna}")
 
         print(f"\n=== VALIDAÇÃO ===")
         if validarTokens(tokens):
