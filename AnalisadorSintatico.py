@@ -143,7 +143,6 @@ if __name__ == "__main__":
             for i, token in enumerate(tokens_ra2):
                 tipo_str = str(token.tipo).split('.')[-1] if hasattr(token.tipo, 'name') else str(token.tipo)
                 print(f"  {i+1:2d}: {tipo_str:20s} -> {token.valor}")
-
         else:
             print("[ERRO] Validacao falhou: tokens invalidos")
 
