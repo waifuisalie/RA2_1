@@ -1,9 +1,6 @@
 docs/
 flowcharts/
-src\__pycache__
-src/functions/__pycache__/
-src/functions/__init__.py
-__pycache__
+src/RA1/functions/python/__pycache__/
+src/RA1/functions/assembly/__pycache__/
+src/RA2/functions/python/__pycache__/
 LICENSE
-
-
