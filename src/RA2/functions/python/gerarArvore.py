@@ -53,12 +53,12 @@ def exportar_arvore_ascii(arvore, nome_arquivo='arvore_output.txt'):
     with open(nome_arquivo, 'w', encoding='utf-8') as f:
         f.write(conteudo)
 
-    # Exportar para /outputs/
-    output_dir = os.path.join(os.getcwd(), 'outputs')
+    # Exportar para /outputs/RA2/
+    output_dir = os.path.join(os.getcwd(), 'outputs', 'RA2')
     os.makedirs(output_dir, exist_ok=True)
 
     output_path = os.path.join(output_dir, nome_arquivo)
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(conteudo)
 
-    print(f"Árvore exportada para: {nome_arquivo} e outputs/{nome_arquivo}")
+    print(f"Árvore exportada para: {nome_arquivo} e outputs/RA2/{nome_arquivo}")
