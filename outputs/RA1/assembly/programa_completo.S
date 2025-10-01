@@ -125,34 +125,6 @@ main:
     rcall processar_rpn_op22
     rcall send_result
 
-    ; Operação 23
-    rcall processar_rpn_op23
-    rcall send_result
-
-    ; Operação 24
-    rcall processar_rpn_op24
-    rcall send_result
-
-    ; Operação 25
-    rcall processar_rpn_op25
-    rcall send_result
-
-    ; Operação 26
-    rcall processar_rpn_op26
-    rcall send_result
-
-    ; Operação 27
-    rcall processar_rpn_op27
-    rcall send_result
-
-    ; Operação 28
-    rcall processar_rpn_op28
-    rcall send_result
-
-    ; Operação 29
-    rcall processar_rpn_op29
-    rcall send_result
-
     ; Loop infinito
     rjmp end_program
 
@@ -162,7 +134,7 @@ main:
 
 processar_rpn_op1:
     ; Processando operação 1 com suporte 16-bit:
-    ; Expressão: A 5.5
+    ; Expressão: 5.0 A
 
     ; Cabeçalho da operação 1
     ldi r16, 13
@@ -238,27 +210,27 @@ processar_rpn_op1:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'A'
+    ldi r16, '5'
+    rcall uart_transmit
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, '5'
-    rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, 'A'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'A'
-    rcall comando_mem
-
-    ; Processando token 1: '5.5'
+    ; Processando token 0: '5.0'
     ; Push 5 para a pilha
     ldi r16, 5      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
+
+    ; Processando token 1: 'A'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -293,7 +265,7 @@ processar_rpn_op1:
 
 processar_rpn_op2:
     ; Processando operação 2 com suporte 16-bit:
-    ; Expressão: B 3.2
+    ; Expressão: 3.0 B
 
     ; Cabeçalho da operação 2
     ldi r16, 13
@@ -369,27 +341,27 @@ processar_rpn_op2:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'B'
+    ldi r16, '3'
+    rcall uart_transmit
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, '3'
-    rcall uart_transmit
-    ldi r16, '2'
+    ldi r16, 'B'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'B'
-    rcall comando_mem
-
-    ; Processando token 1: '3.2'
+    ; Processando token 0: '3.0'
     ; Push 3 para a pilha
     ldi r16, 3      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
+
+    ; Processando token 1: 'B'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -424,7 +396,7 @@ processar_rpn_op2:
 
 processar_rpn_op3:
     ; Processando operação 3 com suporte 16-bit:
-    ; Expressão: C A B +
+    ; Expressão: A B + C
 
     ; Cabeçalho da operação 3
     ldi r16, 13
@@ -500,10 +472,6 @@ processar_rpn_op3:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'A'
     rcall uart_transmit
     ldi r16, ' '
@@ -514,21 +482,22 @@ processar_rpn_op3:
     rcall uart_transmit
     ldi r16, '+'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'C'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'C'
+    ; Processando token 0: 'A'
     rcall comando_mem
 
-    ; Processando token 1: 'A'
+    ; Processando token 1: 'B'
     rcall comando_mem
 
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '+'
+    ; Processando token 2: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -540,6 +509,9 @@ processar_rpn_op3:
     adc r17, r19
 
     rcall stack_push_int
+
+    ; Processando token 3: 'C'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -574,7 +546,7 @@ processar_rpn_op3:
 
 processar_rpn_op4:
     ; Processando operação 4 com suporte 16-bit:
-    ; Expressão: D A B *
+    ; Expressão: A B * D
 
     ; Cabeçalho da operação 4
     ldi r16, 13
@@ -650,10 +622,6 @@ processar_rpn_op4:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'D'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'A'
     rcall uart_transmit
     ldi r16, ' '
@@ -664,21 +632,22 @@ processar_rpn_op4:
     rcall uart_transmit
     ldi r16, '*'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'D'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'D'
+    ; Processando token 0: 'A'
     rcall comando_mem
 
-    ; Processando token 1: 'A'
+    ; Processando token 1: 'B'
     rcall comando_mem
 
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '*'
+    ; Processando token 2: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -689,6 +658,9 @@ processar_rpn_op4:
     rcall multiply_int
 
     rcall stack_push_int
+
+    ; Processando token 3: 'D'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -723,7 +695,7 @@ processar_rpn_op4:
 
 processar_rpn_op5:
     ; Processando operação 5 com suporte 16-bit:
-    ; Expressão: E A B -
+    ; Expressão: A B - E
 
     ; Cabeçalho da operação 5
     ldi r16, 13
@@ -799,10 +771,6 @@ processar_rpn_op5:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'A'
     rcall uart_transmit
     ldi r16, ' '
@@ -813,21 +781,22 @@ processar_rpn_op5:
     rcall uart_transmit
     ldi r16, '-'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'E'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'E'
+    ; Processando token 0: 'A'
     rcall comando_mem
 
-    ; Processando token 1: 'A'
+    ; Processando token 1: 'B'
     rcall comando_mem
 
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '-'
+    ; Processando token 2: '-'
     ; Operação de subtração
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -839,6 +808,9 @@ processar_rpn_op5:
     sbc r17, r19
 
     rcall stack_push_int
+
+    ; Processando token 3: 'E'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -873,7 +845,7 @@ processar_rpn_op5:
 
 processar_rpn_op6:
     ; Processando operação 6 com suporte 16-bit:
-    ; Expressão: F B A /
+    ; Expressão: B A / F
 
     ; Cabeçalho da operação 6
     ldi r16, 13
@@ -949,10 +921,6 @@ processar_rpn_op6:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'F'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'B'
     rcall uart_transmit
     ldi r16, ' '
@@ -963,21 +931,22 @@ processar_rpn_op6:
     rcall uart_transmit
     ldi r16, '/'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'F'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'F'
+    ; Processando token 0: 'B'
     rcall comando_mem
 
-    ; Processando token 1: 'B'
+    ; Processando token 1: 'A'
     rcall comando_mem
 
-    ; Processando token 2: 'A'
-    rcall comando_mem
-
-    ; Processando token 3: '/'
+    ; Processando token 2: '/'
     ; Operação de divisão
     rcall stack_pop_int      ; Remove divisor
     mov r18, r16             ; guarda divisor
@@ -988,6 +957,9 @@ processar_rpn_op6:
     rcall divide_int
 
     rcall stack_push_int
+
+    ; Processando token 3: 'F'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -1022,7 +994,7 @@ processar_rpn_op6:
 
 processar_rpn_op7:
     ; Processando operação 7 com suporte 16-bit:
-    ; Expressão: G A 2.5 ^
+    ; Expressão: A 2.0 ^ G
 
     ; Cabeçalho da operação 7
     ldi r16, 13
@@ -1098,40 +1070,37 @@ processar_rpn_op7:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'G'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'A'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, '2'
     rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, '^'
+    rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'G'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'G'
+    ; Processando token 0: 'A'
     rcall comando_mem
 
-    ; Processando token 1: 'A'
-    rcall comando_mem
-
-    ; Processando token 2: '2.5'
+    ; Processando token 1: '2.0'
     ; Push 2 para a pilha
     ldi r16, 2      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 3: '^'
+    ; Processando token 2: '^'
     ; Operação de potência
     rcall stack_pop_int      ; Remove expoente
     mov r18, r16             ; guarda expoente
@@ -1142,6 +1111,9 @@ processar_rpn_op7:
     rcall power_int
 
     rcall stack_push_int
+
+    ; Processando token 3: 'G'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -1176,7 +1148,7 @@ processar_rpn_op7:
 
 processar_rpn_op8:
     ; Processando operação 8 com suporte 16-bit:
-    ; Expressão: H A B + C D * +
+    ; Expressão: A B + C D * + H
 
     ; Cabeçalho da operação 8
     ldi r16, 13
@@ -1252,10 +1224,6 @@ processar_rpn_op8:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'H'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'A'
     rcall uart_transmit
     ldi r16, ' '
@@ -1282,21 +1250,22 @@ processar_rpn_op8:
     rcall uart_transmit
     ldi r16, '+'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'H'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'H'
+    ; Processando token 0: 'A'
     rcall comando_mem
 
-    ; Processando token 1: 'A'
+    ; Processando token 1: 'B'
     rcall comando_mem
 
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '+'
+    ; Processando token 2: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -1309,13 +1278,13 @@ processar_rpn_op8:
 
     rcall stack_push_int
 
-    ; Processando token 4: 'C'
+    ; Processando token 3: 'C'
     rcall comando_mem
 
-    ; Processando token 5: 'D'
+    ; Processando token 4: 'D'
     rcall comando_mem
 
-    ; Processando token 6: '*'
+    ; Processando token 5: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -1327,7 +1296,7 @@ processar_rpn_op8:
 
     rcall stack_push_int
 
-    ; Processando token 7: '+'
+    ; Processando token 6: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -1339,6 +1308,9 @@ processar_rpn_op8:
     adc r17, r19
 
     rcall stack_push_int
+
+    ; Processando token 7: 'H'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -1624,7 +1596,7 @@ _and_fim:
 
 processar_rpn_op10:
     ; Processando operação 10 com suporte 16-bit:
-    ; Expressão: IFELSE A 10.5 < B 0.0 > || G H
+    ; Expressão: IFELSE A 10.0 < B 0.0 > || G H
 
     ; Cabeçalho da operação 10
     ldi r16, 13
@@ -1724,7 +1696,7 @@ processar_rpn_op10:
     rcall uart_transmit
     ldi r16, '0'
     rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -1762,7 +1734,7 @@ processar_rpn_op10:
     ; Processando token 1: 'A'
     rcall comando_mem
 
-    ; Processando token 2: '10.5'
+    ; Processando token 2: '10.0'
     ; Push 10 para a pilha
     ldi r16, 10      ; Byte baixo
     ldi r17, 0 ; Byte alto
@@ -1879,7 +1851,7 @@ _or_fim:
 
 processar_rpn_op11:
     ; Processando operação 11 com suporte 16-bit:
-    ; Expressão: X 0.5
+    ; Expressão: 0.0 X
 
     ; Cabeçalho da operação 11
     ldi r16, 13
@@ -1957,27 +1929,27 @@ processar_rpn_op11:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'X'
-    rcall uart_transmit
-    ldi r16, ' '
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, '0'
     rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'X'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'X'
-    rcall comando_mem
-
-    ; Processando token 1: '0.5'
+    ; Processando token 0: '0.0'
     ; Push 0 para a pilha
     ldi r16, 0      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
+
+    ; Processando token 1: 'X'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -2012,7 +1984,7 @@ processar_rpn_op11:
 
 processar_rpn_op12:
     ; Processando operação 12 com suporte 16-bit:
-    ; Expressão: WHILE X 5.5 < X X 1.2 + Y X 2.3 *
+    ; Expressão: WHILE X 5.0 < X 1.0 + X X 2.0 * Y
 
     ; Cabeçalho da operação 12
     ldi r16, 13
@@ -2108,13 +2080,9 @@ processar_rpn_op12:
     rcall uart_transmit
     ldi r16, '5'
     rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'X'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -2124,7 +2092,7 @@ processar_rpn_op12:
     rcall uart_transmit
     ldi r16, '1'
     rcall uart_transmit
-    ldi r16, '2'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -2132,7 +2100,7 @@ processar_rpn_op12:
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, 'Y'
+    ldi r16, 'X'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -2142,11 +2110,15 @@ processar_rpn_op12:
     rcall uart_transmit
     ldi r16, '2'
     rcall uart_transmit
-    ldi r16, '3'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, '*'
+    rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'Y'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
@@ -2160,7 +2132,7 @@ processar_rpn_op12:
     ; Processando token 1: 'X'
     rcall comando_mem
 
-    ; Processando token 2: '5.5'
+    ; Processando token 2: '5.0'
     ; Push 5 para a pilha
     ldi r16, 5      ; Byte baixo
     ldi r17, 0 ; Byte alto
@@ -2189,16 +2161,13 @@ _menor_fim:
     ; Processando token 4: 'X'
     rcall comando_mem
 
-    ; Processando token 5: 'X'
-    rcall comando_mem
-
-    ; Processando token 6: '1.2'
+    ; Processando token 5: '1.0'
     ; Push 1 para a pilha
     ldi r16, 1      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 7: '+'
+    ; Processando token 6: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -2211,19 +2180,19 @@ _menor_fim:
 
     rcall stack_push_int
 
-    ; Processando token 8: 'Y'
+    ; Processando token 7: 'X'
     rcall comando_mem
 
-    ; Processando token 9: 'X'
+    ; Processando token 8: 'X'
     rcall comando_mem
 
-    ; Processando token 10: '2.3'
+    ; Processando token 9: '2.0'
     ; Push 2 para a pilha
     ldi r16, 2      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 11: '*'
+    ; Processando token 10: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -2234,6 +2203,9 @@ _menor_fim:
     rcall multiply_int
 
     rcall stack_push_int
+
+    ; Processando token 11: 'Y'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -2268,7 +2240,7 @@ _menor_fim:
 
 processar_rpn_op13:
     ; Processando operação 13 com suporte 16-bit:
-    ; Expressão: Z 3.0 RES
+    ; Expressão: 3.0 RES Z
 
     ; Cabeçalho da operação 13
     ldi r16, 13
@@ -2346,10 +2318,6 @@ processar_rpn_op13:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'Z'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, '3'
     rcall uart_transmit
     ldi r16, '0'
@@ -2362,22 +2330,26 @@ processar_rpn_op13:
     rcall uart_transmit
     ldi r16, 'S'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'Z'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'Z'
-    rcall comando_mem
-
-    ; Processando token 1: '3.0'
+    ; Processando token 0: '3.0'
     ; Push 3 para a pilha
     ldi r16, 3      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 2: 'RES'
+    ; Processando token 1: 'RES'
     rcall comando_res
+
+    ; Processando token 2: 'Z'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -2412,7 +2384,7 @@ processar_rpn_op13:
 
 processar_rpn_op14:
     ; Processando operação 14 com suporte 16-bit:
-    ; Expressão: K X 2.1 ^ Y 3.4 * +
+    ; Expressão: X 2.0 ^ Y 3.0 * + K
 
     ; Cabeçalho da operação 14
     ldi r16, 13
@@ -2490,17 +2462,13 @@ processar_rpn_op14:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'K'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'X'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, '2'
     rcall uart_transmit
-    ldi r16, '1'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -2514,7 +2482,7 @@ processar_rpn_op14:
     rcall uart_transmit
     ldi r16, '3'
     rcall uart_transmit
-    ldi r16, '4'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -2524,24 +2492,25 @@ processar_rpn_op14:
     rcall uart_transmit
     ldi r16, '+'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'K'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'K'
+    ; Processando token 0: 'X'
     rcall comando_mem
 
-    ; Processando token 1: 'X'
-    rcall comando_mem
-
-    ; Processando token 2: '2.1'
+    ; Processando token 1: '2.0'
     ; Push 2 para a pilha
     ldi r16, 2      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 3: '^'
+    ; Processando token 2: '^'
     ; Operação de potência
     rcall stack_pop_int      ; Remove expoente
     mov r18, r16             ; guarda expoente
@@ -2553,16 +2522,16 @@ processar_rpn_op14:
 
     rcall stack_push_int
 
-    ; Processando token 4: 'Y'
+    ; Processando token 3: 'Y'
     rcall comando_mem
 
-    ; Processando token 5: '3.4'
+    ; Processando token 4: '3.0'
     ; Push 3 para a pilha
     ldi r16, 3      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 6: '*'
+    ; Processando token 5: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -2574,7 +2543,7 @@ processar_rpn_op14:
 
     rcall stack_push_int
 
-    ; Processando token 7: '+'
+    ; Processando token 6: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -2586,6 +2555,9 @@ processar_rpn_op14:
     adc r17, r19
 
     rcall stack_push_int
+
+    ; Processando token 7: 'K'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -2620,7 +2592,7 @@ processar_rpn_op14:
 
 processar_rpn_op15:
     ; Processando operação 15 com suporte 16-bit:
-    ; Expressão: M K Z -
+    ; Expressão: K Z - M
 
     ; Cabeçalho da operação 15
     ldi r16, 13
@@ -2698,10 +2670,6 @@ processar_rpn_op15:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'M'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'K'
     rcall uart_transmit
     ldi r16, ' '
@@ -2712,21 +2680,22 @@ processar_rpn_op15:
     rcall uart_transmit
     ldi r16, '-'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'M'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'M'
+    ; Processando token 0: 'K'
     rcall comando_mem
 
-    ; Processando token 1: 'K'
+    ; Processando token 1: 'Z'
     rcall comando_mem
 
-    ; Processando token 2: 'Z'
-    rcall comando_mem
-
-    ; Processando token 3: '-'
+    ; Processando token 2: '-'
     ; Operação de subtração
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -2738,6 +2707,9 @@ processar_rpn_op15:
     sbc r17, r19
 
     rcall stack_push_int
+
+    ; Processando token 3: 'M'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -2772,7 +2744,7 @@ processar_rpn_op15:
 
 processar_rpn_op16:
     ; Processando operação 16 com suporte 16-bit:
-    ; Expressão: IFELSE M 0.0 > N M N 0.0
+    ; Expressão: IFELSE M 0.0 > M N 0.0 N
 
     ; Cabeçalho da operação 16
     ldi r16, 13
@@ -2876,10 +2848,6 @@ processar_rpn_op16:
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, 'N'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'M'
     rcall uart_transmit
     ldi r16, ' '
@@ -2891,6 +2859,10 @@ processar_rpn_op16:
     ldi r16, '0'
     rcall uart_transmit
     ldi r16, '0'
+    rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'N'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
@@ -2930,20 +2902,20 @@ _maior_true:
 _maior_fim:
     rcall stack_push_int
 
-    ; Processando token 4: 'N'
+    ; Processando token 4: 'M'
     rcall comando_mem
 
-    ; Processando token 5: 'M'
+    ; Processando token 5: 'N'
     rcall comando_mem
 
-    ; Processando token 6: 'N'
-    rcall comando_mem
-
-    ; Processando token 7: '0.0'
+    ; Processando token 6: '0.0'
     ; Push 0 para a pilha
     ldi r16, 0      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
+
+    ; Processando token 7: 'N'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -2978,7 +2950,7 @@ _maior_fim:
 
 processar_rpn_op17:
     ; Processando operação 17 com suporte 16-bit:
-    ; Expressão: FOR 1.0 6.0 1.5 P P 1.1 + Q P 2.2 *
+    ; Expressão: FOR 1.0 10.0 2.0 P 1.0 + P P 2.0 * Q
 
     ; Cabeçalho da operação 17
     ldi r16, 13
@@ -3070,19 +3042,17 @@ processar_rpn_op17:
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, '6'
+    ldi r16, '1'
+    rcall uart_transmit
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, '1'
+    ldi r16, '2'
     rcall uart_transmit
-    ldi r16, '5'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'P'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -3092,7 +3062,7 @@ processar_rpn_op17:
     rcall uart_transmit
     ldi r16, '1'
     rcall uart_transmit
-    ldi r16, '1'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -3100,7 +3070,7 @@ processar_rpn_op17:
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
-    ldi r16, 'Q'
+    ldi r16, 'P'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -3110,11 +3080,15 @@ processar_rpn_op17:
     rcall uart_transmit
     ldi r16, '2'
     rcall uart_transmit
-    ldi r16, '2'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, '*'
+    rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'Q'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
@@ -3131,31 +3105,28 @@ processar_rpn_op17:
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 2: '6.0'
-    ; Push 6 para a pilha
-    ldi r16, 6      ; Byte baixo
+    ; Processando token 2: '10.0'
+    ; Push 10 para a pilha
+    ldi r16, 10      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 3: '1.5'
-    ; Push 1 para a pilha
-    ldi r16, 1      ; Byte baixo
+    ; Processando token 3: '2.0'
+    ; Push 2 para a pilha
+    ldi r16, 2      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
     ; Processando token 4: 'P'
     rcall comando_mem
 
-    ; Processando token 5: 'P'
-    rcall comando_mem
-
-    ; Processando token 6: '1.1'
+    ; Processando token 5: '1.0'
     ; Push 1 para a pilha
     ldi r16, 1      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 7: '+'
+    ; Processando token 6: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -3168,19 +3139,19 @@ processar_rpn_op17:
 
     rcall stack_push_int
 
-    ; Processando token 8: 'Q'
+    ; Processando token 7: 'P'
     rcall comando_mem
 
-    ; Processando token 9: 'P'
+    ; Processando token 8: 'P'
     rcall comando_mem
 
-    ; Processando token 10: '2.2'
+    ; Processando token 9: '2.0'
     ; Push 2 para a pilha
     ldi r16, 2      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 11: '*'
+    ; Processando token 10: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -3191,6 +3162,9 @@ processar_rpn_op17:
     rcall multiply_int
 
     rcall stack_push_int
+
+    ; Processando token 11: 'Q'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -3225,7 +3199,7 @@ processar_rpn_op17:
 
 processar_rpn_op18:
     ; Processando operação 18 com suporte 16-bit:
-    ; Expressão: T P Q +
+    ; Expressão: P Q + T
 
     ; Cabeçalho da operação 18
     ldi r16, 13
@@ -3303,10 +3277,6 @@ processar_rpn_op18:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'T'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'P'
     rcall uart_transmit
     ldi r16, ' '
@@ -3317,21 +3287,22 @@ processar_rpn_op18:
     rcall uart_transmit
     ldi r16, '+'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'T'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'T'
+    ; Processando token 0: 'P'
     rcall comando_mem
 
-    ; Processando token 1: 'P'
+    ; Processando token 1: 'Q'
     rcall comando_mem
 
-    ; Processando token 2: 'Q'
-    rcall comando_mem
-
-    ; Processando token 3: '+'
+    ; Processando token 2: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -3343,6 +3314,9 @@ processar_rpn_op18:
     adc r17, r19
 
     rcall stack_push_int
+
+    ; Processando token 3: 'T'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -3377,7 +3351,7 @@ processar_rpn_op18:
 
 processar_rpn_op19:
     ; Processando operação 19 com suporte 16-bit:
-    ; Expressão: IFELSE T 50.5 > N 0.0 != && U T N * U T 2.5 /
+    ; Expressão: IFELSE T 50.0 > N 0.0 != && T N * U T 2.0 / U
 
     ; Cabeçalho da operação 19
     ldi r16, 13
@@ -3477,7 +3451,7 @@ processar_rpn_op19:
     rcall uart_transmit
     ldi r16, '0'
     rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -3494,10 +3468,6 @@ processar_rpn_op19:
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'U'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
@@ -3523,11 +3493,15 @@ processar_rpn_op19:
     rcall uart_transmit
     ldi r16, '2'
     rcall uart_transmit
-    ldi r16, '5'
+    ldi r16, '0'
     rcall uart_transmit
     ldi r16, ' '
     rcall uart_transmit
     ldi r16, '/'
+    rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'U'
     rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
@@ -3541,7 +3515,7 @@ processar_rpn_op19:
     ; Processando token 1: 'T'
     rcall comando_mem
 
-    ; Processando token 2: '50.5'
+    ; Processando token 2: '50.0'
     ; Push 50 para a pilha
     ldi r16, 50      ; Byte baixo
     ldi r17, 0 ; Byte alto
@@ -3620,16 +3594,13 @@ _and_false:
 _and_fim:
     rcall stack_push_int
 
-    ; Processando token 8: 'U'
+    ; Processando token 8: 'T'
     rcall comando_mem
 
-    ; Processando token 9: 'T'
+    ; Processando token 9: 'N'
     rcall comando_mem
 
-    ; Processando token 10: 'N'
-    rcall comando_mem
-
-    ; Processando token 11: '*'
+    ; Processando token 10: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -3641,19 +3612,19 @@ _and_fim:
 
     rcall stack_push_int
 
-    ; Processando token 12: 'U'
+    ; Processando token 11: 'U'
     rcall comando_mem
 
-    ; Processando token 13: 'T'
+    ; Processando token 12: 'T'
     rcall comando_mem
 
-    ; Processando token 14: '2.5'
+    ; Processando token 13: '2.0'
     ; Push 2 para a pilha
     ldi r16, 2      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 15: '/'
+    ; Processando token 14: '/'
     ; Operação de divisão
     rcall stack_pop_int      ; Remove divisor
     mov r18, r16             ; guarda divisor
@@ -3664,6 +3635,9 @@ _and_fim:
     rcall divide_int
 
     rcall stack_push_int
+
+    ; Processando token 15: 'U'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -3698,7 +3672,7 @@ _and_fim:
 
 processar_rpn_op20:
     ; Processando operação 20 com suporte 16-bit:
-    ; Expressão: V 5.0 RES
+    ; Expressão: 5.0 RES V
 
     ; Cabeçalho da operação 20
     ldi r16, 13
@@ -3776,10 +3750,6 @@ processar_rpn_op20:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'V'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, '5'
     rcall uart_transmit
     ldi r16, '0'
@@ -3792,22 +3762,26 @@ processar_rpn_op20:
     rcall uart_transmit
     ldi r16, 'S'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'V'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'V'
-    rcall comando_mem
-
-    ; Processando token 1: '5.0'
+    ; Processando token 0: '5.0'
     ; Push 5 para a pilha
     ldi r16, 5      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 2: 'RES'
+    ; Processando token 1: 'RES'
     rcall comando_res
+
+    ; Processando token 2: 'V'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -3842,7 +3816,7 @@ processar_rpn_op20:
 
 processar_rpn_op21:
     ; Processando operação 21 com suporte 16-bit:
-    ; Expressão: W 8.0 RES
+    ; Expressão: 8.0 RES W
 
     ; Cabeçalho da operação 21
     ldi r16, 13
@@ -3920,10 +3894,6 @@ processar_rpn_op21:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'W'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, '8'
     rcall uart_transmit
     ldi r16, '0'
@@ -3936,22 +3906,26 @@ processar_rpn_op21:
     rcall uart_transmit
     ldi r16, 'S'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'W'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'W'
-    rcall comando_mem
-
-    ; Processando token 1: '8.0'
+    ; Processando token 0: '8.0'
     ; Push 8 para a pilha
     ldi r16, 8      ; Byte baixo
     ldi r17, 0 ; Byte alto
     rcall stack_push_int
 
-    ; Processando token 2: 'RES'
+    ; Processando token 1: 'RES'
     rcall comando_res
+
+    ; Processando token 2: 'W'
+    rcall comando_mem
 
     ; Mostrar resultado
     ldi r16, 'R'
@@ -3986,7 +3960,7 @@ processar_rpn_op21:
 
 processar_rpn_op22:
     ; Processando operação 22 com suporte 16-bit:
-    ; Expressão: FINAL V W + U T * -
+    ; Expressão: V W + U T * - FINAL
 
     ; Cabeçalho da operação 22
     ldi r16, 13
@@ -4064,18 +4038,6 @@ processar_rpn_op22:
     ldi r16, ' '
     rcall uart_transmit
 
-    ldi r16, 'F'
-    rcall uart_transmit
-    ldi r16, 'I'
-    rcall uart_transmit
-    ldi r16, 'N'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
     ldi r16, 'V'
     rcall uart_transmit
     ldi r16, ' '
@@ -4102,21 +4064,30 @@ processar_rpn_op22:
     rcall uart_transmit
     ldi r16, '-'
     rcall uart_transmit
+    ldi r16, ' '
+    rcall uart_transmit
+    ldi r16, 'F'
+    rcall uart_transmit
+    ldi r16, 'I'
+    rcall uart_transmit
+    ldi r16, 'N'
+    rcall uart_transmit
+    ldi r16, 'A'
+    rcall uart_transmit
+    ldi r16, 'L'
+    rcall uart_transmit
     ldi r16, 13
     rcall uart_transmit
     ldi r16, 10
     rcall uart_transmit
 
-    ; Processando token 0: 'FINAL'
+    ; Processando token 0: 'V'
     rcall comando_mem
 
-    ; Processando token 1: 'V'
+    ; Processando token 1: 'W'
     rcall comando_mem
 
-    ; Processando token 2: 'W'
-    rcall comando_mem
-
-    ; Processando token 3: '+'
+    ; Processando token 2: '+'
     ; Operação de soma
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -4129,13 +4100,13 @@ processar_rpn_op22:
 
     rcall stack_push_int
 
-    ; Processando token 4: 'U'
+    ; Processando token 3: 'U'
     rcall comando_mem
 
-    ; Processando token 5: 'T'
+    ; Processando token 4: 'T'
     rcall comando_mem
 
-    ; Processando token 6: '*'
+    ; Processando token 5: '*'
     ; Operação de multiplicação
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -4147,7 +4118,7 @@ processar_rpn_op22:
 
     rcall stack_push_int
 
-    ; Processando token 7: '-'
+    ; Processando token 6: '-'
     ; Operação de subtração
     rcall stack_pop_int      ; Remove segundo operando
     mov r18, r16             ; guarda segundo operando
@@ -4160,1445 +4131,8 @@ processar_rpn_op22:
 
     rcall stack_push_int
 
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 23 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op23:
-    ; Processando operação 23 com suporte 16-bit:
-    ; Expressão: COMPARACAO A B <
-
-    ; Cabeçalho da operação 23
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'M'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'B'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'COMPARACAO'
+    ; Processando token 7: 'FINAL'
     rcall comando_mem
-
-    ; Processando token 1: 'A'
-    rcall comando_mem
-
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '<'
-    ; Operação menor que
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Comparação menor que
-    cp r16, r18              ; Compara low bytes
-    cpc r17, r19             ; Compara high bytes com carry
-    brlt _menor_true         ; Branch if less than
-    ldi r16, 0               ; False
-    ldi r17, 0
-    rjmp _menor_fim
-_menor_true:
-    ldi r16, 1               ; True
-    ldi r17, 0
-_menor_fim:
-    rcall stack_push_int
-
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 24 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op24:
-    ; Processando operação 24 com suporte 16-bit:
-    ; Expressão: LOGICA A 10.0 > B 5.0 < ||
-
-    ; Cabeçalho da operação 24
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'G'
-    rcall uart_transmit
-    ldi r16, 'I'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'B'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '5'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'LOGICA'
-    rcall comando_mem
-
-    ; Processando token 1: 'A'
-    rcall comando_mem
-
-    ; Processando token 2: '10.0'
-    ; Push 10 para a pilha
-    ldi r16, 10      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 3: '>'
-    ; Operação maior que
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Comparação maior que
-    cp r16, r18              ; Compara low bytes
-    cpc r17, r19             ; Compara high bytes com carry
-    brgt _maior_true         ; Branch if greater than
-    ldi r16, 0               ; False
-    ldi r17, 0
-    rjmp _maior_fim
-_maior_true:
-    ldi r16, 1               ; True
-    ldi r17, 0
-_maior_fim:
-    rcall stack_push_int
-
-    ; Processando token 4: 'B'
-    rcall comando_mem
-
-    ; Processando token 5: '5.0'
-    ; Push 5 para a pilha
-    ldi r16, 5      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 6: '<'
-    ; Operação menor que
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Comparação menor que
-    cp r16, r18              ; Compara low bytes
-    cpc r17, r19             ; Compara high bytes com carry
-    brlt _menor_true         ; Branch if less than
-    ldi r16, 0               ; False
-    ldi r17, 0
-    rjmp _menor_fim
-_menor_true:
-    ldi r16, 1               ; True
-    ldi r17, 0
-_menor_fim:
-    rcall stack_push_int
-
-    ; Processando token 7: '||'
-    ; Operação OR
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; OR lógico
-    cp r16, __zero_reg__     ; Verifica primeiro operando
-    cpc r17, __zero_reg__
-    brne _or_true            ; Se não é zero, resultado é 1
-    cp r18, __zero_reg__     ; Verifica segundo operando
-    cpc r19, __zero_reg__
-    brne _or_true            ; Se não é zero, resultado é 1
-    ldi r16, 0               ; Ambos são zero, resultado é 0
-    ldi r17, 0
-    rjmp _or_fim
-_or_true:
-    ldi r16, 1               ; Pelo menos um não é zero
-    ldi r17, 0
-_or_fim:
-    rcall stack_push_int
-
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 25 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op25:
-    ; Processando operação 25 com suporte 16-bit:
-    ; Expressão: NEGACAO A B == !
-
-    ; Cabeçalho da operação 25
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'N'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'G'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'B'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'NEGACAO'
-    rcall comando_mem
-
-    ; Processando token 1: 'A'
-    rcall comando_mem
-
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '=='
-    ; Operação igual a
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Comparação de igualdade
-    cp r16, r18              ; Compara low bytes
-    brne _igual_false        ; Se diferentes, é falso
-    cp r17, r19              ; Compara high bytes
-    brne _igual_false        ; Se diferentes, é falso
-    ldi r16, 1               ; True
-    ldi r17, 0
-    rjmp _igual_fim
-_igual_false:
-    ldi r16, 0               ; False
-    ldi r17, 0
-_igual_fim:
-    rcall stack_push_int
-
-    ; Processando token 4: '!'
-    ; Operação NOT
-    rcall stack_pop_int      ; Remove operando
-
-    ; NOT lógico
-    cp r16, __zero_reg__     ; Compara com zero
-    cpc r17, __zero_reg__
-    breq _not_true           ; Se zero, resultado é 1
-    ldi r16, 0               ; Não é zero, resultado é 0
-    ldi r17, 0
-    rjmp _not_fim
-_not_true:
-    ldi r16, 1               ; É zero, resultado é 1
-    ldi r17, 0
-_not_fim:
-    rcall stack_push_int
-
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 26 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op26:
-    ; Processando operação 26 com suporte 16-bit:
-    ; Expressão: POTENCIA_FLOAT 3.14 2.71 ^
-
-    ; Cabeçalho da operação 26
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'T'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'N'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'I'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'F'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'T'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '3'
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '4'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '2'
-    rcall uart_transmit
-    ldi r16, '7'
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '^'
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'POTENCIA_FLOAT'
-    rcall comando_mem
-
-    ; Processando token 1: '3.14'
-    ; Push 3 para a pilha
-    ldi r16, 3      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 2: '2.71'
-    ; Push 2 para a pilha
-    ldi r16, 2      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 3: '^'
-    ; Operação de potência
-    rcall stack_pop_int      ; Remove expoente
-    mov r18, r16             ; guarda expoente
-    mov r19, r17
-    rcall stack_pop_int      ; Remove base
-
-    ; Potência 16-bit
-    rcall power_int
-
-    rcall stack_push_int
-
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 27 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op27:
-    ; Processando operação 27 com suporte 16-bit:
-    ; Expressão: DIVISAO_FLOAT 22.7 3.14 /
-
-    ; Cabeçalho da operação 27
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'D'
-    rcall uart_transmit
-    ldi r16, 'I'
-    rcall uart_transmit
-    ldi r16, 'V'
-    rcall uart_transmit
-    ldi r16, 'I'
-    rcall uart_transmit
-    ldi r16, 'S'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'F'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'T'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '2'
-    rcall uart_transmit
-    ldi r16, '2'
-    rcall uart_transmit
-    ldi r16, '7'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '3'
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '4'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '/'
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'DIVISAO_FLOAT'
-    rcall comando_mem
-
-    ; Processando token 1: '22.7'
-    ; Push 22 para a pilha
-    ldi r16, 22      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 2: '3.14'
-    ; Push 3 para a pilha
-    ldi r16, 3      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 3: '/'
-    ; Operação de divisão
-    rcall stack_pop_int      ; Remove divisor
-    mov r18, r16             ; guarda divisor
-    mov r19, r17
-    rcall stack_pop_int      ; Remove dividendo
-
-    ; Divisão 16-bit
-    rcall divide_int
-
-    rcall stack_push_int
-
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 28 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op28:
-    ; Processando operação 28 com suporte 16-bit:
-    ; Expressão: MODULO_FLOAT 15.8 4.2 %
-
-    ; Cabeçalho da operação 28
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'M'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'D'
-    rcall uart_transmit
-    ldi r16, 'U'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'F'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'T'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '5'
-    rcall uart_transmit
-    ldi r16, '8'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '4'
-    rcall uart_transmit
-    ldi r16, '2'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '%'
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'MODULO_FLOAT'
-    rcall comando_mem
-
-    ; Processando token 1: '15.8'
-    ; Push 15 para a pilha
-    ldi r16, 15      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 2: '4.2'
-    ; Push 4 para a pilha
-    ldi r16, 4      ; Byte baixo
-    ldi r17, 0 ; Byte alto
-    rcall stack_push_int
-
-    ; Processando token 3: '%'
-    ; Operação de módulo
-    rcall stack_pop_int      ; Remove divisor
-    mov r18, r16             ; guarda divisor
-    mov r19, r17
-    rcall stack_pop_int      ; Remove dividendo
-
-    ; Módulo 16-bit
-    rcall modulo_int
-
-    rcall stack_push_int
-
-    ; Mostrar resultado
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'u'
-    rcall uart_transmit
-    ldi r16, 'l'
-    rcall uart_transmit
-    ldi r16, 't'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'd'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ; Fim do processamento da operação
-    ret
-
-; ====================================================================
-; PROCESSAMENTO OPERAÇÃO 29 - 16-BIT VERSION
-; ====================================================================
-
-processar_rpn_op29:
-    ; Processando operação 29 com suporte 16-bit:
-    ; Expressão: RESULTADO_COMPLEXO A B * C D + / G H - *
-
-    ; Cabeçalho da operação 29
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '1'
-    rcall uart_transmit
-    ldi r16, '0'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, '='
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Mostrar expressão
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'x'
-    rcall uart_transmit
-    ldi r16, 'p'
-    rcall uart_transmit
-    ldi r16, 'r'
-    rcall uart_transmit
-    ldi r16, 'e'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 's'
-    rcall uart_transmit
-    ldi r16, 'a'
-    rcall uart_transmit
-    ldi r16, 'o'
-    rcall uart_transmit
-    ldi r16, ':'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-
-    ldi r16, 'R'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'S'
-    rcall uart_transmit
-    ldi r16, 'U'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'T'
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, 'D'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, 'M'
-    rcall uart_transmit
-    ldi r16, 'P'
-    rcall uart_transmit
-    ldi r16, 'L'
-    rcall uart_transmit
-    ldi r16, 'E'
-    rcall uart_transmit
-    ldi r16, 'X'
-    rcall uart_transmit
-    ldi r16, 'O'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'A'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'B'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '*'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'C'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'D'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '+'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '/'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'G'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, 'H'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '-'
-    rcall uart_transmit
-    ldi r16, ' '
-    rcall uart_transmit
-    ldi r16, '*'
-    rcall uart_transmit
-    ldi r16, 13
-    rcall uart_transmit
-    ldi r16, 10
-    rcall uart_transmit
-
-    ; Processando token 0: 'RESULTADO_COMPLEXO'
-    rcall comando_mem
-
-    ; Processando token 1: 'A'
-    rcall comando_mem
-
-    ; Processando token 2: 'B'
-    rcall comando_mem
-
-    ; Processando token 3: '*'
-    ; Operação de multiplicação
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Multiplicação 16-bit
-    rcall multiply_int
-
-    rcall stack_push_int
-
-    ; Processando token 4: 'C'
-    rcall comando_mem
-
-    ; Processando token 5: 'D'
-    rcall comando_mem
-
-    ; Processando token 6: '+'
-    ; Operação de soma
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Soma 16-bit
-    add r16, r18
-    adc r17, r19
-
-    rcall stack_push_int
-
-    ; Processando token 7: '/'
-    ; Operação de divisão
-    rcall stack_pop_int      ; Remove divisor
-    mov r18, r16             ; guarda divisor
-    mov r19, r17
-    rcall stack_pop_int      ; Remove dividendo
-
-    ; Divisão 16-bit
-    rcall divide_int
-
-    rcall stack_push_int
-
-    ; Processando token 8: 'G'
-    rcall comando_mem
-
-    ; Processando token 9: 'H'
-    rcall comando_mem
-
-    ; Processando token 10: '-'
-    ; Operação de subtração
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Subtração 16-bit
-    sub r16, r18
-    sbc r17, r19
-
-    rcall stack_push_int
-
-    ; Processando token 11: '*'
-    ; Operação de multiplicação
-    rcall stack_pop_int      ; Remove segundo operando
-    mov r18, r16             ; guarda segundo operando
-    mov r19, r17
-    rcall stack_pop_int      ; Remove primeiro operando
-
-    ; Multiplicação 16-bit
-    rcall multiply_int
-
-    rcall stack_push_int
 
     ; Mostrar resultado
     ldi r16, 'R'

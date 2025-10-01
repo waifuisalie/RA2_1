@@ -69,6 +69,9 @@ def processarLinha(linha: str, linha_num: int) -> List[Token]:
         Lista de tokens da linha
     """
     tokens = []
+
+    # Separar parênteses dos outros elementos
+    linha = linha.replace('(', ' ( ').replace(')', ' ) ')
     elementos = linha.split()
 
     for coluna, elemento in enumerate(elementos):
