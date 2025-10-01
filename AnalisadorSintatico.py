@@ -7,6 +7,7 @@ from src.RA1.functions.python.io_utils import lerArquivo, salvar_tokens
 from src.RA1.functions.python.tokens import Tipo_de_Token
 from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
 from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
+from src.RA2.functions.python.lerTokens import lerTokens, validarTokens
 
 # --- caminhos base do projeto ---
 BASE_DIR    = Path(__file__).resolve().parent        # raiz do repo
@@ -130,9 +131,26 @@ if __name__ == "__main__":
     # COMEÇO RA2
     ##################################################################
 
-    # Aqui lemos o arquivo de tokens gerados no RA1
+    # Ler tokens do arquivo de entrada passado como argumento
+    print("\n--- PROCESSAMENTO RA2 ---")
+    try:
+        print(f"\nProcessando tokens de: {entrada.name}")
+        tokens_ra2 = lerTokens(str(entrada))
 
-    # Derivação de teste
+        if validarTokens(tokens_ra2):
+            print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos")
+            print("\nTokens reconhecidos:")
+            for i, token in enumerate(tokens_ra2):
+                tipo_str = str(token.tipo).split('.')[-1] if hasattr(token.tipo, 'name') else str(token.tipo)
+                print(f"  {i+1:2d}: {tipo_str:20s} -> {token.valor}")
+
+        else:
+            print("[ERRO] Validacao falhou: tokens invalidos")
+
+    except Exception as e:
+        print(f"Erro ao processar {entrada.name}: {e}")
+
+    # Derivação de teste (exemplo hardcoded)
     derivacao_exemplo = [
         'PROGRAM → STATEMENT_LIST',
         'STATEMENT_LIST → STATEMENT STATEMENT_LIST',
@@ -152,7 +170,7 @@ if __name__ == "__main__":
         'STATEMENT_LIST → ε'
     ]
 
-
+    print("\n--- GERAÇÃO DE ÁRVORE SINTÁTICA (EXEMPLO) ---")
     arvore = gerarArvore(derivacao_exemplo)
 
     print("\nÁrvore Sintática:\n")
