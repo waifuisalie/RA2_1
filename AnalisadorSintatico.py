@@ -136,14 +136,27 @@ if __name__ == "__main__":
     print("\n--- PROCESSAMENTO RA2 ---")
     try:
         print(f"\nProcessando tokens de: {entrada.name}")
+
+        # Ler arquivo linha por linha para agrupar tokens por expressão
+        with open(str(entrada), 'r', encoding='utf-8') as f:
+            linhas = [linha.strip() for linha in f if linha.strip() and not linha.startswith('#')]
+
         tokens_ra2 = lerTokens(str(entrada))
 
         if validarTokens(tokens_ra2):
             print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos")
             print("\nTokens reconhecidos:")
-            for i, token in enumerate(tokens_ra2):
-                tipo_str = str(token.tipo).split('.')[-1] if hasattr(token.tipo, 'name') else str(token.tipo)
-                print(f"  {i+1:2d}: {tipo_str:20s} -> {token.valor}")
+
+            # Agrupar tokens por linha
+            from src.RA2.functions.python.lerTokens import processarLinha
+            for i, linha in enumerate(linhas, 1):
+                print(f"\n======= EXPRESSAO {i} =======")
+                print(f"Entrada: {linha}")
+                tokens_linha = processarLinha(linha, i)
+                print("Tokens identificados:")
+                for token in tokens_linha:
+                    tipo_str = str(token.tipo).split('.')[-1]
+                    print(f"  {token.valor:15s} -> {tipo_str}")
         else:
             print("[ERRO] Validacao falhou: tokens invalidos")
 
