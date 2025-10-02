@@ -5,33 +5,14 @@ from pathlib import Path
 from typing import List, Optional
 
 # Suportar tanto importação relativa (como módulo) quanto absoluta (execução direta)
-try:
-    from .tokens import Tipo_de_Token, Token
-except ImportError:
-    from tokens import Tipo_de_Token, Token
+
+from .tokens import Tipo_de_Token, Token
+
+from tokens import Tipo_de_Token, Token
 
 
 def lerTokens(arquivo: str) -> List[Token]:
-    """
-    Lê arquivo de tokens gerado na Fase 1 ou arquivo de código fonte para RA2.
 
-    COMPATIBILIDADE RA1: Lê formato de saída da RA1 (tokens_gerados.txt)
-    EXTENSÃO RA2: Lê código fonte com estruturas de controle
-
-    Args:
-        arquivo: Nome do arquivo (tokens da RA1 ou código fonte da RA2)
-
-    Returns:
-        Lista de tokens processados incluindo novos tokens de controle
-
-    Raises:
-        FileNotFoundError: Se o arquivo não for encontrado
-        ValueError: Se o formato dos tokens for inválido
-
-    Formatos suportados:
-        RA1: "3 2 +" (uma expressão RPN por linha)
-        RA2: "( 3 2 + )" ou "( A B > IF X ELSE Y )" (estruturas de controle)
-    """
     tokens = []
 
     try:
@@ -58,20 +39,9 @@ def lerTokens(arquivo: str) -> List[Token]:
     return tokens
 
 def processarLinha(linha: str, linha_num: int) -> List[Token]:
-    """
-    Processa uma linha do arquivo de tokens, incluindo reconhecimento de novos tokens.
 
-    Args:
-        linha: Linha do arquivo
-        linha_num: Número da linha para relatório de erros
-
-    Returns:
-        Lista de tokens da linha
-    """
     tokens = []
 
-    # Separar parênteses dos outros elementos
-    linha = linha.replace('(', ' ( ').replace(')', ' ) ')
     elementos = linha.split()
 
     for coluna, elemento in enumerate(elementos):
