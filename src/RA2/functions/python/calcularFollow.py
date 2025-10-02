@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-from .configuracaoGramatica import GRAMATICA_RPN, SIMBOLO_INICIAL
+from .configuracaoGramatica import GRAMATICA_RPN, SIMBOLO_INICIAL, mapear_gramatica_para_tokens_reais
 from .calcularFirst import calcularFirst, calcular_first_da_sequencia
 
 def calcularFollow():
-    gramatica = GRAMATICA_RPN
+    # Mapeia gramática teórica para tokens reais do projeto
+    gramatica = mapear_gramatica_para_tokens_reais(GRAMATICA_RPN)
     simbolo_inicial = SIMBOLO_INICIAL
     nao_terminais = set(gramatica.keys())
     
