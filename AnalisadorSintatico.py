@@ -167,7 +167,6 @@ if __name__ == "__main__":
     try:
         print("\n--- ANALISE SINTATICA - GRAMATICA ---")
         imprimir_gramatica_completa()
-
     except Exception as e:
         print(f"Erro: {e}")
         import traceback

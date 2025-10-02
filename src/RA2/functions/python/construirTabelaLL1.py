@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .configuracaoGramatica import GRAMATICA_RPN
+from .configuracaoGramatica import GRAMATICA_RPN, mapear_gramatica_para_tokens_reais
 from .calcularFirst import calcularFirst, calcular_first_da_sequencia
 from .calcularFollow import calcularFollow
 
@@ -8,8 +8,8 @@ class ConflictError(Exception):
     pass
 
 def construirTabelaLL1():
-    
-    gramatica = GRAMATICA_RPN
+    # Mapeia gramática teórica para tokens reais do projeto
+    gramatica = mapear_gramatica_para_tokens_reais(GRAMATICA_RPN)
     nao_terminais = set(gramatica.keys())
     
     # Identifica todos os terminais
@@ -53,29 +53,4 @@ def construirTabelaLL1():
                     tabela[nt_head][terminal] = producao
 
     return tabela
-
-
-def imprimir_tabela_ll1(tabela):
-    nao_terminais = sorted(tabela.keys())
-    if not nao_terminais:
-        return
-        
-    terminais = sorted(tabela[nao_terminais[0]].keys())
-    
-    # Cabeçalho
-    header = f"{'NT':<15}" + "".join([f"{t:<15}" for t in terminais])
-    print(header)
-    print("-" * len(header))
-    
-    # Linhas
-    for nt in nao_terminais:
-        row = f"{nt:<15}"
-        for t in terminais:
-            producao = tabela[nt][t]
-            if producao is None:
-                cell = ""
-            else:
-                cell = f"{nt} → {' '.join(producao)}"
-            row += f"{cell:<15}"
-        print(row)
 
