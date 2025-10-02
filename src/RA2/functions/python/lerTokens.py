@@ -6,9 +6,7 @@ from typing import List, Optional
 
 # Suportar tanto importação relativa (como módulo) quanto absoluta (execução direta)
 
-from .tokens import Tipo_de_Token, Token
-
-from tokens import Tipo_de_Token, Token
+from src.RA1.functions.python.tokens import Tipo_de_Token, Token
 
 
 def lerTokens(arquivo: str) -> List[Token]:
@@ -42,6 +40,8 @@ def processarLinha(linha: str, linha_num: int) -> List[Token]:
 
     tokens = []
 
+    # Separar parênteses dos outros elementos
+    linha = linha.replace('(', ' ( ').replace(')', ' ) ')
     elementos = linha.split()
 
     for coluna, elemento in enumerate(elementos):
@@ -52,21 +52,6 @@ def processarLinha(linha: str, linha_num: int) -> List[Token]:
     return tokens
 
 def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
-    """
-    Reconhece e classifica um token, incluindo novos tokens de estruturas de controle.
-
-    Esta função implementa o reconhecimento de:
-    1. Tokens originais da RA1 (operadores aritméticos, números, etc.)
-    2. NOVOS tokens para RA2: operadores relacionais, estruturas de controle, operadores lógicos
-
-    Args:
-        elemento: String do elemento a ser tokenizado
-        linha: Número da linha
-        coluna: Posição na linha
-
-    Returns:
-        Token reconhecido ou None se inválido
-    """
 
     # ===== TOKENS DO RA2 =====
 
@@ -145,15 +130,7 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
                 return None
 
 def validarTokens(tokens: List[Token]) -> bool:
-    """
-    Valida lista de tokens para verificar se estão em formato válido.
 
-    Args:
-        tokens: Lista de tokens para validar
-
-    Returns:
-        True se tokens são válidos, False caso contrário
-    """
     if not tokens:
         return False
 
