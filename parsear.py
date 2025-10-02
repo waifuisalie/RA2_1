@@ -1,506 +1,449 @@
-# Integrantes do grupo (ordem alfabética):
-# Breno Rossi Duarte - breno-rossi
-# Francisco Bley Ruthes - fbleyruthes
-# Rafael Olivare Piveta - RafaPiveta
-# Stefan Benjamim Seixas Lourenco Rodrigues - waifuisalie
-#
-# Nome do grupo no Canvas: RA2_1
+#!/usr/bin/env python3
 
-"""
-ALUNO 2: Função parsear e Parser Descendente Recursivo
-=======================================================
-Responsável por:
-- Implementar parsear(tokens, tabela_ll1) para análise sintática
-- Usar tabela LL(1) para guiar o parsing
-- Implementar pilha de análise e controle de derivação
-- Detectar e reportar erros sintáticos
-- Gerar estrutura de derivação para a árvore sintática
-"""
-
-from typing import List, Dict, Tuple, Optional, Any
-
-# ============================================================================
-# CLASSE PARA REPRESENTAR TOKENS
-# ============================================================================
-
-class Token:
-    """Representa um token do analisador léxico"""
-    def __init__(self, tipo: str, valor: str, linha: int = 0, coluna: int = 0):
-        self.tipo = tipo      # Tipo do token (NUMBER, IDENTIFIER, PLUS, etc)
-        self.valor = valor    # Valor literal do token
-        self.linha = linha    # Linha no código fonte
-        self.coluna = coluna  # Coluna no código fonte
-    
-    def __repr__(self):
-        return f"Token({self.tipo}, '{self.valor}', L{self.linha}:C{self.coluna})"
-    
-    def __str__(self):
-        return f"{self.tipo}('{self.valor}')"
-
-
-# ============================================================================
-# CLASSE PARA REPRESENTAR NÓS DA ÁRVORE SINTÁTICA
-# ============================================================================
-
-class NoArvore:
-    """Representa um nó na árvore sintática (derivação)"""
-    def __init__(self, simbolo: str, valor: Optional[str] = None, 
-                 filhos: Optional[List['NoArvore']] = None):
-        self.simbolo = simbolo    # Nome do símbolo (terminal ou não-terminal)
-        self.valor = valor        # Valor do token (se for terminal)
-        self.filhos = filhos if filhos is not None else []
-        self.regra = None         # Número da regra aplicada (se não-terminal)
-    
-    def adicionar_filho(self, filho: 'NoArvore'):
-        """Adiciona um filho ao nó"""
-        self.filhos.append(filho)
-    
-    def __repr__(self):
-        if self.valor:
-            return f"NoArvore({self.simbolo}, '{self.valor}')"
-        return f"NoArvore({self.simbolo}, {len(self.filhos)} filhos)"
-    
-    def to_dict(self) -> Dict:
-        """Converte a árvore para dicionário (para JSON)"""
-        resultado = {
-            'simbolo': self.simbolo,
-            'regra': self.regra
-        }
-        if self.valor:
-            resultado['valor'] = self.valor
-        if self.filhos:
-            resultado['filhos'] = [filho.to_dict() for filho in self.filhos]
-        return resultado
-
-
-# ============================================================================
-# CLASSE PARA ERROS SINTÁTICOS
-# ============================================================================
+from .configuracaoGramatica import SIMBOLO_INICIAL, MAPEAMENTO_TOKENS
 
 class ErroSintatico(Exception):
-    """Exceção personalizada para erros sintáticos"""
-    def __init__(self, mensagem: str, token: Optional[Token] = None):
+    """Exceção customizada para erros sintáticos"""
+    def __init__(self, mensagem, posicao=None, token=None):
         self.mensagem = mensagem
+        self.posicao = posicao
         self.token = token
-        super().__init__(self.formatar_erro())
+        super().__init__(self.mensagem)
+
+
+class Parser:
+    """Parser LL(1) Descendente Recursivo para RPN"""
     
-    def formatar_erro(self) -> str:
-        """Formata a mensagem de erro com informações do token"""
-        if self.token:
-            return (f"Erro Sintático na linha {self.token.linha}, "
-                   f"coluna {self.token.coluna}:\n  {self.mensagem}\n"
-                   f"  Token encontrado: {self.token}")
-        return f"Erro Sintático: {self.mensagem}"
-
-
-# ============================================================================
-# CLASSE PARSER LL(1)
-# ============================================================================
-
-class ParserLL1:
-    """Parser descendente recursivo LL(1)"""
-    
-    def __init__(self, tokens: List[Token], tabela_ll1: Dict[str, Dict[str, int]], 
-                 gramatica: Dict[str, List[List[str]]]):
+    def __init__(self, tokens, tabela_ll1):
         """
-        Inicializa o parser.
+        Inicializa o parser
         
         Args:
-            tokens: Lista de tokens do analisador léxico
-            tabela_ll1: Tabela de parsing LL(1)
-            gramatica: Regras de produção da gramática
+            tokens: Lista de tuplas (tipo_token, valor, linha, coluna)
+            tabela_ll1: Tabela LL(1) gerada por construirTabelaLL1()
         """
-        self.tokens = tokens
-        self.tabela_ll1 = tabela_ll1
-        self.gramatica = gramatica
+        self.tokens = tokens + [('$', '$', -1, -1)]  # Adiciona marcador de fim
         self.posicao = 0
-        self.token_atual = tokens[0] if tokens else None
-        self.historico_derivacao = []  # Para rastrear derivações
-        self.erros = []  # Lista de erros encontrados
+        self.tabela_ll1 = tabela_ll1
+        self.derivacao = []
+        self.pilha = []
+        
+        # Inicializa pilha com símbolo inicial e $
+        self.pilha.append('$')
+        self.pilha.append(SIMBOLO_INICIAL)
+        
+    def token_atual(self):
+        """Retorna o token atual sem avançar"""
+        if self.posicao < len(self.tokens):
+            return self.tokens[self.posicao]
+        return ('$', '$', -1, -1)
     
     def avancar(self):
         """Avança para o próximo token"""
-        self.posicao += 1
-        if self.posicao < len(self.tokens):
-            self.token_atual = self.tokens[self.posicao]
+        if self.posicao < len(self.tokens) - 1:
+            self.posicao += 1
+    
+    def reportar_erro(self, mensagem):
+        """Reporta erro sintático com informações detalhadas"""
+        token_tipo, token_valor, linha, coluna = self.token_atual()
+        
+        if linha >= 0:
+            erro_msg = f"Erro sintático na linha {linha}, coluna {coluna}: {mensagem}"
+            erro_msg += f"\nToken encontrado: {token_tipo} ('{token_valor}')"
         else:
-            # Token EOF
-            self.token_atual = Token('EOF', '$', 
-                                    self.tokens[-1].linha if self.tokens else 0,
-                                    self.tokens[-1].coluna if self.tokens else 0)
-    
-    def olhar_frente(self, n: int = 1) -> Optional[Token]:
-        """Olha n tokens à frente sem consumir"""
-        pos = self.posicao + n
-        if pos < len(self.tokens):
-            return self.tokens[pos]
-        return Token('EOF', '$', 0, 0)
-    
-    def consumir(self, tipo_esperado: str) -> Token:
-        """
-        Consome um token do tipo esperado.
+            erro_msg = f"Erro sintático: {mensagem}"
+            erro_msg += f"\nToken encontrado: {token_tipo}"
         
-        Args:
-            tipo_esperado: Tipo do token esperado
-            
+        # Mostra contexto da pilha
+        if len(self.pilha) > 1:
+            erro_msg += f"\nEsperado: {self.pilha[-1]}"
+        
+        raise ErroSintatico(erro_msg, self.posicao, token_tipo)
+    
+    def parsear(self):
+        """
+        Executa o parsing LL(1) usando a pilha
+        
         Returns:
-            Token consumido
+            Lista de derivações (strings no formato "NT -> produção")
+        """
+        while len(self.pilha) > 0:
+            topo = self.pilha[-1]
+            token_tipo, token_valor, linha, coluna = self.token_atual()
             
-        Raises:
-            ErroSintatico: Se o token não for do tipo esperado
-        """
-        if self.token_atual.tipo != tipo_esperado:
-            raise ErroSintatico(
-                f"Esperado '{tipo_esperado}', encontrado '{self.token_atual.tipo}'",
-                self.token_atual
-            )
-        
-        token = self.token_atual
-        self.avancar()
-        return token
-    
-    def registrar_derivacao(self, nao_terminal: str, numero_regra: int):
-        """Registra uma derivação aplicada"""
-        producao = self.gramatica[nao_terminal][numero_regra]
-        self.historico_derivacao.append({
-            'nao_terminal': nao_terminal,
-            'regra': numero_regra,
-            'producao': ' '.join(producao)
-        })
-    
-    def parse_nao_terminal(self, nao_terminal: str) -> NoArvore:
-        """
-        Parseia um não-terminal usando a tabela LL(1).
-        
-        Args:
-            nao_terminal: Nome do não-terminal a parsear
+            # Caso 1: Topo é '$' (fim esperado)
+            if topo == '$':
+                if token_tipo == '$':
+                    self.pilha.pop()
+                    return self.derivacao
+                else:
+                    self.reportar_erro(f"Esperado fim da entrada, mas encontrado '{token_valor}'")
             
-        Returns:
-            Nó da árvore sintática representando a derivação
-        """
-        # Criar nó para este não-terminal
-        no = NoArvore(nao_terminal)
-        
-        # Verificar se há entrada na tabela para (nao_terminal, token_atual)
-        if nao_terminal not in self.tabela_ll1:
-            raise ErroSintatico(
-                f"Não-terminal '{nao_terminal}' não encontrado na tabela LL(1)",
-                self.token_atual
-            )
-        
-        entradas = self.tabela_ll1[nao_terminal]
-        tipo_token = self.token_atual.tipo
-        
-        if tipo_token not in entradas:
-            # Tentar recuperação de erro
-            esperados = ', '.join(entradas.keys())
-            raise ErroSintatico(
-                f"Token inesperado para '{nao_terminal}'.\n"
-                f"  Esperados: {esperados}\n"
-                f"  Encontrado: {tipo_token}",
-                self.token_atual
-            )
-        
-        # Obter número da regra a aplicar
-        numero_regra = entradas[tipo_token]
-        producao = self.gramatica[nao_terminal][numero_regra]
-        
-        # Registrar derivação
-        no.regra = numero_regra
-        self.registrar_derivacao(nao_terminal, numero_regra)
-        
-        # Processar cada símbolo da produção
-        for simbolo in producao:
-            if simbolo == 'EPSILON':
-                # Produção vazia (epsilon)
-                filho = NoArvore('ε')
-                no.adicionar_filho(filho)
+            # Caso 2: Topo é EPSILON (produção vazia)
+            elif topo == 'EPSILON':
+                self.pilha.pop()
                 continue
             
-            # Verificar se é terminal ou não-terminal
-            if self.eh_terminal(simbolo):
-                # Terminal: consumir token
-                try:
-                    token = self.consumir(simbolo)
-                    filho = NoArvore(simbolo, token.valor)
-                    no.adicionar_filho(filho)
-                except ErroSintatico as e:
-                    self.erros.append(e)
-                    raise
+            # Caso 3: Topo é um terminal
+            elif topo not in self.tabela_ll1:
+                # Terminal - deve casar com token atual
+                if topo == token_tipo or topo == token_valor:
+                    self.pilha.pop()
+                    self.avancar()
+                else:
+                    self.reportar_erro(f"Esperado '{topo}', mas encontrado '{token_valor}'")
+            
+            # Caso 4: Topo é um não-terminal
             else:
-                # Não-terminal: recursão
-                try:
-                    filho = self.parse_nao_terminal(simbolo)
-                    no.adicionar_filho(filho)
-                except ErroSintatico as e:
-                    self.erros.append(e)
-                    raise
+                # Consulta tabela LL(1)
+                if token_tipo not in self.tabela_ll1[topo]:
+                    # Tenta com o valor do token também
+                    if token_valor not in self.tabela_ll1[topo]:
+                        tokens_esperados = [t for t in self.tabela_ll1[topo].keys() 
+                                          if self.tabela_ll1[topo][t] is not None]
+                        self.reportar_erro(
+                            f"Token inesperado. Esperado um de: {', '.join(tokens_esperados)}"
+                        )
+                    terminal_key = token_valor
+                else:
+                    terminal_key = token_tipo
+                
+                producao = self.tabela_ll1[topo][terminal_key]
+                
+                if producao is None:
+                    tokens_esperados = [t for t in self.tabela_ll1[topo].keys() 
+                                      if self.tabela_ll1[topo][t] is not None]
+                    self.reportar_erro(
+                        f"Entrada inválida. Esperado um de: {', '.join(tokens_esperados)}"
+                    )
+                
+                # Remove não-terminal do topo
+                self.pilha.pop()
+                
+                # Registra derivação (convertendo para tokens teóricos para exibição)
+                producao_str = self._converter_producao_para_exibicao(producao)
+                derivacao_str = f"{topo} → {producao_str}"
+                self.derivacao.append(derivacao_str)
+                
+                # Empilha produção na ordem reversa (exceto EPSILON)
+                if producao != ['EPSILON']:
+                    for simbolo in reversed(producao):
+                        self.pilha.append(simbolo)
         
-        return no
+        return self.derivacao
     
-    def eh_terminal(self, simbolo: str) -> bool:
-        """Verifica se um símbolo é terminal"""
-        terminais = {
-            'LPAREN', 'RPAREN', 'NUMBER', 'IDENTIFIER',
-            'PLUS', 'MINUS', 'MULT', 'DIV_REAL', 'DIV_INT', 'MOD', 'POW',
-            'GT', 'LT', 'EQ', 'NEQ', 'GTE', 'LTE',
-            'AND', 'OR', 'NOT',
-            'MEM', 'RES', 'FOR', 'WHILE', 'IF', 'ELSE', 'EOF'
-        }
-        return simbolo in terminais
-    
-    def parsear(self) -> Tuple[bool, Optional[NoArvore], List[Dict]]:
-        """
-        Executa o parsing completo.
+    def _converter_producao_para_exibicao(self, producao):
+        """Converte produção com tokens reais para formato de exibição"""
+        # Cria mapeamento inverso
+        mapeamento_inverso = {v: k for k, v in MAPEAMENTO_TOKENS.items()}
         
-        Returns:
-            Tupla contendo:
-            - sucesso: True se parsing bem-sucedido
-            - arvore: Raiz da árvore sintática (ou None se erro)
-            - derivacoes: Lista de derivações aplicadas
-        """
-        try:
-            # Começar pelo símbolo inicial
-            arvore = self.parse_nao_terminal('PROGRAM')
-            
-            # Verificar se consumiu todos os tokens
-            if self.token_atual.tipo != 'EOF':
-                raise ErroSintatico(
-                    f"Tokens restantes após parsing completo",
-                    self.token_atual
-                )
-            
-            print("✅ Parsing concluído com sucesso!")
-            return True, arvore, self.historico_derivacao
-            
-        except ErroSintatico as e:
-            print(f"❌ {e}")
-            return False, None, self.historico_derivacao
+        simbolos_exibicao = []
+        for simbolo in producao:
+            if simbolo == 'EPSILON':
+                simbolos_exibicao.append('ε')
+            else:
+                # Tenta mapear de volta para token teórico
+                simbolo_teorico = mapeamento_inverso.get(simbolo, simbolo)
+                simbolos_exibicao.append(simbolo_teorico)
+        
+        return ' '.join(simbolos_exibicao)
 
 
-# ============================================================================
-# FUNÇÃO PRINCIPAL: parsear()
-# ============================================================================
-
-def parsear(tokens: List[Token], tabela_ll1: Dict[str, Dict[str, int]], 
-           gramatica: Dict[str, List[List[str]]]) -> Tuple[bool, Optional[NoArvore], List[Dict]]:
+def parsear(tokens, tabela_ll1):
     """
-    ALUNO 2: Função principal de parsing sintático.
-    
-    Implementa um parser descendente recursivo LL(1) que:
-    1. Usa a tabela LL(1) para decidir quais produções aplicar
-    2. Constrói a árvore sintática durante o parsing
-    3. Detecta e reporta erros sintáticos
-    4. Gera histórico de derivações
+    Função principal de parsing LL(1)
     
     Args:
-        tokens: Lista de tokens do analisador léxico
-        tabela_ll1: Tabela de parsing LL(1) (de construirGramatica)
-        gramatica: Regras de produção da gramática
-        
+        tokens: Lista de tuplas (tipo_token, valor, linha, coluna)
+                Formato esperado da Fase 1: [('NUMBER', '3.14', 1, 0), ...]
+        tabela_ll1: Tabela LL(1) gerada por construirTabelaLL1()
+                    Formato: {nt: {terminal: [producao]}}
+    
     Returns:
-        Tupla contendo:
-        - sucesso: True se parsing foi bem-sucedido, False caso contrário
-        - arvore: Raiz da árvore sintática (None se houver erro)
-        - derivacoes: Lista de derivações aplicadas durante o parsing
+        dict: {
+            'sucesso': bool,
+            'derivacao': lista de strings com derivações,
+            'erro': string de erro (se houver)
+        }
     """
-    if not tokens:
-        print("❌ Erro: lista de tokens vazia")
-        return False, None, []
+    try:
+        parser = Parser(tokens, tabela_ll1)
+        derivacao = parser.parsear()
+        
+        return {
+            'sucesso': True,
+            'derivacao': derivacao,
+            'erro': None
+        }
     
-    print(f"\nIniciando parsing de {len(tokens)} tokens...")
-    print("=" * 80)
+    except ErroSintatico as e:
+        return {
+            'sucesso': False,
+            'derivacao': parser.derivacao if hasattr(parser, 'derivacao') else [],
+            'erro': str(e)
+        }
     
-    # Criar parser e executar
-    parser = ParserLL1(tokens, tabela_ll1, gramatica)
-    sucesso, arvore, derivacoes = parser.parsear()
-    
-    # Exibir estatísticas
-    print("\n" + "=" * 80)
-    print("ESTATÍSTICAS DO PARSING:")
-    print(f"  Tokens processados: {parser.posicao}")
-    print(f"  Derivações aplicadas: {len(derivacoes)}")
-    print(f"  Erros encontrados: {len(parser.erros)}")
-    print("=" * 80)
-    
-    return sucesso, arvore, derivacoes
+    except Exception as e:
+        return {
+            'sucesso': False,
+            'derivacao': [],
+            'erro': f"Erro inesperado no parser: {str(e)}"
+        }
 
 
-# ============================================================================
-# FUNÇÕES AUXILIARES PARA VISUALIZAÇÃO
-# ============================================================================
-
-def exibir_derivacoes(derivacoes: List[Dict]):
-    """Exibe o histórico de derivações de forma legível"""
-    print("\nHISTÓRICO DE DERIVAÇÕES:")
-    print("=" * 80)
-    for i, derivacao in enumerate(derivacoes, 1):
-        print(f"{i:3}. {derivacao['nao_terminal']:15} → {derivacao['producao']}")
-
-
-def exibir_arvore(no: NoArvore, nivel: int = 0, prefixo: str = ""):
+def validar_tokens(tokens):
     """
-    Exibe a árvore sintática de forma hierárquica.
+    Valida formato básico dos tokens antes do parsing
     
     Args:
-        no: Nó raiz da árvore
-        nivel: Nível de indentação
-        prefixo: Prefixo para o nó atual
+        tokens: Lista de tokens para validar
+    
+    Returns:
+        tuple: (bool válido, string mensagem_erro)
     """
-    if nivel == 0:
-        print("\nÁRVORE SINTÁTICA:")
-        print("=" * 80)
+    if not isinstance(tokens, list):
+        return False, "Tokens devem ser uma lista"
     
-    # Exibir nó atual
-    if no.valor:
-        print(f"{prefixo}{no.simbolo}: '{no.valor}'")
-    else:
-        if no.regra is not None:
-            print(f"{prefixo}{no.simbolo} (regra {no.regra})")
-        else:
-            print(f"{prefixo}{no.simbolo}")
+    if len(tokens) == 0:
+        return False, "Lista de tokens vazia"
     
-    # Exibir filhos
-    for i, filho in enumerate(no.filhos):
-        eh_ultimo = (i == len(no.filhos) - 1)
-        novo_prefixo = prefixo + ("    " if eh_ultimo else "│   ")
-        prefixo_filho = prefixo + ("└── " if eh_ultimo else "├── ")
+    for i, token in enumerate(tokens):
+        if not isinstance(token, tuple) or len(token) < 2:
+            return False, f"Token na posição {i} tem formato inválido. Esperado (tipo, valor, linha, coluna)"
+    
+    return True, "Tokens válidos"
+
+
+def imprimir_derivacao(derivacao, arquivo_saida=None):
+    """
+    Imprime a derivação passo a passo
+    
+    Args:
+        derivacao: Lista de strings com as derivações
+        arquivo_saida: Arquivo opcional para salvar a derivação
+    """
+    print("\n=== Derivação LL(1) ===\n")
+    
+    for i, passo in enumerate(derivacao, 1):
+        linha = f"{i:3}. {passo}"
+        print(linha)
         
-        exibir_arvore(filho, nivel + 1, prefixo_filho)
+        if arquivo_saida:
+            arquivo_saida.write(linha + '\n')
+    
+    print(f"\nTotal de passos de derivação: {len(derivacao)}")
 
 
 # ============================================================================
-# FUNÇÕES DE TESTE
+# FUNÇÕES DE TESTE PARA VALIDAÇÃO DO PARSER
 # ============================================================================
 
-def criar_tokens_teste(codigo: str) -> List[Token]:
-    """
-    Cria tokens de teste a partir de uma string de código.
-    Simulação simplificada do analisador léxico.
-    """
-    tokens = []
-    linha = 1
+def testar_expressao_simples():
+    """Teste 1: Expressão aritmética simples (3 2 +)"""
+    print("\n" + "="*60)
+    print("TESTE 1: Expressão Simples")
+    print("="*60)
     
-    # Mapeamento de símbolos para tipos de token
-    mapa_tokens = {
-        '(': 'LPAREN',
-        ')': 'RPAREN',
-        '+': 'PLUS',
-        '-': 'MINUS',
-        '*': 'MULT',
-        '|': 'DIV_REAL',
-        '/': 'DIV_INT',
-        '%': 'MOD',
-        '^': 'POW',
-        '>': 'GT',
-        '<': 'LT',
-        '==': 'EQ',
-        '!=': 'NEQ',
-        '>=': 'GTE',
-        '<=': 'LTE',
-        '&&': 'AND',
-        '||': 'OR',
-        '!': 'NOT',
-        'MEM': 'MEM',
-        'RES': 'RES',
-        'FOR': 'FOR',
-        'WHILE': 'WHILE',
-        'IF': 'IF',
-        'ELSE': 'ELSE'
-    }
-    
-    palavras = codigo.split()
-    for palavra in palavras:
-        # Verificar se é símbolo conhecido
-        if palavra in mapa_tokens:
-            tokens.append(Token(mapa_tokens[palavra], palavra, linha))
-        # Verificar se é número
-        elif palavra.replace('.', '').replace('-', '').isdigit():
-            tokens.append(Token('NUMBER', palavra, linha))
-        # Senão, é identificador
-        else:
-            tokens.append(Token('IDENTIFIER', palavra, linha))
-    
-    return tokens
-
-
-def testar_parser():
-    """Função de teste do parser com exemplos válidos e inválidos"""
-    print("\n" + "=" * 80)
-    print("TESTES DO PARSER")
-    print("=" * 80)
-    
-    # Importar gramática
-    try:
-        from construirGramatica import construirGramatica
-        gramatica, first, follow, tabela_ll1 = construirGramatica()
-    except ImportError as e:
-        print(f"Erro ao importar: {e}")
-        print("Certifique-se que o arquivo construirGramatica.py está no mesmo diretório")
-        return
-    
-    # Testes
-    testes = [
-        # Teste 1: Expressão aritmética simples
-        {
-            'nome': 'Expressão aritmética simples',
-            'codigo': '( 5 3 + )',
-            'esperado': True
-        },
-        # Teste 2: Armazenamento em memória
-        {
-            'nome': 'Armazenamento em memória',
-            'codigo': '( 8 X MEM )',
-            'esperado': True
-        },
-        # Teste 3: Recuperar variável
-        {
-            'nome': 'Recuperar variável',
-            'codigo': '( X )',
-            'esperado': True
-        },
-        # Teste 4: Operação com variável
-        {
-            'nome': 'Operação com variável',
-            'codigo': '( X 9 + )',
-            'esperado': True
-        },
-        # Teste 5: Expressão aninhada
-        {
-            'nome': 'Expressão aninhada',
-            'codigo': '( ( 5 3 + ) 2 * )',
-            'esperado': True
-        },
-        # Teste 6: Erro - token inesperado
-        {
-            'nome': 'ERRO: Token inesperado',
-            'codigo': '( 5 + 3 )',
-            'esperado': False
-        }
+    # Tokens simulados para (3 2 +)
+    tokens = [
+        ('(', '(', 1, 0),
+        ('NUMBER', '3', 1, 1),
+        ('NUMBER', '2', 1, 3),
+        ('+', '+', 1, 5),
+        (')', ')', 1, 6)
     ]
     
-    for i, teste in enumerate(testes, 1):
-        print(f"\n{'=' * 80}")
-        print(f"TESTE {i}: {teste['nome']}")
-        print(f"Código: {teste['codigo']}")
-        print(f"{'=' * 80}")
-        
-        tokens = criar_tokens_teste(teste['codigo'])
-        sucesso, arvore, derivacoes = parsear(tokens, tabela_ll1, gramatica)
-        
-        if sucesso == teste['esperado']:
-            print(f"✅ Teste passou!")
-        else:
-            print(f"❌ Teste falhou!")
-        
-        if sucesso and arvore:
-            exibir_derivacoes(derivacoes)
-            exibir_arvore(arvore)
+    from .construirGramatica import construirGramatica
+    gramatica_info = construirGramatica()
+    
+    resultado = parsear(tokens, gramatica_info['ll1_table_real'])
+    
+    if resultado['sucesso']:
+        print("✓ Parsing bem-sucedido!")
+        imprimir_derivacao(resultado['derivacao'])
+    else:
+        print(f"✗ Erro: {resultado['erro']}")
+    
+    return resultado['sucesso']
 
 
-# ============================================================================
-# EXECUÇÃO DOS TESTES
-# ============================================================================
+def testar_expressao_aninhada():
+    """Teste 2: Expressão aninhada ((3 2 +) 5 *)"""
+    print("\n" + "="*60)
+    print("TESTE 2: Expressão Aninhada")
+    print("="*60)
+    
+    tokens = [
+        ('(', '(', 1, 0),
+        ('(', '(', 1, 1),
+        ('NUMBER', '3', 1, 2),
+        ('NUMBER', '2', 1, 4),
+        ('+', '+', 1, 6),
+        (')', ')', 1, 7),
+        ('NUMBER', '5', 1, 9),
+        ('*', '*', 1, 11),
+        (')', ')', 1, 12)
+    ]
+    
+    from .construirGramatica import construirGramatica
+    gramatica_info = construirGramatica()
+    
+    resultado = parsear(tokens, gramatica_info['ll1_table_real'])
+    
+    if resultado['sucesso']:
+        print("✓ Parsing bem-sucedido!")
+        imprimir_derivacao(resultado['derivacao'])
+    else:
+        print(f"✗ Erro: {resultado['erro']}")
+    
+    return resultado['sucesso']
 
-if __name__ == "__main__":
-    testar_parser()
+
+def testar_comando_res():
+    """Teste 3: Comando especial (2 RES)"""
+    print("\n" + "="*60)
+    print("TESTE 3: Comando RES")
+    print("="*60)
+    
+    tokens = [
+        ('(', '(', 1, 0),
+        ('NUMBER', '2', 1, 1),
+        ('RES', 'RES', 1, 3),
+        (')', ')', 1, 6)
+    ]
+    
+    from .construirGramatica import construirGramatica
+    gramatica_info = construirGramatica()
+    
+    resultado = parsear(tokens, gramatica_info['ll1_table_real'])
+    
+    if resultado['sucesso']:
+        print("✓ Parsing bem-sucedido!")
+        imprimir_derivacao(resultado['derivacao'])
+    else:
+        print(f"✗ Erro: {resultado['erro']}")
+    
+    return resultado['sucesso']
+
+
+def testar_uso_memoria():
+    """Teste 4: Uso de memória (X)"""
+    print("\n" + "="*60)
+    print("TESTE 4: Uso de Memória")
+    print("="*60)
+    
+    tokens = [
+        ('(', '(', 1, 0),
+        ('IDENTIFIER', 'X', 1, 1),
+        (')', ')', 1, 2)
+    ]
+    
+    from .construirGramatica import construirGramatica
+    gramatica_info = construirGramatica()
+    
+    resultado = parsear(tokens, gramatica_info['ll1_table_real'])
+    
+    if resultado['sucesso']:
+        print("✓ Parsing bem-sucedido!")
+        imprimir_derivacao(resultado['derivacao'])
+    else:
+        print(f"✗ Erro: {resultado['erro']}")
+    
+    return resultado['sucesso']
+
+
+def testar_erro_sintatico():
+    """Teste 5: Erro sintático (3 + 2) - ordem inválida"""
+    print("\n" + "="*60)
+    print("TESTE 5: Erro Sintático (ordem inválida)")
+    print("="*60)
+    
+    tokens = [
+        ('(', '(', 1, 0),
+        ('NUMBER', '3', 1, 1),
+        ('+', '+', 1, 3),
+        ('NUMBER', '2', 1, 5),
+        (')', ')', 1, 6)
+    ]
+    
+    from .construirGramatica import construirGramatica
+    gramatica_info = construirGramatica()
+    
+    resultado = parsear(tokens, gramatica_info['ll1_table_real'])
+    
+    if not resultado['sucesso']:
+        print("✓ Erro detectado corretamente!")
+        print(f"Mensagem: {resultado['erro']}")
+    else:
+        print("✗ Erro não foi detectado (falha no teste)")
+    
+    return not resultado['sucesso']
+
+
+def testar_parenteses_desbalanceados():
+    """Teste 6: Parênteses desbalanceados"""
+    print("\n" + "="*60)
+    print("TESTE 6: Parênteses Desbalanceados")
+    print("="*60)
+    
+    tokens = [
+        ('(', '(', 1, 0),
+        ('NUMBER', '3', 1, 1),
+        ('NUMBER', '2', 1, 3),
+        ('+', '+', 1, 5)
+        # Falta ')' no final
+    ]
+    
+    from .construirGramatica import construirGramatica
+    gramatica_info = construirGramatica()
+    
+    resultado = parsear(tokens, gramatica_info['ll1_table_real'])
+    
+    if not resultado['sucesso']:
+        print("✓ Erro detectado corretamente!")
+        print(f"Mensagem: {resultado['erro']}")
+    else:
+        print("✗ Erro não foi detectado (falha no teste)")
+    
+    return not resultado['sucesso']
+
+
+def executar_todos_testes():
+    """Executa todos os testes do parser"""
+    print("\n" + "="*70)
+    print(" BATERIA DE TESTES DO PARSER LL(1)")
+    print("="*70)
+    
+    testes = [
+        ("Expressão Simples", testar_expressao_simples),
+        ("Expressão Aninhada", testar_expressao_aninhada),
+        ("Comando RES", testar_comando_res),
+        ("Uso de Memória", testar_uso_memoria),
+        ("Erro Sintático", testar_erro_sintatico),
+        ("Parênteses Desbalanceados", testar_parenteses_desbalanceados)
+    ]
+    
+    resultados = []
+    for nome, teste_fn in testes:
+        try:
+            passou = teste_fn()
+            resultados.append((nome, passou))
+        except Exception as e:
+            print(f"\n✗ Exceção no teste '{nome}': {e}")
+            resultados.append((nome, False))
+    
+    # Resumo
+    print("\n" + "="*70)
+    print(" RESUMO DOS TESTES")
+    print("="*70)
+    
+    passou_total = sum(1 for _, passou in resultados if passou)
+    total = len(resultados)
+    
+    for nome, passou in resultados:
+        status = "✓ PASSOU" if passou else "✗ FALHOU"
+        print(f"{status:12} - {nome}")
+    
+    print(f"\nResultado: {passou_total}/{total} testes passaram")
+    
+    return passou_total == total
