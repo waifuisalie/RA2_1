@@ -7,7 +7,11 @@ from src.RA1.functions.python.io_utils import lerArquivo, salvar_tokens
 from src.RA1.functions.python.tokens import Tipo_de_Token
 from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
 from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
+<<<<<<< HEAD
 from src.RA2.functions.python.lerTokens import lerTokens, validarTokens
+=======
+from src.RA2.functions.python.construirGramatica import construirGramatica, imprimir_gramatica_completa
+>>>>>>> 3db80ca (Criada construirGramatica)
 
 # --- caminhos base do projeto ---
 BASE_DIR    = Path(__file__).resolve().parent        # raiz do repo
@@ -137,6 +141,7 @@ if __name__ == "__main__":
         print(f"\nProcessando tokens de: {entrada.name}")
         tokens_ra2 = lerTokens(str(entrada))
 
+<<<<<<< HEAD
         if validarTokens(tokens_ra2):
             print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos")
             print("\nTokens reconhecidos:")
@@ -150,6 +155,19 @@ if __name__ == "__main__":
         print(f"Erro ao processar {entrada.name}: {e}")
 
     # Derivação de teste (exemplo hardcoded)
+=======
+    try:
+        # Usa a função dedicada para imprimir toda a estrutura da gramática
+        print("\nAnálise Sintática - Fase 2")
+        imprimir_gramatica_completa()
+        
+    except Exception as e:
+        print(f"Erro: {e}")
+        import traceback
+        traceback.print_exc()
+
+    # Derivação de teste
+>>>>>>> 3db80ca (Criada construirGramatica)
     derivacao_exemplo = [
         'PROGRAM → STATEMENT_LIST',
         'STATEMENT_LIST → STATEMENT STATEMENT_LIST',
