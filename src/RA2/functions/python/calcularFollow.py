@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+from .configuracaoGramatica import GRAMATICA_RPN, SIMBOLO_INICIAL
+from .calcularFirst import calcularFirst, calcular_first_da_sequencia
+
+def calcularFollow():
+    gramatica = GRAMATICA_RPN
+    simbolo_inicial = SIMBOLO_INICIAL
+    nao_terminais = set(gramatica.keys())
+    
+    # Calcula FIRST primeiro (necessário para FOLLOW)
+    FIRST = calcularFirst()
+    
+    # Inicialização
+    FOLLOW = {nt: set() for nt in nao_terminais}
+    
+    # Regra 1: Adiciona $ ao FOLLOW do símbolo inicial
+    FOLLOW[simbolo_inicial].add('$')
+    
+    mudou = True
+    while mudou:
+        mudou = False
+        # Itera sobre cada produção da gramática
+        for nt_head, producoes in gramatica.items():
+            for producao in producoes:
+                # Itera sobre cada símbolo da produção
+                for i, simbolo in enumerate(producao):
+                    if simbolo in nao_terminais:
+                        beta = producao[i+1:]  # resto da produção após o símbolo
+                        
+                        # Regra 2.a: Adicionar FIRST(beta) a FOLLOW(simbolo)
+                        if beta:
+                            first_beta = calcular_first_da_sequencia(beta, FIRST, nao_terminais)
+                            
+                            tamanho_anterior = len(FOLLOW[simbolo])
+                            FOLLOW[simbolo].update(first_beta - {'EPSILON'})
+                            if len(FOLLOW[simbolo]) > tamanho_anterior:
+                                mudou = True
+                            
+                            # Regra 2.b: Se beta é NULLABLE, adicionar FOLLOW(head) a FOLLOW(simbolo)
+                            if 'EPSILON' in first_beta:
+                                tamanho_anterior = len(FOLLOW[simbolo])
+                                FOLLOW[simbolo].update(FOLLOW[nt_head])
+                                if len(FOLLOW[simbolo]) > tamanho_anterior:
+                                    mudou = True
+                        
+                        # Regra 2.b (caso beta seja vazio): Adicionar FOLLOW(head) a FOLLOW(simbolo)
+                        else:
+                            tamanho_anterior = len(FOLLOW[simbolo])
+                            FOLLOW[simbolo].update(FOLLOW[nt_head])
+                            if len(FOLLOW[simbolo]) > tamanho_anterior:
+                                mudou = True
+    
+    return FOLLOW
