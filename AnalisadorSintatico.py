@@ -8,6 +8,7 @@ from src.RA1.functions.python.tokens import Tipo_de_Token
 from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
 from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
 from src.RA2.functions.python.lerTokens import lerTokens, validarTokens
+from src.RA2.functions.python.construirGramatica import construirGramatica, imprimir_gramatica_completa
 
 # --- caminhos base do projeto ---
 BASE_DIR    = Path(__file__).resolve().parent        # raiz do repo
@@ -148,6 +149,16 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"Erro ao processar {entrada.name}: {e}")
+
+    # Análise Sintática - Gramática
+    try:
+        print("\n--- ANALISE SINTATICA - GRAMATICA ---")
+        imprimir_gramatica_completa()
+
+    except Exception as e:
+        print(f"Erro: {e}")
+        import traceback
+        traceback.print_exc()
 
     # Derivação de teste (exemplo hardcoded)
     derivacao_exemplo = [
