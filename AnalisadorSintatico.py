@@ -7,6 +7,7 @@ from src.RA1.functions.python.io_utils import lerArquivo, salvar_tokens
 from src.RA1.functions.python.tokens import Tipo_de_Token
 from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
 from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
+from src.RA2.functions.python.lerTokens import lerTokens, validarTokens
 from src.RA2.functions.python.construirGramatica import construirGramatica, imprimir_gramatica_completa
 
 # --- caminhos base do projeto ---
@@ -131,19 +132,48 @@ if __name__ == "__main__":
     # COMEÇO RA2
     ##################################################################
 
-    # Aqui lemos o arquivo de tokens gerados no RA1
-
+    # Ler tokens do arquivo de entrada passado como argumento
+    print("\n--- PROCESSAMENTO RA2 ---")
     try:
-        # Usa a função dedicada para imprimir toda a estrutura da gramática
-        print("\nAnálise Sintática - Fase 2")
+        print(f"\nProcessando tokens de: {entrada.name}")
+
+        # Ler arquivo linha por linha para agrupar tokens por expressão
+        with open(str(entrada), 'r', encoding='utf-8') as f:
+            linhas = [linha.strip() for linha in f if linha.strip() and not linha.startswith('#')]
+
+        tokens_ra2 = lerTokens(str(entrada))
+
+        if validarTokens(tokens_ra2):
+            print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos")
+            print("\nTokens reconhecidos:")
+
+            # Agrupar tokens por linha
+            from src.RA2.functions.python.lerTokens import processarLinha
+            for i, linha in enumerate(linhas, 1):
+                print(f"\n======= EXPRESSAO {i} =======")
+                print(f"Entrada: {linha}")
+                tokens_linha = processarLinha(linha, i)
+                print("Tokens identificados:")
+                for token in tokens_linha:
+                    tipo_str = str(token.tipo).split('.')[-1]
+                    print(f"  {token.valor:15s} -> {tipo_str}")
+        else:
+            print("[ERRO] Validacao falhou: tokens invalidos")
+
+    except Exception as e:
+        print(f"Erro ao processar {entrada.name}: {e}")
+
+    # Análise Sintática - Gramática
+    try:
+        print("\n--- ANALISE SINTATICA - GRAMATICA ---")
         imprimir_gramatica_completa()
-        
+
     except Exception as e:
         print(f"Erro: {e}")
         import traceback
         traceback.print_exc()
 
-    # Derivação de teste
+    # Derivação de teste (exemplo hardcoded)
     derivacao_exemplo = [
         'PROGRAM → STATEMENT_LIST',
         'STATEMENT_LIST → STATEMENT STATEMENT_LIST',
@@ -163,7 +193,7 @@ if __name__ == "__main__":
         'STATEMENT_LIST → ε'
     ]
 
-
+    print("\n--- GERAÇÃO DE ÁRVORE SINTÁTICA (EXEMPLO) ---")
     arvore = gerarArvore(derivacao_exemplo)
 
     print("\nÁrvore Sintática:\n")
