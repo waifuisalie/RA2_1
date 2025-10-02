@@ -3,11 +3,7 @@
 import sys
 from pathlib import Path
 from typing import List, Optional
-
-# Suportar tanto importação relativa (como módulo) quanto absoluta (execução direta)
-
 from src.RA1.functions.python.tokens import Tipo_de_Token, Token
-
 
 def lerTokens(arquivo: str) -> List[Token]:
 
