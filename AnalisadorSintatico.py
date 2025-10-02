@@ -145,14 +145,18 @@ if __name__ == "__main__":
 
         if validarTokens(tokens_ra2):
             print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos")
-            print("\nTokens reconhecidos (primeiras 10 linhas):")
+            print("\nTokens reconhecidos:")
 
             # Agrupar tokens por linha
             from src.RA2.functions.python.lerTokens import processarLinha
-            for i, linha in enumerate(linhas[:10], 1):  # Limitar a 10 linhas
+            for i, linha in enumerate(linhas, 1):
+                print(f"\n======= EXPRESSAO {i} =======")
+                print(f"Entrada: {linha}")
                 tokens_linha = processarLinha(linha, i)
-                tokens_str = ' '.join([f"{token.valor}({str(token.tipo).split('.')[-1]})" for token in tokens_linha])
-                print(f"  Linha {i:2d}: {tokens_str}")
+                print("Tokens identificados:")
+                for token in tokens_linha:
+                    tipo_str = str(token.tipo).split('.')[-1]
+                    print(f"  {token.valor:15s} -> {tipo_str}")
         else:
             print("[ERRO] Validacao falhou: tokens invalidos")
 
