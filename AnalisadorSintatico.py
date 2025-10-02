@@ -37,20 +37,33 @@ def exibirResultados(vetor_linhas: list[str]) -> None:
     # Inicializar o histórico na memória global (removido para evitar duplicação)
 
     for i, linha in enumerate(vetor_linhas, start=1):
-        lista_de_tokens = parseExpressao(linha)
-        # para salvar tokens completos (incluindo parênteses) para RA2
-        tokens_completos = [str(token.valor) for token in lista_de_tokens if token.tipo != Tipo_de_Token.FIM]
-        tokens_salvos_txt.append(tokens_completos)
+        try:
+            lista_de_tokens = parseExpressao(linha)
+            # para salvar tokens completos (incluindo parênteses) para RA2
+            tokens_completos = [str(token.valor) for token in lista_de_tokens if token.tipo != Tipo_de_Token.FIM]
+            tokens_salvos_txt.append(tokens_completos)
 
-        resultado = executarExpressao(lista_de_tokens, memoria_global)
-        # Adiciona apenas uma vez ao histórico
-        if 'historico_resultados' not in memoria_global:
-            memoria_global['historico_resultados'] = []
-        memoria_global['historico_resultados'].append(resultado)
-        print(f"Linha {i:02d}: Expressão '{linha}' -> Resultado: {resultado}")
-        # Remove a linha abaixo para evitar duplicação
-        # historico_global.append(resultado)
-        # print(f"DEBUG: Histórico após adicionar {resultado}: {historico_global}")
+            resultado = executarExpressao(lista_de_tokens, memoria_global)
+            # Adiciona apenas uma vez ao histórico
+            if 'historico_resultados' not in memoria_global:
+                memoria_global['historico_resultados'] = []
+            memoria_global['historico_resultados'].append(resultado)
+            print(f"Linha {i:02d}: Expressão '{linha}' -> Resultado: {resultado}")
+            # Remove a linha abaixo para evitar duplicação
+            # historico_global.append(resultado)
+            # print(f"DEBUG: Histórico após adicionar {resultado}: {historico_global}")
+        except ValueError as e:
+            print(f"Linha {i:02d}: Expressão '{linha}' -> ERRO: {e}")
+            tokens_salvos_txt.append([])  # Adiciona lista vazia para manter índices
+            if 'historico_resultados' not in memoria_global:
+                memoria_global['historico_resultados'] = []
+            memoria_global['historico_resultados'].append(None)  # Adiciona None para erro
+        except Exception as e:
+            print(f"Linha {i:02d}: Expressão '{linha}' -> ERRO INESPERADO: {type(e).__name__}: {e}")
+            tokens_salvos_txt.append([])
+            if 'historico_resultados' not in memoria_global:
+                memoria_global['historico_resultados'] = []
+            memoria_global['historico_resultados'].append(None)
 
     # Salva em ambos os locais: RA1 e raiz
     salvar_tokens(tokens_salvos_txt, OUT_TOKENS)  # Salva em RA1
