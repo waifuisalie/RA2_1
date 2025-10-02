@@ -1,47 +1,53 @@
 #!/usr/bin/env python3
 
-from .configuracaoGramatica import GRAMATICA_RPN, SIMBOLO_INICIAL
+from .configuracaoGramatica import GRAMATICA_RPN, SIMBOLO_INICIAL, mapear_tokens_reais_para_teoricos
 from .calcularFirst import calcularFirst
 from .calcularFollow import calcularFollow
 from .construirTabelaLL1 import construirTabelaLL1, ConflictError
 
 def construirGramatica():
-
-    gramatica = GRAMATICA_RPN
+    # Usar gramática teórica para extrair estrutura (consistente com documento)
+    gramatica_teorica = GRAMATICA_RPN
     simbolo_inicial = SIMBOLO_INICIAL
     
-    # Extrai terminais e não-terminais
-    nao_terminais = set(gramatica.keys())
+    # Extrai terminais e não-terminais da gramática TEÓRICA
+    nao_terminais = set(gramatica_teorica.keys())
     terminais = set()
     
-    # Coleta todos os símbolos terminais das produções
-    for producoes in gramatica.values():
+    # Coleta todos os símbolos terminais das produções TEÓRICAS
+    for producoes in gramatica_teorica.values():
         for producao in producoes:
             for simbolo in producao:
                 if simbolo not in nao_terminais and simbolo != 'EPSILON':
                     terminais.add(simbolo)
     
     
-    # print("Calculando conjuntos FIRST...")
-    conjuntos_first = calcularFirst()
+    # Calcular conjuntos usando tokens reais (para funcionamento interno)
+    conjuntos_first_reais = calcularFirst()
+    conjuntos_follow_reais = calcularFollow()
     
-    # print("Calculando conjuntos FOLLOW...")
-    conjuntos_follow = calcularFollow()
+    # Mapear de volta para tokens teóricos (para exibição coerente)
+    conjuntos_first = {nt: mapear_tokens_reais_para_teoricos(conjunto) 
+                      for nt, conjunto in conjuntos_first_reais.items()}
+    conjuntos_follow = {nt: mapear_tokens_reais_para_teoricos(conjunto) 
+                       for nt, conjunto in conjuntos_follow_reais.items()}
     
-    # print("Construindo tabela LL(1)...")
     tabela_ll1 = None
+    tabela_ll1_teorica = None
     conflitos = []
     eh_ll1 = False
     
     try:
-        tabela_ll1 = construirTabelaLL1()
+        tabela_ll1_reais = construirTabelaLL1()
+        tabela_ll1 = tabela_ll1_reais  # Para uso interno
+        tabela_ll1_teorica = mapear_tokens_reais_para_teoricos(tabela_ll1_reais)  # Para exibição
         eh_ll1 = True
     except ConflictError as e:
         conflitos = [str(e)]
     
     # Converte gramática para formato de lista de produções (compatibilidade)
     producoes_lista = []
-    for nt, producoes in gramatica.items():
+    for nt, producoes in gramatica_teorica.items():
         for producao in producoes:
             if producao == ['EPSILON']:
                 producoes_lista.append(f"{nt} -> ε")
@@ -51,10 +57,11 @@ def construirGramatica():
     # Estrutura completa de retorno
     resultado = {
         'productions': producoes_lista,
-        'grammar_dict': gramatica,
-        'first_sets': conjuntos_first,
-        'follow_sets': conjuntos_follow,
-        'll1_table': tabela_ll1,
+        'grammar_dict': gramatica_teorica,
+        'first_sets': conjuntos_first,  # Tokens teóricos para exibição
+        'follow_sets': conjuntos_follow,  # Tokens teóricos para exibição  
+        'll1_table': tabela_ll1_teorica,  # Tokens teóricos para exibição
+        'll1_table_real': tabela_ll1,  # Tokens reais para uso interno
         'start_symbol': simbolo_inicial,
         'terminals': terminais,
         'non_terminals': nao_terminais,
@@ -97,19 +104,19 @@ def imprimir_gramatica_completa():
     
     print(f"\n- Tabela LL1:")
     if gramatica['ll1_table']:
-        print("Tabela LL(1) construída com sucesso!")
-        # Mostrar algumas entradas da tabela como exemplo
+        
+        # Mostrar TODAS as entradas da tabela LL(1)
         table = gramatica['ll1_table']
-        count = 0
+        total_entries = 0
+        
         for nt in sorted(table.keys()):
             for terminal in sorted(table[nt].keys()):
-                if table[nt][terminal] is not None and count < 5:
+                if table[nt][terminal] is not None:
                     production = ' '.join(table[nt][terminal])
                     print(f"M[{nt}, {terminal}] = {nt} → {production}")
-                    count += 1
-            if count >= 5:
-                break
-        print(f"... (Total: {sum(1 for nt in table for t in table[nt] if table[nt][t] is not None)} entradas)")
+                    total_entries += 1
+        
+        print(f"\nTotal de entradas na tabela: {total_entries}")
     else:
         print("Erro na construção da Tabela LL(1)")
     
