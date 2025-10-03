@@ -131,7 +131,9 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
     elif elemento == '*':
         return Token(Tipo_de_Token.MULTIPLICACAO, elemento)
     elif elemento == '/':
-        return Token(Tipo_de_Token.DIVISAO, elemento)
+        return Token(Tipo_de_Token.DIVISAO_INTEIRA, elemento)
+    elif elemento == '|':
+        return Token(Tipo_de_Token.DIVISAO_REAL, elemento)
     elif elemento == '%':
         return Token(Tipo_de_Token.RESTO, elemento)
     elif elemento == '^':

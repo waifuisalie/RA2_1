@@ -401,7 +401,7 @@ def processarTokens(tokens: list[Token], memoria: dict) -> float:
                     print("ERRO -> Histórico vazio")
                     pilha.append(0.0)
                 
-        elif str(token.valor) in ['+', '-', '*', '/', '%', '^']:
+        elif str(token.valor) in ['+', '-', '*', '/', '|', '%', '^']:
             if len(pilha) >= 2:
                 b = pilha.pop()
                 a = pilha.pop()
@@ -410,7 +410,8 @@ def processarTokens(tokens: list[Token], memoria: dict) -> float:
                     if token.valor == '+': resultado = a + b
                     elif token.valor == '-': resultado = a - b
                     elif token.valor == '*': resultado = a * b
-                    elif token.valor == '/': resultado = a / b if b != 0 else 0.0
+                    elif token.valor == '/': resultado = int(a / b) if b != 0 else 0.0  # Divisão INTEIRA
+                    elif token.valor == '|': resultado = a / b if b != 0 else 0.0  # Divisão REAL
                     elif token.valor == '%': resultado = a % b if b != 0 else 0.0
                     elif token.valor == '^': resultado = math.pow(a, b)
                     

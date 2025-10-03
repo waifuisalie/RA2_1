@@ -34,6 +34,7 @@ GRAMATICA_RPN = {
         ['NUMERO_REAL', 'OPERATOR'],
         ['VARIAVEL', 'AFTER_VAR_OP'],  # INOVAÇÃO: Continuação não-terminal
         ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'OPERATOR'],
+        ['NOT'],  # Suporte para operador unário NOT
         ['RES'],
         ['EPSILON']  # Para permitir fechamento direto como em (5)
     ],
@@ -45,6 +46,7 @@ GRAMATICA_RPN = {
         ['NUMERO_REAL', 'OPERATOR'],
         ['VARIAVEL', 'AFTER_VAR_OP'],  # Permite variável sem operador obrigatório
         ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'OPERATOR'],
+        ['NOT'],  # Suporte para operador unário NOT
         ['EPSILON']
     ],
     
@@ -73,7 +75,7 @@ GRAMATICA_RPN = {
     
     # Hierarquia de operadores
     'OPERATOR': [['ARITH_OP'], ['COMP_OP'], ['LOGIC_OP']],
-    'ARITH_OP': [['SOMA'], ['SUBTRACAO'], ['MULTIPLICACAO'], ['DIVISAO'], ['RESTO'], ['POTENCIA']],
+        'ARITH_OP': [['SOMA'], ['SUBTRACAO'], ['MULTIPLICACAO'], ['DIVISAO_INTEIRA'], ['DIVISAO_REAL'], ['RESTO'], ['POTENCIA']],
     'COMP_OP': [['MENOR'], ['MAIOR'], ['IGUAL'], ['MENOR_IGUAL'], ['MAIOR_IGUAL'], ['DIFERENTE']],
     'LOGIC_OP': [['AND'], ['OR'], ['NOT']],
     
@@ -94,7 +96,8 @@ MAPEAMENTO_TOKENS = {
     'SOMA': '+',
     'SUBTRACAO': '-',
     'MULTIPLICACAO': '*',
-    'DIVISAO': '/',
+    'DIVISAO_INTEIRA': '/',
+    'DIVISAO_REAL': '|',
     'RESTO': '%',
     'POTENCIA': '^',
     'MENOR': '<',
