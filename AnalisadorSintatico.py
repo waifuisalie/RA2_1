@@ -14,9 +14,11 @@ from pathlib import Path
 from src.RA1.functions.python.io_utils import lerArquivo
 from src.RA1.functions.python.exibirResultados import exibirResultados
 from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
-from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
-from src.RA2.functions.python.lerTokens import lerTokens, validarTokens
-from src.RA2.functions.python.construirGramatica import construirGramatica, imprimir_gramatica_completa
+from src.RA2.functions.python.gerarArvore import gerar_e_salvar_todas_arvores
+from src.RA2.functions.python.lerTokens import lerTokens, validarTokens, reconhecerToken
+from src.RA2.functions.python.construirGramatica import imprimir_gramatica_completa
+from src.RA2.functions.python.construirTabelaLL1 import construirTabelaLL1
+from src.RA2.functions.python.parsear import parsear_todas_linhas
 
 # --- caminhos base do projeto ---
 BASE_DIR    = Path(__file__).resolve().parent        # raiz do repo
@@ -36,12 +38,21 @@ if __name__ == "__main__":
     # --- resolve caminho da entrada ---
     arg = Path(sys.argv[1])
 
-    # Tenta encontrar o arquivo em várias localizações possíveis
-    possibilidades = [
-        Path.cwd() / arg,  # Relativo ao diretório atual
-        BASE_DIR / arg,    # Relativo à raiz do projeto
-        INPUTS_DIR / arg,  # Dentro da pasta inputs/RA1
-    ]
+    # Ordem de prioridade para localizar arquivo:
+    # 1. Caminho absoluto (se fornecido)
+    # 2. Relativo ao diretório atual
+    # 3. Relativo à raiz do projeto
+    # 4. Dentro da pasta inputs/RA1 (padrão para testes)
+    possibilidades = []
+    
+    if arg.is_absolute():
+        possibilidades.append(arg)
+    else:
+        possibilidades.extend([
+            Path.cwd() / arg,    # Relativo ao diretório atual
+            BASE_DIR / arg,      # Relativo à raiz do projeto
+            INPUTS_DIR / arg,    # Dentro da pasta inputs/RA1
+        ])
 
     entrada = None
     for caminho in possibilidades:
@@ -49,11 +60,11 @@ if __name__ == "__main__":
             entrada = caminho.resolve()
             break
 
-    if entrada is None and arg.is_absolute():  # Se for caminho absoluto
-        entrada = Path(arg)
-
-    if not entrada.exists():
-        print(f"ERRO -> arquivo não encontrado: {entrada}")
+    if entrada is None:
+        print(f"ERRO -> arquivo não encontrado: {arg}")
+        print(f"Tentativas de busca:")
+        for i, caminho in enumerate(possibilidades, 1):
+            print(f"  {i}. {caminho}")
         sys.exit(1)
 
     operacoes_lidas = lerArquivo(str(entrada))
@@ -108,7 +119,6 @@ if __name__ == "__main__":
     
     print(f"Arquivo {nome_arquivo_ra1.name} gerado com sucesso em:")
     print(f"- {OUT_ASM_DIR}")
-    print(f"- {BASE_DIR}")
     print(f"Contém {len(all_tokens)} operações RPN em sequência.")
 
     print("\nPara testar:")
@@ -129,46 +139,104 @@ if __name__ == "__main__":
         print(f"Tokens processados: {len(tokens_para_ra2)} tokens")
         print(f"Validação dos tokens: {'SUCESSO' if tokens_sao_validos else 'FALHOU'}")
     except Exception as e:
-        print(f"Erro no processamento de tokens: {e}")
+        print(f"  Erro no processamento de tokens: {e}")
         import traceback
         traceback.print_exc()
+        sys.exit(1)
 
     # Análise Sintática - Gramática
     try:
         print("\n--- ANALISE SINTATICA - GRAMATICA ---")
         imprimir_gramatica_completa()
     except Exception as e:
-        print(f"Erro: {e}")
+        print(f"  Erro ao exibir gramática: {e}")
         import traceback
         traceback.print_exc()
+        sys.exit(1)
 
-    # Derivação de teste (exemplo hardcoded)
-    derivacao_exemplo = [
-        'PROGRAM → STATEMENT_LIST',
-        'STATEMENT_LIST → STATEMENT STATEMENT_LIST',
-        'STATEMENT → IF_STATEMENT',
-        'IF_STATEMENT → if ( CONDITION ) then STATEMENT',
-        'CONDITION → OPERAND COMPARISON OPERAND',
-        'OPERAND → IDENTIFIER',
-        'COMPARISON → <',
-        'OPERAND → NUMBER',
-        'STATEMENT → ASSIGNMENT',
-        'ASSIGNMENT → IDENTIFIER = EXPRESSION ;',
-        'IDENTIFIER → x',
-        'EXPRESSION → OPERAND OPERATOR OPERAND',
-        'OPERAND → IDENTIFIER',
-        'OPERATOR → +',
-        'OPERAND → NUMBER',
-        'STATEMENT_LIST → ε'
-    ]
+    # Construção da tabela LL(1)
+    try:
+        print("\n--- CONSTRUÇÃO DA TABELA LL(1) ---")
+        tabela_ll1 = construirTabelaLL1()
+        print(f"  Tabela LL(1) construída com {len(tabela_ll1)} entradas")
+    except Exception as e:
+        print(f"  Erro ao construir tabela LL(1): {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
-    print("\n--- GERAÇÃO DE ÁRVORE SINTÁTICA (EXEMPLO) ---")
-    arvore = gerarArvore(derivacao_exemplo)
+    # Aplicação da análise sintática com parsear
+    try:
+        print("\n--- ANÁLISE SINTÁTICA COM PARSEAR ---")
+        
+        # Lê linha por linha do arquivo tokens_gerados.txt
+        tokens_por_linha = []
+        linhas_arquivo = lerArquivo(str(OUT_TOKENS))
+        
+        def segmentar_linha_em_instrucoes(linha_texto):
+            """Segmenta uma linha em múltiplas instruções baseado em parênteses balanceados"""
+            instrucoes = []
+            elementos = linha_texto.split()
+            i = 0
+            
+            while i < len(elementos):
+                if elementos[i] == '(':
+                    # Encontra expressão balanceada
+                    instrucao_elementos = []
+                    nivel_parenteses = 0
+                    
+                    while i < len(elementos):
+                        elemento = elementos[i]
+                        instrucao_elementos.append(elemento)
+                        
+                        if elemento == '(':
+                            nivel_parenteses += 1
+                        elif elemento == ')':
+                            nivel_parenteses -= 1
+                            
+                        i += 1
+                        
+                        # Quando parênteses estão balanceados, temos uma instrução completa
+                        if nivel_parenteses == 0:
+                            break
+                    
+                    if instrucao_elementos:
+                        instrucoes.append(' '.join(instrucao_elementos))
+                else:
+                    i += 1
+            
+            return instrucoes
 
-    print("\nÁrvore Sintática:\n")
-    print(arvore.label)
-    for i, filho in enumerate(arvore.filhos):
-        eh_ultimo = i == len(arvore.filhos) - 1
-        print(filho.desenhar_ascii('', eh_ultimo))
-
-    exportar_arvore_ascii(arvore)    
+        for linha_texto in linhas_arquivo:
+            linha_texto = linha_texto.strip()
+            if linha_texto and not linha_texto.startswith('#'):
+                # Segmenta linha em múltiplas instruções se necessário
+                instrucoes = segmentar_linha_em_instrucoes(linha_texto)
+                
+                for instrucao in instrucoes:
+                    # Processa cada instrução individualmente usando lerTokens
+                    tokens_linha = []
+                    elementos = instrucao.split()
+                    
+                    for elemento in elementos: 
+                        # Usa o reconhecerToken do lerTokens.py
+                        token = reconhecerToken(elemento, 1, 1)  # linha e coluna fictícias
+                        if token:
+                            tokens_linha.append(token)
+                    
+                    if tokens_linha:
+                        tokens_por_linha.append(tokens_linha)
+        
+        print(f"Analisando {len(tokens_por_linha)} linha(s) de tokens")
+        
+        # Aplica parsear para cada linha
+        derivacoes = parsear_todas_linhas(tabela_ll1, tokens_por_linha)
+        
+        # Gera e salva todas as árvores sintáticas
+        print("\n--- GERAÇÃO DAS ÁRVORES SINTÁTICAS ---")
+        gerar_e_salvar_todas_arvores(derivacoes, "arvore_output.txt")
+        
+    except Exception as e:
+        print(f"  Erro na análise sintática: {e}")
+        import traceback
+        traceback.print_exc()    
