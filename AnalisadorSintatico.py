@@ -11,15 +11,20 @@
 import sys
 from pathlib import Path
 
+import sys
+from pathlib import Path
+
 from src.RA1.functions.python.rpn_calc import parseExpressao, executarExpressao
-from src.RA1.functions.python.io_utils import lerArquivo, salvar_tokens
+
 from src.RA1.functions.python.tokens import Tipo_de_Token
-from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
-from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
 from src.RA2.functions.python.lerTokens import lerTokens, lerTokensDoArquivo, validarTokens
 from src.RA2.functions.python.construirGramatica import construirGramatica, imprimir_gramatica_completa
 from src.RA2.functions.python.parsear import parsear
 from src.RA2.functions.python.processarExpressoes import processar_e_exportar_arvores
+from src.RA1.functions.python.io_utils import lerArquivo
+from src.RA1.functions.python.exibirResultados import exibirResultados
+from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
+from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
 
 # --- caminhos base do projeto ---
 BASE_DIR    = Path(__file__).resolve().parent        # raiz do repo
@@ -30,33 +35,6 @@ OUT_ASM_DIR = BASE_DIR / "outputs" / "RA1" / "assembly"          # raiz/outputs/
 # garante pastas de saída
 OUT_ASM_DIR.mkdir(parents=True, exist_ok=True)
 OUT_TOKENS.parent.mkdir(parents=True, exist_ok=True)
-
-def exibirResultados(vetor_linhas: list[str]) -> None:
-    memoria_global = {}
-    historico_global = []
-    tokens_salvos_txt = []
-
-    # Inicializar o histórico na memória global (removido para evitar duplicação)
-
-    for i, linha in enumerate(vetor_linhas, start=1):
-        lista_de_tokens = parseExpressao(linha)
-        # para salvar tokens completos (incluindo parênteses) para RA2
-        tokens_completos = [str(token.valor) for token in lista_de_tokens if token.tipo != Tipo_de_Token.FIM]
-        tokens_salvos_txt.append(tokens_completos)
-
-        resultado = executarExpressao(lista_de_tokens, memoria_global)
-        # Adiciona apenas uma vez ao histórico
-        if 'historico_resultados' not in memoria_global:
-            memoria_global['historico_resultados'] = []
-        memoria_global['historico_resultados'].append(resultado)
-        print(f"Linha {i:02d}: Expressão '{linha}' -> Resultado: {resultado}")
-        # Remove a linha abaixo para evitar duplicação
-        # historico_global.append(resultado)
-        # print(f"DEBUG: Histórico após adicionar {resultado}: {historico_global}")
-
-    # Salva em ambos os locais: RA1 e raiz
-    salvar_tokens(tokens_salvos_txt, OUT_TOKENS)  # Salva em RA1
-    # salvar_tokens(tokens_salvos_txt, BASE_DIR / "tokens_gerados.txt")  # Salva na raiz
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -97,8 +75,16 @@ if __name__ == "__main__":
         
     print(f"\nArquivo de teste: {mostrar}\n")
 
-    exibirResultados(operacoes_lidas)
+    # Executa a análise das expressões RPN
+    sucesso, linhas_processadas, linhas_com_erro = exibirResultados(operacoes_lidas, OUT_TOKENS)
     print("\n--- FIM DOS TESTES ---\n")
+    
+    # Se houve erros, interrompe a execução
+    if not sucesso:
+        print("EXECUÇÃO INTERROMPIDA:")
+        print(f"   Foram encontrados {linhas_com_erro} erro(s) em {linhas_processadas} linha(s) processada(s).")
+        print("   Corrija os erros antes de prosseguir com a geração de Assembly e análise sintática.")
+        sys.exit(1)
 
     # --- Geração de código assembly para todas as operações em um único arquivo ---
     codigo_assembly = []
