@@ -17,19 +17,51 @@ class NoArvore:
         self.filhos.append(filho)
 
     def desenhar_ascii(self, prefixo='', eh_ultimo=True):
-        conector = '└── ' if eh_ultimo else '├── '
+        # Usa ASCII simples para compatibilidade Windows
+        conector = '`-- ' if eh_ultimo else '|-- '
         resultado = prefixo + conector + self.label + '\n'
-        prefixo_prox = prefixo + ('    ' if eh_ultimo else '│   ')
+        prefixo_prox = prefixo + ('    ' if eh_ultimo else '|   ')
         for i, filho in enumerate(self.filhos):
             ultimo = i == len(self.filhos) - 1
             resultado += filho.desenhar_ascii(prefixo_prox, ultimo)
         return resultado
 
-def gerarArvore(derivacao):
-    producoes = [linha.split('→') for linha in derivacao]
-    producoes = [(lhs.strip(), rhs.strip().split()) for lhs, rhs in producoes]
+def gerarArvore(derivacao, simbolo_inicial='PROGRAM'):
+    """
+    Gera arvore sintatica a partir da derivacao produzida pelo parser.
 
-    index = [0]  # índice mutável
+    Args:
+        derivacao: Lista de strings no formato "LHS -> RHS" ou "LHS → RHS"
+                   Exemplo: ["PROGRAM -> LINHA PROGRAM_PRIME", "LINHA -> ( CONTENT )", ...]
+        simbolo_inicial: Simbolo raiz da arvore (default: 'PROGRAM')
+
+    Returns:
+        NoArvore representando a raiz da arvore sintatica
+    """
+    # Processar derivacao - aceita tanto '->' quanto '→'
+    producoes = []
+    for linha in derivacao:
+        # Tenta split com ambos separadores
+        if '->' in linha:
+            partes = linha.split('->')
+        elif '→' in linha:
+            partes = linha.split('→')
+        else:
+            continue  # Pula linhas sem separador
+
+        if len(partes) == 2:
+            lhs = partes[0].strip()
+            rhs = partes[1].strip()
+
+            # Trata EPSILON como producao vazia
+            if rhs == 'EPSILON' or rhs == 'ε':
+                rhs_simbolos = ['EPSILON']
+            else:
+                rhs_simbolos = rhs.split()
+
+            producoes.append((lhs, rhs_simbolos))
+
+    index = [0]  # indice mutavel
 
     def construir_no(simbolo_esperado):
         if index[0] >= len(producoes):
@@ -42,14 +74,15 @@ def gerarArvore(derivacao):
         index[0] += 1
         no = NoArvore(lhs)
         for simbolo in rhs:
-            if simbolo != 'ε':
+            if simbolo != 'EPSILON' and simbolo != 'ε':
                 filho = construir_no(simbolo)
                 no.adicionar_filho(filho)
             else:
-                no.adicionar_filho(NoArvore('ε'))
+                # Usa 'epsilon' ASCII para compatibilidade
+                no.adicionar_filho(NoArvore('epsilon'))
         return no
 
-    return construir_no('PROGRAM')
+    return construir_no(simbolo_inicial)
 
 def exportar_arvore_ascii(arvore, nome_arquivo='arvore_output.txt'):
     conteudo = arvore.label + '\n'

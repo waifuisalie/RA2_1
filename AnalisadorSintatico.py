@@ -16,8 +16,10 @@ from src.RA1.functions.python.io_utils import lerArquivo, salvar_tokens
 from src.RA1.functions.python.tokens import Tipo_de_Token
 from src.RA1.functions.assembly import gerarAssemblyMultiple, save_assembly, save_registers_inc
 from src.RA2.functions.python.gerarArvore import gerarArvore, exportar_arvore_ascii
-from src.RA2.functions.python.lerTokens import lerTokens, validarTokens
+from src.RA2.functions.python.lerTokens import lerTokens, lerTokensDoArquivo, validarTokens
 from src.RA2.functions.python.construirGramatica import construirGramatica, imprimir_gramatica_completa
+from src.RA2.functions.python.parsear import parsear
+from src.RA2.functions.python.processarExpressoes import processar_e_exportar_arvores
 
 # --- caminhos base do projeto ---
 BASE_DIR    = Path(__file__).resolve().parent        # raiz do repo
@@ -141,36 +143,36 @@ if __name__ == "__main__":
     # COMEÇO RA2
     ##################################################################
 
-    # Ler tokens do arquivo de entrada passado como argumento
+    # RA2 CONSOME TOKENS GERADOS PELO RA1
     print("\n--- PROCESSAMENTO RA2 ---")
     try:
-        print(f"\nProcessando tokens de: {entrada.name}")
+        print(f"\nLendo tokens gerados pelo RA1 de: {OUT_TOKENS}")
 
-        # Ler arquivo linha por linha para agrupar tokens por expressão
-        with open(str(entrada), 'r', encoding='utf-8') as f:
-            linhas = [linha.strip() for linha in f if linha.strip() and not linha.startswith('#')]
-
-        tokens_ra2 = lerTokens(str(entrada))
+        # LE TOKENS DO ARQUIVO GERADO PELO RA1 (nao do arquivo original!)
+        tokens_ra2 = lerTokensDoArquivo(str(OUT_TOKENS))
 
         if validarTokens(tokens_ra2):
-            print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos")
-            print("\nTokens reconhecidos:")
+            print(f"[OK] Tokens validados: {len(tokens_ra2)} tokens lidos do RA1")
+            print(f"[INFO] Arquivo de tokens: {OUT_TOKENS.name}")
 
-            # Agrupar tokens por linha
-            from src.RA2.functions.python.lerTokens import processarLinha
-            for i, linha in enumerate(linhas, 1):
-                print(f"\n======= EXPRESSAO {i} =======")
-                print(f"Entrada: {linha}")
-                tokens_linha = processarLinha(linha, i)
-                print("Tokens identificados:")
-                for token in tokens_linha:
-                    tipo_str = str(token.tipo).split('.')[-1]
-                    print(f"  {token.valor:15s} -> {tipo_str}")
+            # Opcional: Mostrar tokens lidos (comentar para output mais limpo)
+            # print("\nTokens reconhecidos:")
+            # for token in tokens_ra2:
+            #     if token.tipo != Tipo_de_Token.FIM:
+            #         tipo_str = str(token.tipo).split('.')[-1]
+            #         print(f"  {token.valor:15s} -> {tipo_str}")
         else:
-            print("[ERRO] Validacao falhou: tokens invalidos")
+            print("[ERRO] Validacao falhou: tokens invalidos no arquivo do RA1")
 
+    except FileNotFoundError:
+        print(f"[ERRO] Arquivo de tokens nao encontrado: {OUT_TOKENS}")
+        print("[INFO] Execute o RA1 primeiro para gerar os tokens")
+        sys.exit(1)
     except Exception as e:
-        print(f"Erro ao processar {entrada.name}: {e}")
+        print(f"[ERRO] Falha ao processar tokens do RA1: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
     # Análise Sintática - Gramática
     try:
@@ -181,33 +183,16 @@ if __name__ == "__main__":
         import traceback
         traceback.print_exc()
 
-    # Derivação de teste (exemplo hardcoded)
-    derivacao_exemplo = [
-        'PROGRAM → STATEMENT_LIST',
-        'STATEMENT_LIST → STATEMENT STATEMENT_LIST',
-        'STATEMENT → IF_STATEMENT',
-        'IF_STATEMENT → if ( CONDITION ) then STATEMENT',
-        'CONDITION → OPERAND COMPARISON OPERAND',
-        'OPERAND → IDENTIFIER',
-        'COMPARISON → <',
-        'OPERAND → NUMBER',
-        'STATEMENT → ASSIGNMENT',
-        'ASSIGNMENT → IDENTIFIER = EXPRESSION ;',
-        'IDENTIFIER → x',
-        'EXPRESSION → OPERAND OPERATOR OPERAND',
-        'OPERAND → IDENTIFIER',
-        'OPERATOR → +',
-        'OPERAND → NUMBER',
-        'STATEMENT_LIST → ε'
-    ]
+    print("\n--- ANALISE SINTATICA E ARVORES ---")
+    gramatica_info = construirGramatica()
 
-    print("\n--- GERAÇÃO DE ÁRVORE SINTÁTICA (EXEMPLO) ---")
-    arvore = gerarArvore(derivacao_exemplo)
+    # Opcional: Mostrar gramatica completa (comentar para output mais limpo)
+    # imprimir_gramatica_completa()
 
-    print("\nÁrvore Sintática:\n")
-    print(arvore.label)
-    for i, filho in enumerate(arvore.filhos):
-        eh_ultimo = i == len(arvore.filhos) - 1
-        print(filho.desenhar_ascii('', eh_ultimo))
-
-    exportar_arvore_ascii(arvore)    
+    # Processar cada expressao separadamente e gerar arvores individuais
+    arvores = processar_e_exportar_arvores(
+        tokens_ra2,
+        gramatica_info['ll1_table_real'],
+        output_dir="outputs/RA2",
+        verbose=False  # Mude para True para debug detalhado
+    )    

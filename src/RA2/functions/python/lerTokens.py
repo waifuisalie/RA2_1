@@ -153,6 +153,48 @@ def reconhecerToken(elemento: str, linha: int, coluna: int) -> Optional[Token]:
             # Qualquer coisa que não seja um token específico é considerada variável
             return Token(Tipo_de_Token.VARIAVEL, elemento)
 
+def lerTokensDoArquivo(arquivo_tokens: str) -> List[Token]:
+    """
+    Le arquivo de tokens gerado pelo RA1 (outputs/RA1/tokens/tokens_gerados.txt).
+
+    Formato esperado: cada linha contem tokens separados por espaco
+    Exemplo: "( 3.0 2.0 + )"
+
+    Args:
+        arquivo_tokens: Caminho para o arquivo de tokens do RA1
+
+    Returns:
+        Lista de objetos Token processados de todas as linhas
+
+    Raises:
+        FileNotFoundError: Se arquivo nao existe
+    """
+    tokens = []
+
+    try:
+        with open(arquivo_tokens, 'r', encoding='utf-8') as f:
+            for linha_num, linha in enumerate(f, 1):
+                linha = linha.strip()
+
+                # Pular linhas vazias e comentarios
+                if not linha or linha.startswith('#'):
+                    continue
+
+                # Processar tokens da linha (mesma logica de processarLinha)
+                tokens_linha = processarLinha(linha, linha_num)
+                tokens.extend(tokens_linha)
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Arquivo de tokens nao encontrado: {arquivo_tokens}")
+    except Exception as e:
+        raise ValueError(f"Erro ao ler arquivo de tokens: {e}")
+
+    # Adicionar token de fim de arquivo
+    tokens.append(Token(Tipo_de_Token.FIM, "$"))
+
+    return tokens
+
+
 def validarTokens(tokens: List[Token]) -> bool:
     if not tokens:
         return False

@@ -1,30 +1,121 @@
 PROGRAM
-└── STATEMENT_LIST
-    ├── STATEMENT
-    │   └── IF_STATEMENT
-    │       ├── if
-    │       ├── (
-    │       ├── CONDITION
-    │       │   ├── OPERAND
-    │       │   │   └── IDENTIFIER
-    │       │   ├── COMPARISON
-    │       │   │   └── <
-    │       │   └── OPERAND
-    │       │       └── NUMBER
-    │       ├── )
-    │       ├── then
-    │       └── STATEMENT
-    │           └── ASSIGNMENT
-    │               ├── IDENTIFIER
-    │               │   └── x
-    │               ├── =
-    │               ├── EXPRESSION
-    │               │   ├── OPERAND
-    │               │   │   └── IDENTIFIER
-    │               │   ├── OPERATOR
-    │               │   │   └── +
-    │               │   └── OPERAND
-    │               │       └── NUMBER
-    │               └── ;
-    └── STATEMENT_LIST
-        └── ε
+|-- LINHA
+|   |-- (
+|   |-- CONTENT
+|   |   |-- NUMBER
+|   |   `-- AFTER_NUM
+|   |       |-- NUMBER
+|   |       `-- OPERATOR
+|   |           `-- ARITH_OP
+|   |               `-- +
+|   `-- )
+`-- PROGRAM_PRIME
+    |-- LINHA
+    |   |-- (
+    |   |-- CONTENT
+    |   |   |-- NUMBER
+    |   |   `-- AFTER_NUM
+    |   |       |-- NUMBER
+    |   |       `-- OPERATOR
+    |   |           `-- ARITH_OP
+    |   |               `-- -
+    |   `-- )
+    `-- PROGRAM_PRIME
+        |-- LINHA
+        |   |-- (
+        |   |-- CONTENT
+        |   |   |-- NUMBER
+        |   |   `-- AFTER_NUM
+        |   |       |-- NUMBER
+        |   |       `-- OPERATOR
+        |   |           `-- ARITH_OP
+        |   |               `-- *
+        |   `-- )
+        `-- PROGRAM_PRIME
+            |-- LINHA
+            |   |-- (
+            |   |-- CONTENT
+            |   |   |-- NUMBER
+            |   |   `-- AFTER_NUM
+            |   |       |-- NUMBER
+            |   |       `-- OPERATOR
+            |   |           `-- ARITH_OP
+            |   |               `-- /
+            |   `-- )
+            `-- PROGRAM_PRIME
+                |-- LINHA
+                |   |-- (
+                |   |-- CONTENT
+                |   |   |-- NUMBER
+                |   |   `-- AFTER_NUM
+                |   |       |-- NUMBER
+                |   |       `-- OPERATOR
+                |   |           `-- ARITH_OP
+                |   |               `-- %
+                |   `-- )
+                `-- PROGRAM_PRIME
+                    |-- LINHA
+                    |   |-- (
+                    |   |-- CONTENT
+                    |   |   |-- NUMBER
+                    |   |   `-- AFTER_NUM
+                    |   |       |-- NUMBER
+                    |   |       `-- OPERATOR
+                    |   |           `-- ARITH_OP
+                    |   |               `-- ^
+                    |   `-- )
+                    `-- PROGRAM_PRIME
+                        |-- LINHA
+                        |   |-- (
+                        |   |-- CONTENT
+                        |   |   |-- (
+                        |   |   |-- EXPR
+                        |   |   |   |-- NUMBER
+                        |   |   |   `-- AFTER_NUM
+                        |   |   |       |-- NUMBER
+                        |   |   |       `-- OPERATOR
+                        |   |   |           `-- ARITH_OP
+                        |   |   |               `-- +
+                        |   |   |-- )
+                        |   |   `-- AFTER_EXPR
+                        |   |       |-- (
+                        |   |       |-- EXPR
+                        |   |       |   |-- NUMBER
+                        |   |       |   `-- AFTER_NUM
+                        |   |       |       |-- NUMBER
+                        |   |       |       `-- OPERATOR
+                        |   |       |           `-- ARITH_OP
+                        |   |       |               `-- *
+                        |   |       |-- )
+                        |   |       `-- OPERATOR
+                        |   |           `-- ARITH_OP
+                        |   |               `-- /
+                        |   `-- )
+                        `-- PROGRAM_PRIME
+                            |-- LINHA
+                            |   |-- (
+                            |   |-- CONTENT
+                            |   |   |-- NUMBER
+                            |   |   `-- AFTER_NUM
+                            |   |       |-- IDENTIFIER
+                            |   |       `-- AFTER_VAR_OP
+                            |   |           `-- epsilon
+                            |   `-- )
+                            `-- PROGRAM_PRIME
+                                |-- LINHA
+                                |   |-- (
+                                |   |-- CONTENT
+                                |   |   |-- IDENTIFIER
+                                |   |   `-- AFTER_VAR
+                                |   |       `-- epsilon
+                                |   `-- )
+                                `-- PROGRAM_PRIME
+                                    |-- LINHA
+                                    |   |-- (
+                                    |   |-- CONTENT
+                                    |   |   |-- NUMBER
+                                    |   |   `-- AFTER_NUM
+                                    |   |       `-- RES
+                                    |   `-- )
+                                    `-- PROGRAM_PRIME
+                                        `-- epsilon
