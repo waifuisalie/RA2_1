@@ -127,19 +127,12 @@ def exportar_arvores_consolidadas(
 
         conteudo.append("")  # Linha em branco
 
-    # Salva arquivo
+    # Salva arquivo APENAS em outputs/RA2/
     with open(output_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(conteudo))
-
-    # Tambem salva na raiz
-    root_path = "arvore_output.txt"
-    with open(root_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(conteudo))
 
     print(f"\n{'='*60}")
     print(f"EXPORTACAO CONCLUIDA")
     print(f"{'='*60}")
-    print(f"Arquivo gerado:")
-    print(f"  - {root_path}")
-    print(f"  - {output_path}")
+    print(f"Arquivo gerado em: {output_path}")
     print(f"\nTotal de arvores exportadas: {len([a for a in arvores if a is not None])}/{len(arvores)}")
