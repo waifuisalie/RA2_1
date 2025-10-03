@@ -1,4 +1,4 @@
-import os
+#!/usr/bin/env python3
 
 # Integrantes do grupo (ordem alfabética):
 # Nome Completo 1 - Breno Rossi Duarte
@@ -7,6 +7,9 @@ import os
 # Nome Completo 4 - Stefan Benjamim Seixas Lourenço Rodrigues
 #
 # Nome do grupo no Canvas: RA2_1
+
+import os
+from .configuracaoGramatica import MAPEAMENTO_TOKENS
 
 class NoArvore:
     def __init__(self, label):
@@ -33,11 +36,15 @@ def gerarArvore(derivacao):
 
     def construir_no(simbolo_esperado):
         if index[0] >= len(producoes):
-            return NoArvore(simbolo_esperado)
+            # Converte nome do token para valor real se disponível
+            valor_real = MAPEAMENTO_TOKENS.get(simbolo_esperado, simbolo_esperado)
+            return NoArvore(valor_real)
 
         lhs, rhs = producoes[index[0]]
         if lhs != simbolo_esperado:
-            return NoArvore(simbolo_esperado)
+            # Converte nome do token para valor real se disponível
+            valor_real = MAPEAMENTO_TOKENS.get(simbolo_esperado, simbolo_esperado)
+            return NoArvore(valor_real)
 
         index[0] += 1
         no = NoArvore(lhs)
@@ -113,12 +120,12 @@ def gerar_e_salvar_todas_arvores(derivacoes_por_linha, nome_arquivo='arvore_outp
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(conteudo_completo)
         
-        print(f". {arvores_geradas} árvore(s) sintática(s) salva(s) em:")
+        print(f"  {arvores_geradas} árvore(s) sintática(s) salva(s) em:")
         print(f"   - {nome_arquivo}")
         print(f"   - outputs/RA2/{nome_arquivo}")
         
         return True
         
     except Exception as e:
-        print(f". Erro ao salvar árvores: {e}")
+        print(f"  Erro ao salvar árvores: {e}")
         return False

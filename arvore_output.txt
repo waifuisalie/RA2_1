@@ -4,14 +4,14 @@ LINHA 1:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── NUMERO_REAL
+│   │   ├── NUMBER
 │   │   └── AFTER_NUM
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -21,14 +21,14 @@ LINHA 2:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── NUMERO_REAL
+│   │   ├── NUMBER
 │   │   └── AFTER_NUM
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -38,23 +38,23 @@ LINHA 3:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── ARITH_OP
-│   │   │                   └── SOMA
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── +
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -64,23 +64,23 @@ LINHA 4:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── ARITH_OP
-│   │   │                   └── MULTIPLICACAO
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── *
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -90,23 +90,23 @@ LINHA 5:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── ARITH_OP
-│   │   │                   └── SUBTRACAO
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── -
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -116,23 +116,23 @@ LINHA 6:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── ARITH_OP
-│   │   │                   └── DIVISAO
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── /
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -142,22 +142,22 @@ LINHA 7:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── NUMERO_REAL
+│   │   │       ├── NUMBER
 │   │   │       └── OPERATOR
 │   │   │           └── ARITH_OP
-│   │   │               └── POTENCIA
-│   │   ├── FECHA_PARENTESES
+│   │   │               └── ^
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -167,43 +167,43 @@ LINHA 8:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── ABRE_PARENTESES
+│   │   │   ├── (
 │   │   │   ├── EXPR
-│   │   │   │   ├── VARIAVEL
+│   │   │   │   ├── IDENTIFIER
 │   │   │   │   └── AFTER_VAR
-│   │   │   │       ├── VARIAVEL
+│   │   │   │       ├── IDENTIFIER
 │   │   │   │       └── AFTER_VAR_OP
 │   │   │   │           └── OPERATOR
 │   │   │   │               └── ARITH_OP
-│   │   │   │                   └── SOMA
-│   │   │   ├── FECHA_PARENTESES
+│   │   │   │                   └── +
+│   │   │   ├── )
 │   │   │   └── AFTER_EXPR
-│   │   │       ├── ABRE_PARENTESES
+│   │   │       ├── (
 │   │   │       ├── EXPR
-│   │   │       │   ├── VARIAVEL
+│   │   │       │   ├── IDENTIFIER
 │   │   │       │   └── AFTER_VAR
-│   │   │       │       ├── VARIAVEL
+│   │   │       │       ├── IDENTIFIER
 │   │   │       │       └── AFTER_VAR_OP
 │   │   │       │           └── OPERATOR
 │   │   │       │               └── ARITH_OP
-│   │   │       │                   └── MULTIPLICACAO
-│   │   │       ├── FECHA_PARENTESES
+│   │   │       │                   └── *
+│   │   │       ├── )
 │   │   │       └── AFTER_EXPR
 │   │   │           ├── OPERATOR
 │   │   │           │   └── ARITH_OP
-│   │   │           │       └── SOMA
+│   │   │           │       └── +
 │   │   │           └── EXPR_CHAIN
 │   │   │               └── ε
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -213,55 +213,55 @@ LINHA 9:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
 │   │   ├── IFELSE
 │   │   └── IFELSE_STRUCT
-│   │       ├── ABRE_PARENTESES
+│   │       ├── (
 │   │       ├── EXPR
-│   │       │   ├── ABRE_PARENTESES
+│   │       │   ├── (
 │   │       │   ├── EXPR
-│   │       │   │   ├── VARIAVEL
+│   │       │   │   ├── IDENTIFIER
 │   │       │   │   └── AFTER_VAR
-│   │       │   │       ├── VARIAVEL
+│   │       │   │       ├── IDENTIFIER
 │   │       │   │       └── AFTER_VAR_OP
 │   │       │   │           └── OPERATOR
 │   │       │   │               └── COMP_OP
-│   │       │   │                   └── MAIOR
-│   │       │   ├── FECHA_PARENTESES
+│   │       │   │                   └── >
+│   │       │   ├── )
 │   │       │   └── AFTER_EXPR
-│   │       │       ├── ABRE_PARENTESES
+│   │       │       ├── (
 │   │       │       ├── EXPR
-│   │       │       │   ├── VARIAVEL
+│   │       │       │   ├── IDENTIFIER
 │   │       │       │   └── AFTER_VAR
-│   │       │       │       ├── VARIAVEL
+│   │       │       │       ├── IDENTIFIER
 │   │       │       │       └── AFTER_VAR_OP
 │   │       │       │           └── OPERATOR
 │   │       │       │               └── COMP_OP
-│   │       │       │                   └── MENOR_IGUAL
-│   │       │       ├── FECHA_PARENTESES
+│   │       │       │                   └── <=
+│   │       │       ├── )
 │   │       │       └── AFTER_EXPR
 │   │       │           ├── OPERATOR
 │   │       │           │   └── LOGIC_OP
-│   │       │           │       └── AND
+│   │       │           │       └── &&
 │   │       │           └── EXPR_CHAIN
 │   │       │               └── ε
-│   │       ├── FECHA_PARENTESES
+│   │       ├── )
 │   │       ├── LINHA
-│   │       │   ├── ABRE_PARENTESES
+│   │       │   ├── (
 │   │       │   ├── CONTENT
-│   │       │   │   ├── NUMERO_REAL
+│   │       │   │   ├── NUMBER
 │   │       │   │   └── AFTER_NUM
 │   │       │   │       └── ε
-│   │       │   └── FECHA_PARENTESES
+│   │       │   └── )
 │   │       └── LINHA
-│   │           ├── ABRE_PARENTESES
+│   │           ├── (
 │   │           ├── CONTENT
-│   │           │   ├── NUMERO_REAL
+│   │           │   ├── NUMBER
 │   │           │   └── AFTER_NUM
 │   │           │       └── ε
-│   │           └── FECHA_PARENTESES
-│   └── FECHA_PARENTESES
+│   │           └── )
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -271,53 +271,53 @@ LINHA 10:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
 │   │   ├── IFELSE
 │   │   └── IFELSE_STRUCT
-│   │       ├── ABRE_PARENTESES
+│   │       ├── (
 │   │       ├── EXPR
-│   │       │   ├── ABRE_PARENTESES
+│   │       │   ├── (
 │   │       │   ├── EXPR
-│   │       │   │   ├── VARIAVEL
+│   │       │   │   ├── IDENTIFIER
 │   │       │   │   └── AFTER_VAR
-│   │       │   │       ├── NUMERO_REAL
+│   │       │   │       ├── NUMBER
 │   │       │   │       └── OPERATOR
 │   │       │   │           └── COMP_OP
-│   │       │   │               └── MENOR
-│   │       │   ├── FECHA_PARENTESES
+│   │       │   │               └── <
+│   │       │   ├── )
 │   │       │   └── AFTER_EXPR
-│   │       │       ├── ABRE_PARENTESES
+│   │       │       ├── (
 │   │       │       ├── EXPR
-│   │       │       │   ├── VARIAVEL
+│   │       │       │   ├── IDENTIFIER
 │   │       │       │   └── AFTER_VAR
-│   │       │       │       ├── NUMERO_REAL
+│   │       │       │       ├── NUMBER
 │   │       │       │       └── OPERATOR
 │   │       │       │           └── COMP_OP
-│   │       │       │               └── MAIOR
-│   │       │       ├── FECHA_PARENTESES
+│   │       │       │               └── >
+│   │       │       ├── )
 │   │       │       └── AFTER_EXPR
 │   │       │           ├── OPERATOR
 │   │       │           │   └── LOGIC_OP
-│   │       │           │       └── OR
+│   │       │           │       └── ||
 │   │       │           └── EXPR_CHAIN
 │   │       │               └── ε
-│   │       ├── FECHA_PARENTESES
+│   │       ├── )
 │   │       ├── LINHA
-│   │       │   ├── ABRE_PARENTESES
+│   │       │   ├── (
 │   │       │   ├── CONTENT
-│   │       │   │   ├── VARIAVEL
+│   │       │   │   ├── IDENTIFIER
 │   │       │   │   └── AFTER_VAR
 │   │       │   │       └── ε
-│   │       │   └── FECHA_PARENTESES
+│   │       │   └── )
 │   │       └── LINHA
-│   │           ├── ABRE_PARENTESES
+│   │           ├── (
 │   │           ├── CONTENT
-│   │           │   ├── VARIAVEL
+│   │           │   ├── IDENTIFIER
 │   │           │   └── AFTER_VAR
 │   │           │       └── ε
-│   │           └── FECHA_PARENTESES
-│   └── FECHA_PARENTESES
+│   │           └── )
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -327,14 +327,14 @@ LINHA 11:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── NUMERO_REAL
+│   │   ├── NUMBER
 │   │   └── AFTER_NUM
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -344,59 +344,59 @@ LINHA 12:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
 │   │   ├── WHILE
 │   │   └── WHILE_STRUCT
-│   │       ├── ABRE_PARENTESES
+│   │       ├── (
 │   │       ├── EXPR
-│   │       │   ├── VARIAVEL
+│   │       │   ├── IDENTIFIER
 │   │       │   └── AFTER_VAR
-│   │       │       ├── NUMERO_REAL
+│   │       │       ├── NUMBER
 │   │       │       └── OPERATOR
 │   │       │           └── COMP_OP
-│   │       │               └── MENOR
-│   │       ├── FECHA_PARENTESES
+│   │       │               └── <
+│   │       ├── )
 │   │       └── LINHA
-│   │           ├── ABRE_PARENTESES
+│   │           ├── (
 │   │           ├── CONTENT
-│   │           │   ├── ABRE_PARENTESES
+│   │           │   ├── (
 │   │           │   ├── EXPR
-│   │           │   │   ├── ABRE_PARENTESES
+│   │           │   │   ├── (
 │   │           │   │   ├── EXPR
-│   │           │   │   │   ├── VARIAVEL
+│   │           │   │   │   ├── IDENTIFIER
 │   │           │   │   │   └── AFTER_VAR
-│   │           │   │   │       ├── NUMERO_REAL
+│   │           │   │   │       ├── NUMBER
 │   │           │   │   │       └── OPERATOR
 │   │           │   │   │           └── ARITH_OP
-│   │           │   │   │               └── SOMA
-│   │           │   │   ├── FECHA_PARENTESES
+│   │           │   │   │               └── +
+│   │           │   │   ├── )
 │   │           │   │   └── AFTER_EXPR
-│   │           │   │       ├── VARIAVEL
+│   │           │   │       ├── IDENTIFIER
 │   │           │   │       └── AFTER_VAR_OP
 │   │           │   │           └── ε
-│   │           │   ├── FECHA_PARENTESES
+│   │           │   ├── )
 │   │           │   └── AFTER_EXPR
-│   │           │       ├── ABRE_PARENTESES
+│   │           │       ├── (
 │   │           │       ├── EXPR
-│   │           │       │   ├── ABRE_PARENTESES
+│   │           │       │   ├── (
 │   │           │       │   ├── EXPR
-│   │           │       │   │   ├── VARIAVEL
+│   │           │       │   │   ├── IDENTIFIER
 │   │           │       │   │   └── AFTER_VAR
-│   │           │       │   │       ├── NUMERO_REAL
+│   │           │       │   │       ├── NUMBER
 │   │           │       │   │       └── OPERATOR
 │   │           │       │   │           └── ARITH_OP
-│   │           │       │   │               └── MULTIPLICACAO
-│   │           │       │   ├── FECHA_PARENTESES
+│   │           │       │   │               └── *
+│   │           │       │   ├── )
 │   │           │       │   └── AFTER_EXPR
-│   │           │       │       ├── VARIAVEL
+│   │           │       │       ├── IDENTIFIER
 │   │           │       │       └── AFTER_VAR_OP
 │   │           │       │           └── ε
-│   │           │       ├── FECHA_PARENTESES
+│   │           │       ├── )
 │   │           │       └── AFTER_EXPR
 │   │           │           └── ε
-│   │           └── FECHA_PARENTESES
-│   └── FECHA_PARENTESES
+│   │           └── )
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -406,19 +406,19 @@ LINHA 13:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── NUMERO_REAL
+│   │   │   ├── NUMBER
 │   │   │   └── AFTER_NUM
 │   │   │       └── RES
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -428,41 +428,41 @@ LINHA 14:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── ABRE_PARENTESES
+│   │   │   ├── (
 │   │   │   ├── EXPR
-│   │   │   │   ├── VARIAVEL
+│   │   │   │   ├── IDENTIFIER
 │   │   │   │   └── AFTER_VAR
-│   │   │   │       ├── NUMERO_REAL
+│   │   │   │       ├── NUMBER
 │   │   │   │       └── OPERATOR
 │   │   │   │           └── ARITH_OP
-│   │   │   │               └── POTENCIA
-│   │   │   ├── FECHA_PARENTESES
+│   │   │   │               └── ^
+│   │   │   ├── )
 │   │   │   └── AFTER_EXPR
-│   │   │       ├── ABRE_PARENTESES
+│   │   │       ├── (
 │   │   │       ├── EXPR
-│   │   │       │   ├── VARIAVEL
+│   │   │       │   ├── IDENTIFIER
 │   │   │       │   └── AFTER_VAR
-│   │   │       │       ├── NUMERO_REAL
+│   │   │       │       ├── NUMBER
 │   │   │       │       └── OPERATOR
 │   │   │       │           └── ARITH_OP
-│   │   │       │               └── MULTIPLICACAO
-│   │   │       ├── FECHA_PARENTESES
+│   │   │       │               └── *
+│   │   │       ├── )
 │   │   │       └── AFTER_EXPR
 │   │   │           ├── OPERATOR
 │   │   │           │   └── ARITH_OP
-│   │   │           │       └── SOMA
+│   │   │           │       └── +
 │   │   │           └── EXPR_CHAIN
 │   │   │               └── ε
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -472,23 +472,23 @@ LINHA 15:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── ARITH_OP
-│   │   │                   └── SUBTRACAO
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── -
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -498,34 +498,34 @@ LINHA 16:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
 │   │   ├── IFELSE
 │   │   └── IFELSE_STRUCT
-│   │       ├── ABRE_PARENTESES
+│   │       ├── (
 │   │       ├── EXPR
-│   │       │   ├── VARIAVEL
+│   │       │   ├── IDENTIFIER
 │   │       │   └── AFTER_VAR
-│   │       │       ├── NUMERO_REAL
+│   │       │       ├── NUMBER
 │   │       │       └── OPERATOR
 │   │       │           └── COMP_OP
-│   │       │               └── MAIOR
-│   │       ├── FECHA_PARENTESES
+│   │       │               └── >
+│   │       ├── )
 │   │       ├── LINHA
-│   │       │   ├── ABRE_PARENTESES
+│   │       │   ├── (
 │   │       │   ├── CONTENT
-│   │       │   │   ├── VARIAVEL
+│   │       │   │   ├── IDENTIFIER
 │   │       │   │   └── AFTER_VAR
 │   │       │   │       └── ε
-│   │       │   └── FECHA_PARENTESES
+│   │       │   └── )
 │   │       └── LINHA
-│   │           ├── ABRE_PARENTESES
+│   │           ├── (
 │   │           ├── CONTENT
-│   │           │   ├── NUMERO_REAL
+│   │           │   ├── NUMBER
 │   │           │   └── AFTER_NUM
 │   │           │       └── ε
-│   │           └── FECHA_PARENTESES
-│   └── FECHA_PARENTESES
+│   │           └── )
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -535,14 +535,14 @@ LINHA 17:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── VARIAVEL
+│   │   ├── IDENTIFIER
 │   │   └── AFTER_VAR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -552,59 +552,59 @@ LINHA 18:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
 │   │   ├── FOR
 │   │   └── FOR_STRUCT
-│   │       ├── ABRE_PARENTESES
-│   │       ├── NUMERO_REAL
-│   │       ├── FECHA_PARENTESES
-│   │       ├── ABRE_PARENTESES
-│   │       ├── NUMERO_REAL
-│   │       ├── FECHA_PARENTESES
-│   │       ├── ABRE_PARENTESES
-│   │       ├── NUMERO_REAL
-│   │       ├── FECHA_PARENTESES
+│   │       ├── (
+│   │       ├── NUMBER
+│   │       ├── )
+│   │       ├── (
+│   │       ├── NUMBER
+│   │       ├── )
+│   │       ├── (
+│   │       ├── NUMBER
+│   │       ├── )
 │   │       └── LINHA
-│   │           ├── ABRE_PARENTESES
+│   │           ├── (
 │   │           ├── CONTENT
-│   │           │   ├── ABRE_PARENTESES
+│   │           │   ├── (
 │   │           │   ├── EXPR
-│   │           │   │   ├── ABRE_PARENTESES
+│   │           │   │   ├── (
 │   │           │   │   ├── EXPR
-│   │           │   │   │   ├── VARIAVEL
+│   │           │   │   │   ├── IDENTIFIER
 │   │           │   │   │   └── AFTER_VAR
-│   │           │   │   │       ├── NUMERO_REAL
+│   │           │   │   │       ├── NUMBER
 │   │           │   │   │       └── OPERATOR
 │   │           │   │   │           └── ARITH_OP
-│   │           │   │   │               └── SOMA
-│   │           │   │   ├── FECHA_PARENTESES
+│   │           │   │   │               └── +
+│   │           │   │   ├── )
 │   │           │   │   └── AFTER_EXPR
-│   │           │   │       ├── VARIAVEL
+│   │           │   │       ├── IDENTIFIER
 │   │           │   │       └── AFTER_VAR_OP
 │   │           │   │           └── ε
-│   │           │   ├── FECHA_PARENTESES
+│   │           │   ├── )
 │   │           │   └── AFTER_EXPR
-│   │           │       ├── ABRE_PARENTESES
+│   │           │       ├── (
 │   │           │       ├── EXPR
-│   │           │       │   ├── ABRE_PARENTESES
+│   │           │       │   ├── (
 │   │           │       │   ├── EXPR
-│   │           │       │   │   ├── VARIAVEL
+│   │           │       │   │   ├── IDENTIFIER
 │   │           │       │   │   └── AFTER_VAR
-│   │           │       │   │       ├── NUMERO_REAL
+│   │           │       │   │       ├── NUMBER
 │   │           │       │   │       └── OPERATOR
 │   │           │       │   │           └── ARITH_OP
-│   │           │       │   │               └── MULTIPLICACAO
-│   │           │       │   ├── FECHA_PARENTESES
+│   │           │       │   │               └── *
+│   │           │       │   ├── )
 │   │           │       │   └── AFTER_EXPR
-│   │           │       │       ├── VARIAVEL
+│   │           │       │       ├── IDENTIFIER
 │   │           │       │       └── AFTER_VAR_OP
 │   │           │       │           └── ε
-│   │           │       ├── FECHA_PARENTESES
+│   │           │       ├── )
 │   │           │       └── AFTER_EXPR
 │   │           │           └── ε
-│   │           └── FECHA_PARENTESES
-│   └── FECHA_PARENTESES
+│   │           └── )
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -614,23 +614,23 @@ LINHA 19:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── ARITH_OP
-│   │   │                   └── SOMA
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── +
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -640,77 +640,77 @@ LINHA 20:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
 │   │   │   ├── IFELSE
 │   │   │   └── IFELSE_STRUCT
-│   │   │       ├── ABRE_PARENTESES
+│   │   │       ├── (
 │   │   │       ├── EXPR
-│   │   │       │   ├── ABRE_PARENTESES
+│   │   │       │   ├── (
 │   │   │       │   ├── EXPR
-│   │   │       │   │   ├── VARIAVEL
+│   │   │       │   │   ├── IDENTIFIER
 │   │   │       │   │   └── AFTER_VAR
-│   │   │       │   │       ├── NUMERO_REAL
+│   │   │       │   │       ├── NUMBER
 │   │   │       │   │       └── OPERATOR
 │   │   │       │   │           └── COMP_OP
-│   │   │       │   │               └── MAIOR
-│   │   │       │   ├── FECHA_PARENTESES
+│   │   │       │   │               └── >
+│   │   │       │   ├── )
 │   │   │       │   └── AFTER_EXPR
-│   │   │       │       ├── ABRE_PARENTESES
+│   │   │       │       ├── (
 │   │   │       │       ├── EXPR
-│   │   │       │       │   ├── VARIAVEL
+│   │   │       │       │   ├── IDENTIFIER
 │   │   │       │       │   └── AFTER_VAR
-│   │   │       │       │       ├── NUMERO_REAL
+│   │   │       │       │       ├── NUMBER
 │   │   │       │       │       └── OPERATOR
 │   │   │       │       │           └── COMP_OP
-│   │   │       │       │               └── DIFERENTE
-│   │   │       │       ├── FECHA_PARENTESES
+│   │   │       │       │               └── !=
+│   │   │       │       ├── )
 │   │   │       │       └── AFTER_EXPR
 │   │   │       │           ├── OPERATOR
 │   │   │       │           │   └── LOGIC_OP
-│   │   │       │           │       └── AND
+│   │   │       │           │       └── &&
 │   │   │       │           └── EXPR_CHAIN
 │   │   │       │               └── ε
-│   │   │       ├── FECHA_PARENTESES
+│   │   │       ├── )
 │   │   │       ├── LINHA
-│   │   │       │   ├── ABRE_PARENTESES
+│   │   │       │   ├── (
 │   │   │       │   ├── CONTENT
-│   │   │       │   │   ├── ABRE_PARENTESES
+│   │   │       │   │   ├── (
 │   │   │       │   │   ├── EXPR
-│   │   │       │   │   │   ├── VARIAVEL
+│   │   │       │   │   │   ├── IDENTIFIER
 │   │   │       │   │   │   └── AFTER_VAR
-│   │   │       │   │   │       ├── VARIAVEL
+│   │   │       │   │   │       ├── IDENTIFIER
 │   │   │       │   │   │       └── AFTER_VAR_OP
 │   │   │       │   │   │           └── OPERATOR
 │   │   │       │   │   │               └── ARITH_OP
-│   │   │       │   │   │                   └── MULTIPLICACAO
-│   │   │       │   │   ├── FECHA_PARENTESES
+│   │   │       │   │   │                   └── *
+│   │   │       │   │   ├── )
 │   │   │       │   │   └── AFTER_EXPR
 │   │   │       │   │       └── ε
-│   │   │       │   └── FECHA_PARENTESES
+│   │   │       │   └── )
 │   │   │       └── LINHA
-│   │   │           ├── ABRE_PARENTESES
+│   │   │           ├── (
 │   │   │           ├── CONTENT
-│   │   │           │   ├── ABRE_PARENTESES
+│   │   │           │   ├── (
 │   │   │           │   ├── EXPR
-│   │   │           │   │   ├── VARIAVEL
+│   │   │           │   │   ├── IDENTIFIER
 │   │   │           │   │   └── AFTER_VAR
-│   │   │           │   │       ├── NUMERO_REAL
+│   │   │           │   │       ├── NUMBER
 │   │   │           │   │       └── OPERATOR
 │   │   │           │   │           └── ARITH_OP
-│   │   │           │   │               └── DIVISAO
-│   │   │           │   ├── FECHA_PARENTESES
+│   │   │           │   │               └── /
+│   │   │           │   ├── )
 │   │   │           │   └── AFTER_EXPR
 │   │   │           │       └── ε
-│   │   │           └── FECHA_PARENTESES
-│   │   ├── FECHA_PARENTESES
+│   │   │           └── )
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -720,19 +720,19 @@ LINHA 21:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── NUMERO_REAL
+│   │   │   ├── NUMBER
 │   │   │   └── AFTER_NUM
 │   │   │       └── RES
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -742,19 +742,19 @@ LINHA 22:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── NUMERO_REAL
+│   │   │   ├── NUMBER
 │   │   │   └── AFTER_NUM
 │   │   │       └── RES
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -764,43 +764,43 @@ LINHA 23:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── ABRE_PARENTESES
+│   │   │   ├── (
 │   │   │   ├── EXPR
-│   │   │   │   ├── VARIAVEL
+│   │   │   │   ├── IDENTIFIER
 │   │   │   │   └── AFTER_VAR
-│   │   │   │       ├── VARIAVEL
+│   │   │   │       ├── IDENTIFIER
 │   │   │   │       └── AFTER_VAR_OP
 │   │   │   │           └── OPERATOR
 │   │   │   │               └── ARITH_OP
-│   │   │   │                   └── SOMA
-│   │   │   ├── FECHA_PARENTESES
+│   │   │   │                   └── +
+│   │   │   ├── )
 │   │   │   └── AFTER_EXPR
-│   │   │       ├── ABRE_PARENTESES
+│   │   │       ├── (
 │   │   │       ├── EXPR
-│   │   │       │   ├── VARIAVEL
+│   │   │       │   ├── IDENTIFIER
 │   │   │       │   └── AFTER_VAR
-│   │   │       │       ├── VARIAVEL
+│   │   │       │       ├── IDENTIFIER
 │   │   │       │       └── AFTER_VAR_OP
 │   │   │       │           └── OPERATOR
 │   │   │       │               └── ARITH_OP
-│   │   │       │                   └── MULTIPLICACAO
-│   │   │       ├── FECHA_PARENTESES
+│   │   │       │                   └── *
+│   │   │       ├── )
 │   │   │       └── AFTER_EXPR
 │   │   │           ├── OPERATOR
 │   │   │           │   └── ARITH_OP
-│   │   │           │       └── SUBTRACAO
+│   │   │           │       └── -
 │   │   │           └── EXPR_CHAIN
 │   │   │               └── ε
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -810,23 +810,23 @@ LINHA 24:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── VARIAVEL
+│   │   │   ├── IDENTIFIER
 │   │   │   └── AFTER_VAR
-│   │   │       ├── VARIAVEL
+│   │   │       ├── IDENTIFIER
 │   │   │       └── AFTER_VAR_OP
 │   │   │           └── OPERATOR
 │   │   │               └── COMP_OP
-│   │   │                   └── MENOR
-│   │   ├── FECHA_PARENTESES
+│   │   │                   └── <
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -836,41 +836,41 @@ LINHA 25:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── ABRE_PARENTESES
+│   │   │   ├── (
 │   │   │   ├── EXPR
-│   │   │   │   ├── VARIAVEL
+│   │   │   │   ├── IDENTIFIER
 │   │   │   │   └── AFTER_VAR
-│   │   │   │       ├── NUMERO_REAL
+│   │   │   │       ├── NUMBER
 │   │   │   │       └── OPERATOR
 │   │   │   │           └── COMP_OP
-│   │   │   │               └── MAIOR
-│   │   │   ├── FECHA_PARENTESES
+│   │   │   │               └── >
+│   │   │   ├── )
 │   │   │   └── AFTER_EXPR
-│   │   │       ├── ABRE_PARENTESES
+│   │   │       ├── (
 │   │   │       ├── EXPR
-│   │   │       │   ├── VARIAVEL
+│   │   │       │   ├── IDENTIFIER
 │   │   │       │   └── AFTER_VAR
-│   │   │       │       ├── NUMERO_REAL
+│   │   │       │       ├── NUMBER
 │   │   │       │       └── OPERATOR
 │   │   │       │           └── COMP_OP
-│   │   │       │               └── MENOR
-│   │   │       ├── FECHA_PARENTESES
+│   │   │       │               └── <
+│   │   │       ├── )
 │   │   │       └── AFTER_EXPR
 │   │   │           ├── OPERATOR
 │   │   │           │   └── LOGIC_OP
-│   │   │           │       └── OR
+│   │   │           │       └── ||
 │   │   │           └── EXPR_CHAIN
 │   │   │               └── ε
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -880,32 +880,32 @@ LINHA 26:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── ABRE_PARENTESES
+│   │   │   ├── (
 │   │   │   ├── EXPR
-│   │   │   │   ├── VARIAVEL
+│   │   │   │   ├── IDENTIFIER
 │   │   │   │   └── AFTER_VAR
-│   │   │   │       ├── VARIAVEL
+│   │   │   │       ├── IDENTIFIER
 │   │   │   │       └── AFTER_VAR_OP
 │   │   │   │           └── OPERATOR
 │   │   │   │               └── COMP_OP
-│   │   │   │                   └── IGUAL
-│   │   │   ├── FECHA_PARENTESES
+│   │   │   │                   └── ==
+│   │   │   ├── )
 │   │   │   └── AFTER_EXPR
 │   │   │       ├── OPERATOR
 │   │   │       │   └── LOGIC_OP
-│   │   │       │       └── NOT
+│   │   │       │       └── !
 │   │   │       └── EXPR_CHAIN
 │   │   │           └── ε
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -915,22 +915,22 @@ LINHA 27:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── NUMERO_REAL
+│   │   │   ├── NUMBER
 │   │   │   └── AFTER_NUM
-│   │   │       ├── NUMERO_REAL
+│   │   │       ├── NUMBER
 │   │   │       └── OPERATOR
 │   │   │           └── ARITH_OP
-│   │   │               └── POTENCIA
-│   │   ├── FECHA_PARENTESES
+│   │   │               └── ^
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -940,22 +940,22 @@ LINHA 28:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── NUMERO_REAL
+│   │   │   ├── NUMBER
 │   │   │   └── AFTER_NUM
-│   │   │       ├── NUMERO_REAL
+│   │   │       ├── NUMBER
 │   │   │       └── OPERATOR
 │   │   │           └── ARITH_OP
-│   │   │               └── DIVISAO
-│   │   ├── FECHA_PARENTESES
+│   │   │               └── /
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -965,22 +965,22 @@ LINHA 29:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── NUMERO_REAL
+│   │   │   ├── NUMBER
 │   │   │   └── AFTER_NUM
-│   │   │       ├── NUMERO_REAL
+│   │   │       ├── NUMBER
 │   │   │       └── OPERATOR
 │   │   │           └── ARITH_OP
-│   │   │               └── RESTO
-│   │   ├── FECHA_PARENTESES
+│   │   │               └── %
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
@@ -990,63 +990,63 @@ LINHA 30:
 ==================================================
 PROGRAM
 ├── LINHA
-│   ├── ABRE_PARENTESES
+│   ├── (
 │   ├── CONTENT
-│   │   ├── ABRE_PARENTESES
+│   │   ├── (
 │   │   ├── EXPR
-│   │   │   ├── ABRE_PARENTESES
+│   │   │   ├── (
 │   │   │   ├── EXPR
-│   │   │   │   ├── ABRE_PARENTESES
+│   │   │   │   ├── (
 │   │   │   │   ├── EXPR
-│   │   │   │   │   ├── VARIAVEL
+│   │   │   │   │   ├── IDENTIFIER
 │   │   │   │   │   └── AFTER_VAR
-│   │   │   │   │       ├── VARIAVEL
+│   │   │   │   │       ├── IDENTIFIER
 │   │   │   │   │       └── AFTER_VAR_OP
 │   │   │   │   │           └── OPERATOR
 │   │   │   │   │               └── ARITH_OP
-│   │   │   │   │                   └── MULTIPLICACAO
-│   │   │   │   ├── FECHA_PARENTESES
+│   │   │   │   │                   └── *
+│   │   │   │   ├── )
 │   │   │   │   └── AFTER_EXPR
-│   │   │   │       ├── ABRE_PARENTESES
+│   │   │   │       ├── (
 │   │   │   │       ├── EXPR
-│   │   │   │       │   ├── VARIAVEL
+│   │   │   │       │   ├── IDENTIFIER
 │   │   │   │       │   └── AFTER_VAR
-│   │   │   │       │       ├── VARIAVEL
+│   │   │   │       │       ├── IDENTIFIER
 │   │   │   │       │       └── AFTER_VAR_OP
 │   │   │   │       │           └── OPERATOR
 │   │   │   │       │               └── ARITH_OP
-│   │   │   │       │                   └── SOMA
-│   │   │   │       ├── FECHA_PARENTESES
+│   │   │   │       │                   └── +
+│   │   │   │       ├── )
 │   │   │   │       └── AFTER_EXPR
 │   │   │   │           ├── OPERATOR
 │   │   │   │           │   └── ARITH_OP
-│   │   │   │           │       └── DIVISAO
+│   │   │   │           │       └── /
 │   │   │   │           └── EXPR_CHAIN
-│   │   │   │               ├── ABRE_PARENTESES
+│   │   │   │               ├── (
 │   │   │   │               ├── EXPR
-│   │   │   │               │   ├── VARIAVEL
+│   │   │   │               │   ├── IDENTIFIER
 │   │   │   │               │   └── AFTER_VAR
-│   │   │   │               │       ├── VARIAVEL
+│   │   │   │               │       ├── IDENTIFIER
 │   │   │   │               │       └── AFTER_VAR_OP
 │   │   │   │               │           └── OPERATOR
 │   │   │   │               │               └── ARITH_OP
-│   │   │   │               │                   └── SUBTRACAO
-│   │   │   │               ├── FECHA_PARENTESES
+│   │   │   │               │                   └── -
+│   │   │   │               ├── )
 │   │   │   │               └── AFTER_EXPR
 │   │   │   │                   ├── OPERATOR
 │   │   │   │                   │   └── ARITH_OP
-│   │   │   │                   │       └── MULTIPLICACAO
+│   │   │   │                   │       └── *
 │   │   │   │                   └── EXPR_CHAIN
 │   │   │   │                       └── ε
-│   │   │   ├── FECHA_PARENTESES
+│   │   │   ├── )
 │   │   │   └── AFTER_EXPR
 │   │   │       └── ε
-│   │   ├── FECHA_PARENTESES
+│   │   ├── )
 │   │   └── AFTER_EXPR
-│   │       ├── VARIAVEL
+│   │       ├── IDENTIFIER
 │   │       └── AFTER_VAR_OP
 │   │           └── ε
-│   └── FECHA_PARENTESES
+│   └── )
 └── PROGRAM_PRIME
     └── ε
 
