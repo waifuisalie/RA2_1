@@ -11,11 +11,44 @@ For any production rule `A → XYZ`:
 - **ε (Epsilon)**: The empty string, representing no symbols
 
 ### FOLLOW Dependencies and Circularity
-**Circular dependencies** in FOLLOW sets occur when non-terminals reference each other in cycles:
+
+**Important Note**: Circular dependencies in FOLLOW sets are **completely normal and expected** in grammar analysis!
+
+#### Why Circular Dependencies Occur
+**Circular dependencies** in FOLLOW sets happen when non-terminals reference each other in cycles:
 - Example: FOLLOW(A) depends on FOLLOW(B), FOLLOW(B) depends on FOLLOW(C), FOLLOW(C) depends on FOLLOW(A)
-- This is **NORMAL** and expected in grammar analysis
-- **Solution**: Fixed-point iteration - start with known values and iterate until convergence
-- **Not a problem**: Circularity doesn't indicate grammar issues, just computational complexity
+
+#### Why This is NOT a Problem
+
+**1. Mathematical Necessity**: In recursive grammars (which most practical grammars are), non-terminals naturally reference each other. Consider:
+   - `EXPR → NUMERO_REAL AFTER_NUM`
+   - `AFTER_NUM → VARIAVEL AFTER_VAR_OP`
+   - `AFTER_VAR_OP → OPERATOR` where OPERATOR can appear in EXPR contexts
+
+   This creates natural cycles where FOLLOW sets depend on each other.
+
+**2. Theoretical Foundation**: Circular dependencies are a fundamental aspect of formal language theory:
+   - They arise from the recursive nature of context-free grammars
+   - They're handled by well-established mathematical techniques
+   - Every compiler construction textbook covers this as standard practice
+
+**3. Computational Solution**: Fixed-point iteration is a proven, efficient algorithm:
+   - Guaranteed to converge for finite grammars
+   - Produces mathematically correct results
+   - Used in all production compiler generators (YACC, Bison, ANTLR, etc.)
+
+**4. Grammar Quality Indicator**: Circular dependencies often indicate **well-structured grammars**:
+   - They show proper factoring and modularity
+   - They enable clean separation of concerns
+   - They're typical in LL(1) and LR(1) grammars
+
+#### What WOULD Be a Problem
+- **FIRST/FIRST conflicts**: Multiple productions with overlapping FIRST sets
+- **FIRST/FOLLOW conflicts**: FIRST and FOLLOW sets intersecting for nullable non-terminals
+- **Infinite loops**: Grammar rules that never terminate (not our case)
+- **Left recursion**: In LL parsing (avoided in our grammar design)
+
+**Conclusion**: Circular FOLLOW dependencies are a normal computational challenge, not a grammar design flaw. They're solved by standard algorithms and indicate a properly structured recursive grammar.
 
 ### Fixed-Point Iteration
 **Algorithm**:
