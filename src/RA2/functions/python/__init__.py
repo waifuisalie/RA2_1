@@ -11,7 +11,7 @@
 from .calcularFirst import calcularFirst
 from .calcularFollow import calcularFollow
 from .construirTabelaLL1 import construirTabelaLL1, ConflictError
-from .construirGramatica import construirGramatica, imprimir_gramatica_completa
+from .construirGramatica import imprimir_gramatica_completa
 
 __all__ = [
     'calcularFirst',
