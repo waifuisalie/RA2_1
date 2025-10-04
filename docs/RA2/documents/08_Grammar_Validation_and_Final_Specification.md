@@ -64,10 +64,10 @@ For a grammar to be LL(1), it must satisfy:
 
 **Definition**: No production has the form `A → Aα` (covered in [01_Grammar_Fundamentals.md](./01_Grammar_Fundamentals.md))
 
-**Verification**: All 21 productions from our final grammar are either:
-- **Terminal productions**: `OPERATOR → +`
-- **Right-recursive**: `STATEMENT_LIST → STATEMENT STATEMENT_LIST`
-- **Non-recursive**: `EXPRESSION → ( OPERAND OPERAND OPERATOR )`
+**Verification**: All 56 productions from our final grammar are either:
+- **Terminal productions**: `OPERATOR → SOMA`
+- **Right-recursive**: `PROGRAM_PRIME → LINHA PROGRAM_PRIME`
+- **Non-recursive**: `LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES`
 
 **Result**: ✅ No left recursion detected
 
@@ -77,32 +77,39 @@ For a grammar to be LL(1), it must satisfy:
 
 **Key Validation** (using FIRST sets from [06_Complete_FIRST_FOLLOW_Calculation.md](./06_Complete_FIRST_FOLLOW_Calculation.md)):
 
-**STATEMENT** (most critical check):
-- `STATEMENT → EXPRESSION` - FIRST = {(, NUMBER, IDENTIFIER, MEM}
-- `STATEMENT → FOR_STATEMENT` - FIRST = {FOR}
-- `STATEMENT → WHILE_STATEMENT` - FIRST = {WHILE}
-- `STATEMENT → IF_STATEMENT` - FIRST = {IF}
-- `STATEMENT → ASSIGN_STATEMENT` - FIRST = {ASSIGN}
+**CONTENT** (most critical check):
+- `CONTENT → NUMERO_REAL AFTER_NUM` - FIRST = {NUMERO_REAL}
+- `CONTENT → VARIAVEL AFTER_VAR` - FIRST = {VARIAVEL}
+- `CONTENT → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR` - FIRST = {ABRE_PARENTESES}
+- `CONTENT → FOR FOR_STRUCT` - FIRST = {FOR}
+- `CONTENT → WHILE WHILE_STRUCT` - FIRST = {WHILE}
+- `CONTENT → IFELSE IFELSE_STRUCT` - FIRST = {IFELSE}
 
 **Result**: All FIRST sets are **completely disjoint** ✅ (This was the key success of keyword-based disambiguation from file 05)
 
-**STATEMENT_LIST**:
-- `STATEMENT_LIST → STATEMENT STATEMENT_LIST` - FIRST = {(, NUMBER, IDENTIFIER, FOR, WHILE, IF, ASSIGN, MEM}
-- `STATEMENT_LIST → ε` - FIRST = {ε}
+**PROGRAM_PRIME**:
+- `PROGRAM_PRIME → LINHA PROGRAM_PRIME` - FIRST = {ABRE_PARENTESES}
+- `PROGRAM_PRIME → EPSILON` - FIRST = {EPSILON}
 
 **Result**: {(, NUMBER, IDENTIFIER, FOR, WHILE, IF, ASSIGN, MEM} ∩ {ε} = ∅ ✅
 
-**EXPRESSION**:
-- `EXPRESSION → ( OPERAND OPERAND OPERATOR )` - FIRST = {(}
-- `EXPRESSION → OPERAND` - FIRST = {NUMBER, IDENTIFIER, MEM}
+**EXPR**:
+- `EXPR → NUMERO_REAL AFTER_NUM` - FIRST = {NUMERO_REAL}
+- `EXPR → VARIAVEL AFTER_VAR` - FIRST = {VARIAVEL}
+- `EXPR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR` - FIRST = {ABRE_PARENTESES}
+- `EXPR → FOR FOR_STRUCT` - FIRST = {FOR}
+- `EXPR → WHILE WHILE_STRUCT` - FIRST = {WHILE}
+- `EXPR → IFELSE IFELSE_STRUCT` - FIRST = {IFELSE}
 
 **Result**: {(} ∩ {NUMBER, IDENTIFIER, MEM} = ∅ ✅
 
-**OPERAND** (corrected in file 06):
-- `OPERAND → NUMBER` - FIRST = {NUMBER}
-- `OPERAND → IDENTIFIER` - FIRST = {IDENTIFIER}
-- `OPERAND → ( EXPRESSION )` - FIRST = {(}
-- `OPERAND → MEM ( IDENTIFIER )` - FIRST = {MEM}
+**AFTER_NUM** (handles deterministic continuation):
+- `AFTER_NUM → NUMERO_REAL OPERATOR` - FIRST = {NUMERO_REAL}
+- `AFTER_NUM → VARIAVEL AFTER_VAR_OP` - FIRST = {VARIAVEL}
+- `AFTER_NUM → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR` - FIRST = {ABRE_PARENTESES}
+- `AFTER_NUM → NOT` - FIRST = {NOT}
+- `AFTER_NUM → RES` - FIRST = {RES}
+- `AFTER_NUM → EPSILON` - FIRST = {EPSILON}
 
 **Result**: All FIRST sets disjoint ✅
 
@@ -110,15 +117,14 @@ For a grammar to be LL(1), it must satisfy:
 
 **Definition**: For productions with ε, check FIRST(ε production) ∩ FOLLOW(non-terminal) = ∅
 
-**STATEMENT_LIST → ε**:
-- FIRST(ε) = {ε}
-- FOLLOW(STATEMENT_LIST) = {$, )} (from file 06)
-- Check: {ε} ∩ {$, )} = ∅ ✅
+**PROGRAM_PRIME → EPSILON**:
+- FIRST(EPSILON) = {EPSILON}
+- FOLLOW(PROGRAM_PRIME) = {$} (from file 06)
+- Check: {EPSILON} ∩ {$} = ∅ ✅
 
-**IF_TAIL → ε**:
-- FIRST(ε) = {ε}
-- FOLLOW(IF_TAIL) = calculated correctly in file 06
-- Check: No conflicts ✅
+**All NULLABLE productions** (AFTER_NUM, AFTER_VAR_OP, AFTER_VAR, AFTER_EXPR, EXPR_CHAIN):
+- All FIRST/FOLLOW intersections verified in file 06
+- Check: No conflicts detected ✅
 
 #### 4. Unambiguity Verification ✅
 
@@ -138,93 +144,115 @@ For a grammar to be LL(1), it must satisfy:
 
 ## Complete Grammar Specification
 
-### Final Production Rules (EBNF Format)
+### Final Production Rules (EBNF Format - Actual Implementation)
 
 ```ebnf
 (* Start Symbol *)
-PROGRAM ::= STATEMENT_LIST
+PROGRAM ::= LINHA PROGRAM_PRIME
 
-(* Statement Sequences *)
-STATEMENT_LIST ::= STATEMENT STATEMENT_LIST | ε
+(* Program Structure *)
+PROGRAM_PRIME ::= LINHA PROGRAM_PRIME | EPSILON
 
-(* Individual Statements *)
-STATEMENT ::= EXPRESSION
-            | FOR_STATEMENT
-            | WHILE_STATEMENT
-            | IF_STATEMENT
-            | ASSIGN_STATEMENT
+(* Line Structure *)
+LINHA ::= "(" CONTENT ")"
 
-(* Expressions *)
-EXPRESSION ::= "(" OPERAND OPERAND OPERATOR ")"
-             | OPERAND
+(* Content Types *)
+CONTENT ::= NUMERO_REAL AFTER_NUM
+          | VARIAVEL AFTER_VAR
+          | "(" EXPR ")" AFTER_EXPR
+          | "FOR" FOR_STRUCT
+          | "WHILE" WHILE_STRUCT
+          | "IFELSE" IFELSE_STRUCT
 
-(* Operands *)
-OPERAND ::= NUMBER
-          | IDENTIFIER
-          | "(" EXPRESSION ")"
-          | "MEM" "(" IDENTIFIER ")"
+(* Deterministic Continuation Patterns *)
+AFTER_NUM ::= NUMERO_REAL OPERATOR
+            | VARIAVEL AFTER_VAR_OP
+            | "(" EXPR ")" OPERATOR
+            | "NOT" | "RES" | EPSILON
+
+AFTER_VAR_OP ::= OPERATOR | EPSILON
+
+AFTER_VAR ::= NUMERO_REAL AFTER_VAR_OP
+            | VARIAVEL AFTER_VAR_OP
+            | "(" EXPR ")" AFTER_VAR_OP
+            | "NOT" | "RES" | EPSILON
+
+AFTER_EXPR ::= OPERATOR EXPR_CHAIN | EPSILON
+
+EXPR_CHAIN ::= NUMERO_REAL OPERATOR
+             | VARIAVEL AFTER_VAR_OP
+             | "(" EXPR ")" OPERATOR
+             | "NOT" | "RES" | EPSILON
+
+(* Expression Structure *)
+EXPR ::= NUMERO_REAL AFTER_NUM
+       | VARIAVEL AFTER_VAR
+       | "(" EXPR ")" AFTER_EXPR
+       | "FOR" FOR_STRUCT
+       | "WHILE" WHILE_STRUCT
+       | "IFELSE" IFELSE_STRUCT
 
 (* Control Structures *)
-FOR_STATEMENT ::= "FOR" "(" OPERAND OPERAND IDENTIFIER STATEMENT ")"
+FOR_STRUCT ::= "(" NUMERO_REAL ")" "(" NUMERO_REAL ")" "(" NUMERO_REAL ")" LINHA
 
-WHILE_STATEMENT ::= "WHILE" "(" EXPRESSION STATEMENT ")"
+WHILE_STRUCT ::= "(" EXPR ")" LINHA
 
-IF_STATEMENT ::= "IF" "(" EXPRESSION STATEMENT ")" IF_TAIL
-
-IF_TAIL ::= "ELSE" "(" STATEMENT ")" | ε
-
-ASSIGN_STATEMENT ::= "ASSIGN" "(" OPERAND IDENTIFIER ")"
+IFELSE_STRUCT ::= "(" EXPR ")" LINHA LINHA
 
 (* Operators *)
-OPERATOR ::= "+" | "-" | "*" | "|" | "/" | "%" | "^"
-           | ">" | "<" | ">=" | "<=" | "==" | "!="
+OPERATOR ::= "SOMA" | "SUBTRACAO" | "MULTIPLICACAO"
+           | "DIVISAO_INTEIRA" | "DIVISAO_REAL" | "RESTO" | "POTENCIA"
+           | "MENOR" | "MAIOR" | "IGUAL" | "MENOR_IGUAL" | "MAIOR_IGUAL" | "DIFERENTE"
+           | "AND" | "OR" | "NOT"
 
 (* Terminals *)
-NUMBER ::= [0-9]+ ("." [0-9]+)?
-IDENTIFIER ::= [a-zA-Z][a-zA-Z0-9]*
+NUMERO_REAL ::= [0-9]+ ("." [0-9]+)?
+VARIAVEL ::= [a-zA-Z][a-zA-Z0-9]*
 ```
 
 ### Token Definitions
 
 ```python
-# Terminal symbols (tokens)
+# Terminal symbols (tokens) - Actual Implementation
 TOKENS = {
     # Literals
-    'NUMBER': r'\d+(\.\d+)?',
-    'IDENTIFIER': r'[a-zA-Z][a-zA-Z0-9]*',
+    'NUMERO_REAL': r'\d+(\.\d+)?',
+    'VARIAVEL': r'[a-zA-Z][a-zA-Z0-9]*',
 
-    # Operators
-    'PLUS': r'\+',
-    'MINUS': r'-',
-    'MULTIPLY': r'\*',
-    'DIVIDE_REAL': r'\|',
-    'DIVIDE_INT': r'/',
-    'MODULO': r'%',
-    'POWER': r'\^',
+    # Arithmetic operators
+    'SOMA': r'SOMA',
+    'SUBTRACAO': r'SUBTRACAO',
+    'MULTIPLICACAO': r'MULTIPLICACAO',
+    'DIVISAO_INTEIRA': r'DIVISAO_INTEIRA',
+    'DIVISAO_REAL': r'DIVISAO_REAL',
+    'RESTO': r'RESTO',
+    'POTENCIA': r'POTENCIA',
 
-    # Relational operators
-    'GT': r'>',
-    'LT': r'<',
-    'GTE': r'>=',
-    'LTE': r'<=',
-    'EQ': r'==',
-    'NEQ': r'!=',
+    # Comparison operators
+    'MENOR': r'MENOR',
+    'MAIOR': r'MAIOR',
+    'IGUAL': r'IGUAL',
+    'MENOR_IGUAL': r'MENOR_IGUAL',
+    'MAIOR_IGUAL': r'MAIOR_IGUAL',
+    'DIFERENTE': r'DIFERENTE',
+
+    # Logical operators
+    'AND': r'AND',
+    'OR': r'OR',
+    'NOT': r'NOT',
 
     # Keywords
     'FOR': r'FOR',
     'WHILE': r'WHILE',
-    'IF': r'IF',
-    'ELSE': r'ELSE',
-    'ASSIGN': r'ASSIGN',
-    'MEM': r'MEM',
+    'IFELSE': r'IFELSE',
     'RES': r'RES',
-    'PRINT': r'PRINT',
 
     # Delimiters
-    'LPAREN': r'\(',
-    'RPAREN': r'\)',
+    'ABRE_PARENTESES': r'\(',
+    'FECHA_PARENTESES': r'\)',
 
-    # End of input
+    # Special
+    'EPSILON': r'EPSILON',
     'EOF': r'$'
 }
 ```
@@ -240,80 +268,82 @@ TOKENS = {
 
 ## Syntax Examples and Semantics
 
-### Basic Expressions
+### Basic Expressions (Actual Implementation)
 
 ```
 // Simple arithmetic
-(3 4 +)                    → 3 + 4 = 7
-(10 3 -)                   → 10 - 3 = 7
-(5 2 *)                    → 5 * 2 = 10
-(8 3 |)                    → 8 / 3 = 2.666...
-(8 3 /)                    → 8 // 3 = 2
-(10 3 %)                   → 10 % 3 = 1
-(2 8 ^)                    → 2 ^ 8 = 256
+(3 4 SOMA)                 → 3 + 4 = 7
+(10 3 SUBTRACAO)           → 10 - 3 = 7
+(5 2 MULTIPLICACAO)        → 5 * 2 = 10
+(8 3 DIVISAO_REAL)         → 8 / 3 = 2.666...
+(8 3 DIVISAO_INTEIRA)      → 8 // 3 = 2
+(10 3 RESTO)               → 10 % 3 = 1
+(2 8 POTENCIA)             → 2 ^ 8 = 256
 
 // Relational operations
-(5 3 >)                    → 5 > 3 = true
-(2 7 <=)                   → 2 <= 7 = true
-(5 5 ==)                   → 5 == 5 = true
+(5 3 MAIOR)                → 5 > 3 = true
+(2 7 MENOR_IGUAL)          → 2 <= 7 = true
+(5 5 IGUAL)                → 5 == 5 = true
 
 // Nested expressions
-((3 4 +) (5 2 *) -)        → (3+4) - (5*2) = 7 - 10 = -3
+(((3 4 SOMA) (5 2 MULTIPLICACAO) SUBTRACAO))  → (3+4) - (5*2) = 7 - 10 = -3
 ```
 
-### Control Structures
+### Control Structures (Actual Implementation)
 
 ```
-// FOR loop: for i from 1 to 10
-FOR (1 10 I (I PRINT))
+// FOR loop: from 1 to 10 with step 1
+(FOR (1) (10) (1) ((I PRINT)))
 
-// WHILE loop: while x > 0
-WHILE ((X 0 >) ((X 1 -) X ASSIGN))
+// WHILE loop: while condition is true
+(WHILE ((X 0 MAIOR)) ((X 1 SUBTRACAO)))
 
-// IF statement
-IF ((X 5 >) (SUCCESS PRINT))
+// IF-ELSE statement (always requires both branches)
+(IFELSE ((X 5 MAIOR)) ((SUCCESS PRINT)) ((FAILURE PRINT)))
 
-// IF-ELSE statement
-IF ((X 0 >) (POSITIVE PRINT)) ELSE (NEGATIVE PRINT)
+// Variable usage
+(X)                        → Access variable X
+(42)                       → Literal number
 
-// Assignment
-ASSIGN (42 X)
-ASSIGN ((A B +) RESULT)
+// Simple assignment pattern
+(X 42 IGUAL)               → X equals 42 comparison
 
-// Memory operations
-MEM (TEMP_VAR)             → Retrieve from memory
+// Complex expressions
+(((A B SOMA) (C D MULTIPLICACAO) DIVISAO_REAL))  → (A+B) / (C*D)
 ```
 
-### Complex Programs
+### Complex Programs (Actual Implementation)
 
 ```
-// Factorial calculation
-ASSIGN (1 RESULT)
-FOR (1 N I (
-    ASSIGN ((RESULT I *) RESULT)
+// Simple loop counting
+(FOR (1) (10) (1) ((I PRINT)))
+
+// Nested expressions with comparison
+(IFELSE ((A B SOMA) (C D MULTIPLICACAO) MAIOR)
+    ((FIRST_GREATER PRINT))
+    ((SECOND_GREATER PRINT))
+)
+
+// WHILE loop with condition
+(WHILE ((I 10 MENOR))
+    ((I 1 SOMA))
+)
+
+// Multiple statements program
+((X 5 SOMA))              // First line: X + 5
+((Y 3 MULTIPLICACAO))     // Second line: Y * 3
+((IFELSE ((X Y MAIOR))    // Third line: IF-ELSE with comparison
+    ((X PRINT))
+    ((Y PRINT))
 ))
-(RESULT PRINT)
 
-// Fibonacci sequence
-ASSIGN (0 A)
-ASSIGN (1 B)
-(A PRINT)
-(B PRINT)
-FOR (3 N I (
-    ASSIGN ((A B +) C)
-    (C PRINT)
-    ASSIGN (B A)
-    ASSIGN (C B)
-))
-
-// Conditional processing with loops
-FOR (1 100 I (
-    IF ((I 2 %)
-        (ODD PRINT)
-    ) ELSE (
-        (EVEN PRINT)
-    )
-))
+// Complex nested FOR with IF-ELSE
+(FOR (1) (5) (1)
+    ((IFELSE ((I 3 MENOR))
+        ((SMALL PRINT))
+        ((LARGE PRINT))
+    ))
+)
 ```
 
 ## Integration Guidelines
@@ -346,7 +376,10 @@ FOR (1 100 I (
 ```python
 # In lerTokens() - Add keyword recognition
 KEYWORDS = {
-    'FOR', 'WHILE', 'IF', 'ELSE', 'ASSIGN', 'MEM', 'RES', 'PRINT'
+    'FOR', 'WHILE', 'IFELSE', 'RES', 'NOT',
+    'SOMA', 'SUBTRACAO', 'MULTIPLICACAO', 'DIVISAO_INTEIRA', 'DIVISAO_REAL',
+    'RESTO', 'POTENCIA', 'MENOR', 'MAIOR', 'IGUAL', 'MENOR_IGUAL',
+    'MAIOR_IGUAL', 'DIFERENTE', 'AND', 'OR'
 }
 
 # In construirGramatica() - Return complete structure
@@ -372,24 +405,23 @@ def parsear(tokens, tabela_ll1):
 #### 1. Basic Expression Tests
 ```python
 basic_tests = [
-    "(3 4 +)",
-    "(10 5 -)",
-    "(6 7 *)",
-    "(15 3 |)",
-    "(17 5 /)",
-    "(10 3 %)",
-    "(2 8 ^)"
+    "(3 4 SOMA)",
+    "(10 5 SUBTRACAO)",
+    "(6 7 MULTIPLICACAO)",
+    "(15 3 DIVISAO_REAL)",
+    "(17 5 DIVISAO_INTEIRA)",
+    "(10 3 RESTO)",
+    "(2 8 POTENCIA)"
 ]
 ```
 
 #### 2. Control Structure Tests
 ```python
 control_tests = [
-    "FOR (1 5 I (I PRINT))",
-    "WHILE ((X 0 >) ((X 1 -) X ASSIGN))",
-    "IF ((X 5 >) (SUCCESS PRINT))",
-    "IF ((X 0 >) (POS PRINT)) ELSE (NEG PRINT)",
-    "ASSIGN (42 X)"
+    "(FOR (1) (5) (1) ((I PRINT)))",
+    "(WHILE ((X 0 MAIOR)) ((X 1 SUBTRACAO)))",
+    "(IFELSE ((X 5 MAIOR)) ((SUCCESS PRINT)) ((FAILURE PRINT)))",
+    "((X 42 IGUAL))"
 ]
 ```
 
@@ -397,25 +429,26 @@ control_tests = [
 ```python
 complex_tests = [
     # Nested control structures
-    """FOR (1 3 I (
-        FOR (1 3 J (
-            ((I J *) PRINT)
+    """(FOR (1) (3) (1) (
+        (FOR (1) (3) (1) (
+            ((I J MULTIPLICACAO))
         ))
     ))""",
 
     # Mixed expressions and control
-    """ASSIGN ((A B +) RESULT)
-    IF ((RESULT 10 >) (HIGH PRINT)) ELSE (LOW PRINT)"""
+    """(((A B SOMA) RESULT))
+    (IFELSE ((RESULT 10 MAIOR)) ((HIGH PRINT)) ((LOW PRINT)))"""
 ]
 ```
 
 #### 4. Error Cases
 ```python
 error_tests = [
-    "(3 +)",              # Missing operand
-    "FOR 1 5 I (PRINT)",  # Missing parentheses
-    "IF X > 5 (PRINT)",   # Invalid condition syntax
-    "((3 4 +)",           # Unmatched parentheses
+    "(3 SOMA)",                    # Missing operand
+    "FOR (1) (5) (1) (PRINT)",     # Missing required parentheses around body
+    "(IFELSE (X 5 MAIOR) (PRINT))", # Missing required else branch
+    "((3 4 SOMA)",                 # Unmatched parentheses
+    "(X Y SOMA MULTIPLICACAO)",     # Invalid operator sequence
 ]
 ```
 
@@ -468,10 +501,11 @@ error_tests = [
 ### Critical Success Factors
 
 **Grammar Validation Complete**:
-- ✅ All 21 production rules validated as LL(1) compatible
+- ✅ All 56 production rules validated as LL(1) compatible
 - ✅ No FIRST/FIRST conflicts detected
 - ✅ No FIRST/FOLLOW conflicts detected
 - ✅ Complete parsing table with no ambiguities
+- ✅ Handles circular dependencies in FOLLOW sets correctly
 
 **Implementation Assets Ready**:
 - ✅ Complete Python parser code (file 07)
@@ -494,7 +528,7 @@ error_tests = [
 - [ ] Maintain consistency with theoretical foundation
 
 **Before Submission**:
-- [ ] All 21 production rules implemented correctly
+- [ ] All 56 production rules implemented correctly
 - [ ] All test cases pass successfully
 - [ ] Error handling works for malformed inputs
 - [ ] Integration between all 4 functions successful
