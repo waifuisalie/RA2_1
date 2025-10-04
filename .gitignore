@@ -2,7 +2,16 @@ src/RA1/functions/python/__pycache__/
 src/RA1/functions/assembly/__pycache__/
 src/RA2/functions/python/__pycache__/
 LICENSE
+.DS_Store
 src/.DS_Store
+src/RA1/.DS_Store
+src/RA1/functions/.DS_Store
+src/RA1/functions/python/.DS_Store
 src/RA2/.DS_Store
 src/RA2/functions/.DS_Store
-
+src/RA2/functions/python/.DS_Store
+outputs/RA1/assembly/programa_completo.S
+outputs/RA1/assembly/registers.inc
+outputs/RA1/tokens/tokens_gerados.txt
+arvore_output.txt
+outputs/RA2/arvore_output.txt

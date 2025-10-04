@@ -69,7 +69,7 @@ class Analisador_Lexico:
             token = Token(Tipo_de_Token.MULTIPLICACAO, '*')
             self.avanca_ponteiro()
         elif self.caractere == '/':
-            token = Token(Tipo_de_Token.DIVISAO, '/')
+            token = Token(Tipo_de_Token.DIVISAO_INTEIRA, '/')
             self.avanca_ponteiro()
         elif self.caractere == '%':
             token = Token(Tipo_de_Token.RESTO, '%')
@@ -111,7 +111,7 @@ class Analisador_Lexico:
                 token = Token(Tipo_de_Token.OR, '||')
                 self.avanca_ponteiro()
             else:
-                raise ValueError("ERRO -> Esperado '|' após '|'")
+                token = Token(Tipo_de_Token.DIVISAO_REAL, '|')
         elif self.caractere == '&':
             self.avanca_ponteiro()
             if self.caractere == '&':

@@ -16,7 +16,8 @@ class Tipo_de_Token:
     SOMA = "SOMA"              # +
     SUBTRACAO = "SUBTRACAO"    # -
     MULTIPLICACAO = "MULT"     # *
-    DIVISAO = "DIV"            # /
+    DIVISAO_INTEIRA = "DIV_INT"    # /
+    DIVISAO_REAL = "DIV_REAL"      # |
     RESTO = "RESTO"            # %
     POTENCIA = "POT"           # ^
 

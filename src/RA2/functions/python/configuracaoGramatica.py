@@ -34,41 +34,55 @@ GRAMATICA_RPN = {
         ['NUMERO_REAL', 'OPERATOR'],
         ['VARIAVEL', 'AFTER_VAR_OP'],  # INOVAÇÃO: Continuação não-terminal
         ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'OPERATOR'],
-        ['RES']
+        ['NOT'],  # Suporte para operador unário NOT
+        ['RES'],
+        ['EPSILON']  # Para permitir fechamento direto como em (5)
     ],
     
     'AFTER_VAR_OP': [['OPERATOR'], ['EPSILON']],
     
-    # AFTER_VAR - processar após variável inicial
+    # AFTER_VAR - processar após variável inicial  
     'AFTER_VAR': [
         ['NUMERO_REAL', 'OPERATOR'],
-        ['VARIAVEL', 'OPERATOR'],
+        ['VARIAVEL', 'AFTER_VAR_OP'],  # Permite variável sem operador obrigatório
         ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'OPERATOR'],
+        ['NOT'],  # Suporte para operador unário NOT
         ['EPSILON']
     ],
     
     # AFTER_EXPR - processar após expressão em parênteses
     'AFTER_EXPR': [
         ['NUMERO_REAL', 'OPERATOR'],
-        ['VARIAVEL', 'OPERATOR'],
-        ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'OPERATOR']
+        ['VARIAVEL', 'AFTER_VAR_OP'],  # Usa mesma estratégia de AFTER_NUM
+        ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'AFTER_EXPR'],  # Permite expr recursiva
+        ['OPERATOR', 'EXPR_CHAIN'],  # Para operadores seguidos de mais expressões
+        ['EPSILON']    # Para permitir fechamento direto
+    ],
+    
+    # EXPR_CHAIN - para operadores entre expressões
+    'EXPR_CHAIN': [
+        ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'AFTER_EXPR'],
+        ['EPSILON']
     ],
     
     # EXPR - expressões internas
     'EXPR': [
         ['NUMERO_REAL', 'AFTER_NUM'],
         ['VARIAVEL', 'AFTER_VAR'],
-        ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'AFTER_EXPR']
+        ['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'AFTER_EXPR'],
+        ['IFELSE', 'IFELSE_STRUCT']  # Permite IFELSE em expressões
     ],
     
     # Hierarquia de operadores
     'OPERATOR': [['ARITH_OP'], ['COMP_OP'], ['LOGIC_OP']],
-    'ARITH_OP': [['SOMA'], ['SUBTRACAO'], ['MULTIPLICACAO'], ['DIVISAO'], ['RESTO'], ['POTENCIA']],
+        'ARITH_OP': [['SOMA'], ['SUBTRACAO'], ['MULTIPLICACAO'], ['DIVISAO_INTEIRA'], ['DIVISAO_REAL'], ['RESTO'], ['POTENCIA']],
     'COMP_OP': [['MENOR'], ['MAIOR'], ['IGUAL'], ['MENOR_IGUAL'], ['MAIOR_IGUAL'], ['DIFERENTE']],
     'LOGIC_OP': [['AND'], ['OR'], ['NOT']],
     
     # Estruturas de controle
-    'FOR_STRUCT': [['NUMERO_REAL', 'NUMERO_REAL', 'VARIAVEL', 'LINHA']],
+    'FOR_STRUCT': [['ABRE_PARENTESES', 'NUMERO_REAL', 'FECHA_PARENTESES', 
+                   'ABRE_PARENTESES', 'NUMERO_REAL', 'FECHA_PARENTESES', 
+                   'ABRE_PARENTESES', 'NUMERO_REAL', 'FECHA_PARENTESES', 'LINHA']],
     'WHILE_STRUCT': [['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'LINHA']],
     'IFELSE_STRUCT': [['ABRE_PARENTESES', 'EXPR', 'FECHA_PARENTESES', 'LINHA', 'LINHA']]
 }
@@ -82,7 +96,8 @@ MAPEAMENTO_TOKENS = {
     'SOMA': '+',
     'SUBTRACAO': '-',
     'MULTIPLICACAO': '*',
-    'DIVISAO': '/',
+    'DIVISAO_INTEIRA': '/',
+    'DIVISAO_REAL': '|',
     'RESTO': '%',
     'POTENCIA': '^',
     'MENOR': '<',
