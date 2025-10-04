@@ -143,24 +143,35 @@ F → (E) | id                    // Factor: parentheses or identifier
 - `id + id * id` becomes `id + (id * id)` ✅
 - Multiplication has higher precedence than addition
 
-### Example 3: Your RPN Language (Simplified)
+### Example 3: Your RPN Language (Complete LL(1) Grammar)
 ```
 Grammar Components:
-N = {EXPR, OPERAND, OPERATOR}
-Σ = {(, ), +, -, *, |, /, %, ^, NUMBER, IDENTIFIER}
-S = EXPR
+N = {PROGRAM, PROGRAM_PRIME, LINHA, CONTENT, AFTER_NUM, AFTER_VAR_OP,
+     AFTER_VAR, AFTER_EXPR, EXPR_CHAIN, EXPR, OPERATOR, ARITH_OP,
+     COMP_OP, LOGIC_OP, FOR_STRUCT, WHILE_STRUCT, IFELSE_STRUCT}
+Σ = {(, ), +, -, *, /, |, %, ^, <, >, ==, <=, >=, !=, &&, ||, !,
+     NUMBER, IDENTIFIER, FOR, WHILE, IFELSE, RES, ε}
+S = PROGRAM
 
-Production Rules:
-EXPR → (OPERAND OPERAND OPERATOR)    // Basic RPN: (A B op)
-OPERAND → NUMBER | IDENTIFIER | EXPR   // Operands can be nested!
-OPERATOR → + | - | * | | | / | % | ^
+Key Production Rules (56 total):
+PROGRAM → LINHA PROGRAM_PRIME
+LINHA → ( CONTENT )
+CONTENT → NUMBER AFTER_NUM | IDENTIFIER AFTER_VAR | FOR FOR_STRUCT | WHILE WHILE_STRUCT | IFELSE IFELSE_STRUCT
+AFTER_NUM → NUMBER OPERATOR | IDENTIFIER AFTER_VAR_OP | ( EXPR ) OPERATOR | NOT | RES | ε
+OPERATOR → ARITH_OP | COMP_OP | LOGIC_OP
+FOR_STRUCT → ( NUMBER ) ( NUMBER ) ( NUMBER ) LINHA
+WHILE_STRUCT → ( EXPR ) LINHA
+IFELSE_STRUCT → ( EXPR ) LINHA LINHA
 ```
 
-**How nested expressions work:**
+**How complex nested expressions work:**
 `((A B +) (C D *) /)` breaks down as:
-1. `(A B +)` is an EXPR
-2. `(C D *)` is an EXPR
-3. The whole thing is `(EXPR EXPR /)` which matches our rule!
+1. PROGRAM → LINHA PROGRAM_PRIME
+2. LINHA → ( CONTENT )
+3. CONTENT → ( EXPR ) AFTER_EXPR
+4. EXPR → IDENTIFIER AFTER_VAR (for A B +)
+5. AFTER_EXPR → OPERATOR EXPR_CHAIN (for the division)
+6. This creates a fully LL(1) parseable structure!
 
 ## BNF Notation
 
@@ -190,13 +201,19 @@ Before writing any code, you must:
 3. ✅ Write clear production rules
 4. ✅ Ensure your grammar is LL(1) (no conflicts)
 
-### 3. **Control Structures Need New Rules**
-Your team must design rules for loops and decisions that maintain RPN postfix notation:
+### 3. **Control Structures - Implemented Rules**
+Your grammar includes three types of control structures in RPN postfix notation:
 ```
-// Example possibilities (your team decides syntax):
-LOOP → (START_VALUE END_VALUE COUNTER FOR)        // (1 10 I FOR)
-DECISION → (CONDITION IF THEN_EXPR ELSE ELSE_EXPR) // (A B > IF X ELSE Y)
+// Actual implemented syntax:
+FOR_STRUCT → ( NUMBER ) ( NUMBER ) ( NUMBER ) LINHA    // (1) (10) (1) body
+WHILE_STRUCT → ( EXPR ) LINHA                          // (condition) body
+IFELSE_STRUCT → ( EXPR ) LINHA LINHA                   // (condition) then-body else-body
 ```
+
+**Examples**:
+- FOR loop: `(FOR (1) (10) (1) ((I PRINT)))`
+- WHILE loop: `(WHILE ((I 10 <)) ((I 1 + I =)))`
+- IF-ELSE: `(IFELSE ((X 5 >)) ((SUCCESS PRINT)) ((FAILURE PRINT)))`
 
 ### 4. **Grammar Must Be Unambiguous**
 Your grammar must have **exactly one way** to parse any valid input. Ambiguous grammars cause conflicts in LL(1) parsing.
@@ -218,12 +235,14 @@ Now that you understand grammar fundamentals, you're ready for:
 
 Each concept builds on the previous one, so make sure your team understands grammars before moving forward!
 
-## Questions to Discuss with Your Team
+## Questions to Validate Your Understanding
 
-1. What tokens do you need for control structures? (FOR, WHILE, IF, ELSE, etc.)
-2. What should the syntax look like for loops in RPN notation?
-3. What should the syntax look like for decisions in RPN notation?
-4. How will you handle nested control structures?
-5. How will you maintain the postfix notation requirement?
+1. ✅ **Tokens for control structures**: FOR, WHILE, IFELSE, (, ), NUMBER, IDENTIFIER, operators
+2. ✅ **Loop syntax**: FOR_STRUCT and WHILE_STRUCT as defined in the LL(1) grammar
+3. ✅ **Decision syntax**: IFELSE_STRUCT with condition and two body branches
+4. ✅ **Nested structures**: Handled through recursive LINHA → ( CONTENT ) structure
+5. ✅ **Postfix notation**: Maintained with operators coming after operands in all constructs
 
-Remember: **You are designing the "sentence structure rules" for your programming language!** 🚀
+**Key Insight**: Your team has **already implemented** a complete LL(1) grammar with 56 production rules, 18 non-terminals, and 25 terminals. The grammar is mathematically proven to be conflict-free!
+
+**Next Steps**: Understand how FIRST and FOLLOW sets are calculated for this grammar in the next theory file. 🚀

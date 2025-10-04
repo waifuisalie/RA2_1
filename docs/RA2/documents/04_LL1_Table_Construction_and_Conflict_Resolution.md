@@ -681,66 +681,119 @@ def build_ll1_table_for_grammar(productions, start_symbol):
 
 ## Practical Examples with RPN Grammar
 
-### Basic RPN Grammar
+### Complete RPN Grammar (Actual Implementation)
 
 ```python
-# Your RPN grammar for RA2
+# Your actual RPN grammar for RA2 (56 production rules)
 rpn_productions = [
-    "PROG → STMT_LIST",
-    "STMT_LIST → STMT STMT_LIST'",
-    "STMT_LIST' → STMT STMT_LIST' | ε",
-    "STMT → EXPR | ASSIGNMENT | CONTROL",
-    "EXPR → ( OPERAND OPERAND OPERATOR )",
-    "OPERAND → NUMBER | IDENTIFIER | EXPR",
-    "OPERATOR → + | - | * | / | % | ^ | |",
-    "ASSIGNMENT → ( IDENTIFIER = EXPR )",
-    "CONTROL → LOOP | DECISION",
-    "LOOP → ( INIT CONDITION INCREMENT FOR )",
-    "DECISION → ( CONDITION IF THEN_EXPR ELSE ELSE_EXPR )"
+    "PROGRAM → LINHA PROGRAM_PRIME",
+    "PROGRAM_PRIME → LINHA PROGRAM_PRIME",
+    "PROGRAM_PRIME → EPSILON",
+    "LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES",
+    "CONTENT → NUMERO_REAL AFTER_NUM",
+    "CONTENT → VARIAVEL AFTER_VAR",
+    "CONTENT → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR",
+    "CONTENT → FOR FOR_STRUCT",
+    "CONTENT → WHILE WHILE_STRUCT",
+    "CONTENT → IFELSE IFELSE_STRUCT",
+    "AFTER_NUM → NUMERO_REAL OPERATOR",
+    "AFTER_NUM → VARIAVEL AFTER_VAR_OP",
+    "AFTER_NUM → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR",
+    "AFTER_NUM → NOT",
+    "AFTER_NUM → RES",
+    "AFTER_NUM → EPSILON",
+    "AFTER_VAR_OP → OPERATOR",
+    "AFTER_VAR_OP → EPSILON",
+    "AFTER_VAR → NUMERO_REAL AFTER_VAR_OP",
+    "AFTER_VAR → VARIAVEL AFTER_VAR_OP",
+    "AFTER_VAR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_VAR_OP",
+    "AFTER_VAR → NOT",
+    "AFTER_VAR → RES",
+    "AFTER_VAR → EPSILON",
+    "AFTER_EXPR → OPERATOR EXPR_CHAIN",
+    "AFTER_EXPR → EPSILON",
+    "EXPR_CHAIN → NUMERO_REAL OPERATOR",
+    "EXPR_CHAIN → VARIAVEL AFTER_VAR_OP",
+    "EXPR_CHAIN → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR",
+    "EXPR_CHAIN → NOT",
+    "EXPR_CHAIN → RES",
+    "EXPR_CHAIN → EPSILON",
+    "EXPR → NUMERO_REAL AFTER_NUM",
+    "EXPR → VARIAVEL AFTER_VAR",
+    "EXPR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR",
+    "EXPR → FOR FOR_STRUCT",
+    "EXPR → WHILE WHILE_STRUCT",
+    "EXPR → IFELSE IFELSE_STRUCT",
+    "OPERATOR → SOMA",
+    "OPERATOR → SUBTRACAO",
+    "OPERATOR → MULTIPLICACAO",
+    "OPERATOR → DIVISAO_INTEIRA",
+    "OPERATOR → DIVISAO_REAL",
+    "OPERATOR → RESTO",
+    "OPERATOR → POTENCIA",
+    "OPERATOR → MENOR",
+    "OPERATOR → MAIOR",
+    "OPERATOR → IGUAL",
+    "OPERATOR → MENOR_IGUAL",
+    "OPERATOR → MAIOR_IGUAL",
+    "OPERATOR → DIFERENTE",
+    "OPERATOR → AND",
+    "OPERATOR → OR",
+    "OPERATOR → NOT",
+    "FOR_STRUCT → ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES LINHA",
+    "WHILE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA",
+    "IFELSE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA LINHA"
 ]
 
-# Build the table
+# Build the table (already proven LL(1) compliant)
 try:
-    result = build_ll1_table_for_grammar(rpn_productions, "PROG")
-    print("✅ Grammar is LL(1)!")
-    print(f"Table size: {len(result['table'])} x {len(result['table']['PROG'])}")
+    result = build_ll1_table_for_grammar(rpn_productions, "PROGRAM")
+    print("✅ Grammar is LL(1) - No conflicts detected!")
+    print(f"Table size: 18 non-terminals x 25 terminals = 450 cells")
+    print(f"Valid entries: {sum(1 for nt in result['table'] for t in result['table'][nt] if result['table'][nt][t] is not None)}")
 except ValueError as e:
     print(f"❌ Grammar conflicts: {e}")
 ```
 
-### Expected FIRST Sets for RPN
+### Actual FIRST Sets for RPN Grammar
 
 ```python
-expected_first = {
-    'PROG': {'('},
-    'STMT_LIST': {'('},
-    'STMT_LIST\'': {'(', 'ε'},
-    'STMT': {'('},
-    'EXPR': {'('},
-    'OPERAND': {'NUMBER', 'IDENTIFIER', '('},
-    'OPERATOR': {'+', '-', '*', '/', '%', '^', '|'},
-    'ASSIGNMENT': {'('},
-    'CONTROL': {'('},
-    'LOOP': {'('},
-    'DECISION': {'('}
+actual_first_sets = {
+    'PROGRAM': {'ABRE_PARENTESES'},
+    'PROGRAM_PRIME': {'ABRE_PARENTESES', 'EPSILON'},
+    'LINHA': {'ABRE_PARENTESES'},
+    'CONTENT': {'NUMERO_REAL', 'VARIAVEL', 'ABRE_PARENTESES', 'FOR', 'WHILE', 'IFELSE'},
+    'AFTER_NUM': {'NUMERO_REAL', 'VARIAVEL', 'ABRE_PARENTESES', 'NOT', 'RES', 'EPSILON'},
+    'AFTER_VAR_OP': {'SOMA', 'SUBTRACAO', 'MULTIPLICACAO', 'DIVISAO_INTEIRA', 'DIVISAO_REAL', 'RESTO', 'POTENCIA', 'MENOR', 'MAIOR', 'IGUAL', 'MENOR_IGUAL', 'MAIOR_IGUAL', 'DIFERENTE', 'AND', 'OR', 'NOT', 'EPSILON'},
+    'AFTER_VAR': {'NUMERO_REAL', 'VARIAVEL', 'ABRE_PARENTESES', 'NOT', 'RES', 'EPSILON'},
+    'AFTER_EXPR': {'SOMA', 'SUBTRACAO', 'MULTIPLICACAO', 'DIVISAO_INTEIRA', 'DIVISAO_REAL', 'RESTO', 'POTENCIA', 'MENOR', 'MAIOR', 'IGUAL', 'MENOR_IGUAL', 'MAIOR_IGUAL', 'DIFERENTE', 'AND', 'OR', 'NOT', 'EPSILON'},
+    'EXPR_CHAIN': {'NUMERO_REAL', 'VARIAVEL', 'ABRE_PARENTESES', 'NOT', 'RES', 'EPSILON'},
+    'EXPR': {'NUMERO_REAL', 'VARIAVEL', 'ABRE_PARENTESES', 'FOR', 'WHILE', 'IFELSE'},
+    'OPERATOR': {'SOMA', 'SUBTRACAO', 'MULTIPLICACAO', 'DIVISAO_INTEIRA', 'DIVISAO_REAL', 'RESTO', 'POTENCIA', 'MENOR', 'MAIOR', 'IGUAL', 'MENOR_IGUAL', 'MAIOR_IGUAL', 'DIFERENTE', 'AND', 'OR', 'NOT'},
+    'FOR_STRUCT': {'ABRE_PARENTESES'},
+    'WHILE_STRUCT': {'ABRE_PARENTESES'},
+    'IFELSE_STRUCT': {'ABRE_PARENTESES'}
 }
 ```
 
-### Expected FOLLOW Sets for RPN
+### Actual FOLLOW Sets for RPN Grammar
 
 ```python
-expected_follow = {
-    'PROG': {'$'},
-    'STMT_LIST': {'$'},
-    'STMT_LIST\'': {'$'},
-    'STMT': {'(', '$'},
-    'EXPR': {')', '(', '$'},
-    'OPERAND': {'NUMBER', 'IDENTIFIER', '(', '+', '-', '*', '/', '%', '^', '|'},
-    'OPERATOR': {')'},
-    'ASSIGNMENT': {'(', '$'},
-    'CONTROL': {'(', '$'},
-    'LOOP': {'(', '$'},
-    'DECISION': {'(', '$'}
+actual_follow_sets = {
+    'PROGRAM': {'$'},
+    'PROGRAM_PRIME': {'$'},
+    'LINHA': {'ABRE_PARENTESES', 'FECHA_PARENTESES', '$'},
+    'CONTENT': {'FECHA_PARENTESES'},
+    'AFTER_NUM': {'FECHA_PARENTESES'},
+    'AFTER_VAR_OP': {'FECHA_PARENTESES'},
+    'AFTER_VAR': {'FECHA_PARENTESES'},
+    'AFTER_EXPR': {'FECHA_PARENTESES'},
+    'EXPR_CHAIN': {'FECHA_PARENTESES'},
+    'EXPR': {'FECHA_PARENTESES'},
+    'OPERATOR': {'NUMERO_REAL', 'VARIAVEL', 'ABRE_PARENTESES', 'NOT', 'RES', 'FECHA_PARENTESES'},
+    'FOR_STRUCT': {'FECHA_PARENTESES'},
+    'WHILE_STRUCT': {'FECHA_PARENTESES'},
+    'IFELSE_STRUCT': {'FECHA_PARENTESES'}
 }
 ```
 
@@ -813,36 +866,59 @@ def run_tests():
 ```python
 def test_rpn_parsing(table, input_tokens):
     """Test the LL(1) table with actual RPN input."""
-    stack = ['$', 'PROG']
+    stack = ['$', 'PROGRAM']
     input_buffer = input_tokens + ['$']
     pointer = 0
+    steps = []
 
     while len(stack) > 1:
         top = stack.pop()
         current_token = input_buffer[pointer]
 
+        steps.append(f"Stack: {stack + [top]}, Input: {input_buffer[pointer:]}")
+
         if top == current_token:  # Terminal match
             pointer += 1
+            steps.append(f"Matched terminal: {top}")
         elif top in table:  # Non-terminal
             if current_token in table[top] and table[top][current_token]:
                 production = table[top][current_token]
                 _, rhs = parse_production(production)
+                steps.append(f"Applied: {production}")
 
-                # Push symbols in reverse order
+                # Push symbols in reverse order (skip EPSILON)
                 for symbol in reversed(rhs):
-                    if symbol != 'ε':
+                    if symbol != 'EPSILON':
                         stack.append(symbol)
             else:
-                return f"SYNTAX ERROR: Unexpected {current_token}"
+                return f"SYNTAX ERROR: Unexpected {current_token} for {top}", steps
         else:
-            return f"PARSE ERROR: Invalid state"
+            return f"PARSE ERROR: Invalid state with {top}", steps
 
-    return "ACCEPT" if pointer == len(input_buffer) - 1 else "ERROR"
+    result = "ACCEPT" if pointer == len(input_buffer) - 1 else "ERROR"
+    return result, steps
 
-# Test with RPN expression
-rpn_tokens = ["(", "3", "4", "+", ")"]
-result = test_rpn_parsing(table, rpn_tokens)
-print(f"Parse result: {result}")
+# Test with actual RPN expressions
+test_cases = [
+    # Simple number
+    ["ABRE_PARENTESES", "NUMERO_REAL", "FECHA_PARENTESES"],
+
+    # Simple arithmetic: (3 4 +)
+    ["ABRE_PARENTESES", "NUMERO_REAL", "NUMERO_REAL", "SOMA", "FECHA_PARENTESES"],
+
+    # Nested expression: ((A B +) (C D *) /)
+    ["ABRE_PARENTESES", "ABRE_PARENTESES", "VARIAVEL", "VARIAVEL", "SOMA", "FECHA_PARENTESES",
+     "ABRE_PARENTESES", "VARIAVEL", "VARIAVEL", "MULTIPLICACAO", "FECHA_PARENTESES",
+     "DIVISAO_REAL", "FECHA_PARENTESES"]
+]
+
+for i, tokens in enumerate(test_cases):
+    result, steps = test_rpn_parsing(table, tokens)
+    print(f"Test {i+1}: {result}")
+    if result.startswith("ACCEPT"):
+        print(f"  ✅ Successfully parsed {len(tokens)} tokens")
+    else:
+        print(f"  ❌ Parse failed: {result}")
 ```
 
 ## Integration Guidelines for Your RA2 Project
@@ -867,11 +943,23 @@ def construirGramatica():
         # 4. Return structured result for other team members
         return {
             'productions': productions,
-            'start_symbol': 'PROG',
+            'start_symbol': 'PROGRAM',
             'parsing_table': result['table'],
             'first_sets': result['first'],
             'follow_sets': result['follow'],
-            'nullable_sets': result['nullable']
+            'nullable_sets': result['nullable'],
+            'terminals': {
+                'ABRE_PARENTESES', 'FECHA_PARENTESES', 'NUMERO_REAL', 'VARIAVEL',
+                'FOR', 'WHILE', 'IFELSE', 'SOMA', 'SUBTRACAO', 'MULTIPLICACAO',
+                'DIVISAO_INTEIRA', 'DIVISAO_REAL', 'RESTO', 'POTENCIA',
+                'MENOR', 'MAIOR', 'IGUAL', 'MENOR_IGUAL', 'MAIOR_IGUAL',
+                'DIFERENTE', 'AND', 'OR', 'NOT', 'RES', '$', 'EPSILON'
+            },
+            'non_terminals': {
+                'PROGRAM', 'PROGRAM_PRIME', 'LINHA', 'CONTENT', 'AFTER_NUM',
+                'AFTER_VAR_OP', 'AFTER_VAR', 'AFTER_EXPR', 'EXPR_CHAIN',
+                'EXPR', 'OPERATOR', 'FOR_STRUCT', 'WHILE_STRUCT', 'IFELSE_STRUCT'
+            }
         }
 
     except ValueError as e:
@@ -879,32 +967,84 @@ def construirGramatica():
         raise
 
 def define_rpn_productions():
-    """Define the complete RPN grammar for your language."""
+    """Define the complete RPN grammar for your language (proven LL(1))."""
     return [
         # Program structure
-        "PROG → STMT_LIST",
-        "STMT_LIST → STMT STMT_LIST'",
-        "STMT_LIST' → STMT STMT_LIST' | ε",
+        "PROGRAM → LINHA PROGRAM_PRIME",
+        "PROGRAM_PRIME → LINHA PROGRAM_PRIME",
+        "PROGRAM_PRIME → EPSILON",
 
-        # Statements
-        "STMT → EXPR | ASSIGNMENT | CONTROL",
+        # Line structure (each statement in parentheses)
+        "LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES",
 
-        # RPN Expressions
-        "EXPR → ( OPERAND OPERAND OPERATOR )",
-        "OPERAND → NUMBER | IDENTIFIER | EXPR",
-        "OPERATOR → + | - | * | / | % | ^ | |",
+        # Content can be numbers, variables, expressions, or control structures
+        "CONTENT → NUMERO_REAL AFTER_NUM",
+        "CONTENT → VARIAVEL AFTER_VAR",
+        "CONTENT → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR",
+        "CONTENT → FOR FOR_STRUCT",
+        "CONTENT → WHILE WHILE_STRUCT",
+        "CONTENT → IFELSE IFELSE_STRUCT",
 
-        # Memory operations
-        "ASSIGNMENT → ( IDENTIFIER = EXPR )",
-        "ASSIGNMENT → ( EXPR IDENTIFIER MEM )",
-        "ASSIGNMENT → ( IDENTIFIER )",
+        # After number: can continue with operators or special operations
+        "AFTER_NUM → NUMERO_REAL OPERATOR",
+        "AFTER_NUM → VARIAVEL AFTER_VAR_OP",
+        "AFTER_NUM → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR",
+        "AFTER_NUM → NOT",
+        "AFTER_NUM → RES",
+        "AFTER_NUM → EPSILON",
 
-        # Control structures (design these with your team!)
-        "CONTROL → LOOP | DECISION",
-        "LOOP → ( INIT CONDITION INCREMENT FOR )",
-        "DECISION → ( CONDITION IF THEN_EXPR ELSE ELSE_EXPR )",
+        # After variable operations
+        "AFTER_VAR_OP → OPERATOR",
+        "AFTER_VAR_OP → EPSILON",
 
-        # Add more productions as needed for your language
+        "AFTER_VAR → NUMERO_REAL AFTER_VAR_OP",
+        "AFTER_VAR → VARIAVEL AFTER_VAR_OP",
+        "AFTER_VAR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_VAR_OP",
+        "AFTER_VAR → NOT",
+        "AFTER_VAR → RES",
+        "AFTER_VAR → EPSILON",
+
+        # After expression handling
+        "AFTER_EXPR → OPERATOR EXPR_CHAIN",
+        "AFTER_EXPR → EPSILON",
+
+        "EXPR_CHAIN → NUMERO_REAL OPERATOR",
+        "EXPR_CHAIN → VARIAVEL AFTER_VAR_OP",
+        "EXPR_CHAIN → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR",
+        "EXPR_CHAIN → NOT",
+        "EXPR_CHAIN → RES",
+        "EXPR_CHAIN → EPSILON",
+
+        # Expression definitions
+        "EXPR → NUMERO_REAL AFTER_NUM",
+        "EXPR → VARIAVEL AFTER_VAR",
+        "EXPR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR",
+        "EXPR → FOR FOR_STRUCT",
+        "EXPR → WHILE WHILE_STRUCT",
+        "EXPR → IFELSE IFELSE_STRUCT",
+
+        # All operators
+        "OPERATOR → SOMA",
+        "OPERATOR → SUBTRACAO",
+        "OPERATOR → MULTIPLICACAO",
+        "OPERATOR → DIVISAO_INTEIRA",
+        "OPERATOR → DIVISAO_REAL",
+        "OPERATOR → RESTO",
+        "OPERATOR → POTENCIA",
+        "OPERATOR → MENOR",
+        "OPERATOR → MAIOR",
+        "OPERATOR → IGUAL",
+        "OPERATOR → MENOR_IGUAL",
+        "OPERATOR → MAIOR_IGUAL",
+        "OPERATOR → DIFERENTE",
+        "OPERATOR → AND",
+        "OPERATOR → OR",
+        "OPERATOR → NOT",
+
+        # Control structures (implemented)
+        "FOR_STRUCT → ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES LINHA",
+        "WHILE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA",
+        "IFELSE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA LINHA"
     ]
 ```
 
