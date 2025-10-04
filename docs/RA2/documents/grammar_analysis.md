@@ -186,6 +186,59 @@ FOLLOW(IFELSE_STRUCT) = {FECHA_PARENTESES}
 | WHILE_STRUCT | | | WHILE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA | | | | | | | | | | | | | | | | | | | | | | |
 | IFELSE_STRUCT | | | IFELSE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA LINHA | | | | | | | | | | | | | | | | | | | | | | |
 
+## LL(1) Parsing Table - Readable Format
+
+For practical implementation, the parsing table is organized by functional groups. Each table shows only the relevant terminals for each non-terminal.
+
+### Program Structure
+
+| Non-terminal | ( | ) | $ |
+|--------------|---|---|---|
+| **PROGRAM** | PROGRAM → LINHA PROGRAM_PRIME | | |
+| **PROGRAM_PRIME** | PROGRAM_PRIME → LINHA PROGRAM_PRIME | PROGRAM_PRIME → ε | PROGRAM_PRIME → ε |
+| **LINHA** | LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES | LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES | LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES |
+
+### Content and Expressions
+
+| Non-terminal | NUMBER | IDENTIFIER | ( | ) | FOR | WHILE | IFELSE |
+|--------------|--------|------------|---|---|-----|-------|--------|
+| **CONTENT** | CONTENT → NUMERO_REAL AFTER_NUM | CONTENT → VARIAVEL AFTER_VAR | CONTENT → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR | | CONTENT → FOR FOR_STRUCT | CONTENT → WHILE WHILE_STRUCT | CONTENT → IFELSE IFELSE_STRUCT |
+| **EXPR** | EXPR → NUMERO_REAL AFTER_NUM | EXPR → VARIAVEL AFTER_VAR | EXPR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR | | | | EXPR → IFELSE IFELSE_STRUCT |
+| **EXPR_CHAIN** | | | EXPR_CHAIN → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR | EXPR_CHAIN → ε | | | |
+
+### After-Processing Non-terminals
+
+| Non-terminal | NUMBER | IDENTIFIER | ( | ) | NOT | RES |
+|--------------|--------|------------|---|---|-----|-----|
+| **AFTER_NUM** | AFTER_NUM → NUMERO_REAL OPERATOR | AFTER_NUM → VARIAVEL AFTER_VAR_OP | AFTER_NUM → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR | AFTER_NUM → ε | AFTER_NUM → NOT | AFTER_NUM → RES |
+| **AFTER_VAR** | AFTER_VAR → NUMERO_REAL OPERATOR | AFTER_VAR → VARIAVEL AFTER_VAR_OP | AFTER_VAR → ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR | AFTER_VAR → ε | AFTER_VAR → NOT | |
+| **AFTER_EXPR** | AFTER_EXPR → NUMERO_REAL OPERATOR | AFTER_EXPR → VARIAVEL AFTER_VAR_OP | AFTER_EXPR → ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR | AFTER_EXPR → ε | AFTER_EXPR → OPERATOR EXPR_CHAIN | |
+
+### Variable-Operator Processing
+
+| Non-terminal | ) | All Operators |
+|--------------|---|---------------|
+| **AFTER_VAR_OP** | AFTER_VAR_OP → ε | AFTER_VAR_OP → OPERATOR |
+
+*Note: "All Operators" includes: +, -, *, /, \|, %, ^, <, >, ==, <=, >=, !=, &&, \|\|, !*
+
+### Operator Hierarchy
+
+| Non-terminal | + | - | * | / | \| | % | ^ | < | > | == | <= | >= | != | && | \|\| | ! |
+|--------------|---|---|---|---|---|---|---|---|---|----|----|----|----|----|----|---|
+| **OPERATOR** | OPERATOR → ARITH_OP | OPERATOR → ARITH_OP | OPERATOR → ARITH_OP | OPERATOR → ARITH_OP | OPERATOR → ARITH_OP | OPERATOR → ARITH_OP | OPERATOR → ARITH_OP | OPERATOR → COMP_OP | OPERATOR → COMP_OP | OPERATOR → COMP_OP | OPERATOR → COMP_OP | OPERATOR → COMP_OP | OPERATOR → COMP_OP | OPERATOR → LOGIC_OP | OPERATOR → LOGIC_OP | OPERATOR → LOGIC_OP |
+| **ARITH_OP** | ARITH_OP → SOMA | ARITH_OP → SUBTRACAO | ARITH_OP → MULTIPLICACAO | ARITH_OP → DIVISAO_INTEIRA | ARITH_OP → DIVISAO_REAL | ARITH_OP → RESTO | ARITH_OP → POTENCIA | | | | | | | | | |
+| **COMP_OP** | | | | | | | | COMP_OP → MENOR | COMP_OP → MAIOR | COMP_OP → IGUAL | COMP_OP → MENOR_IGUAL | COMP_OP → MAIOR_IGUAL | COMP_OP → DIFERENTE | | | |
+| **LOGIC_OP** | | | | | | | | | | | | | | LOGIC_OP → AND | LOGIC_OP → OR | LOGIC_OP → NOT |
+
+### Control Structures
+
+| Non-terminal | ( |
+|--------------|---|
+| **FOR_STRUCT** | FOR_STRUCT → ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES ABRE_PARENTESES NUMERO_REAL FECHA_PARENTESES LINHA |
+| **WHILE_STRUCT** | WHILE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA |
+| **IFELSE_STRUCT** | IFELSE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA LINHA |
+
 ## LL(1) Grammar Verification
 
 This grammar is **LL(1)** because:
