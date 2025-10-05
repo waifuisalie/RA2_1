@@ -48,6 +48,7 @@ graph TD
         E3["🔍 reconhecerToken()<br/>Direct token recognition"]
         E4["🔍 parsear_todas_linhas()<br/>Parse & generate derivations"]
         E5["🌳 gerar_e_salvar_todas_arvores()<br/>Generate syntax trees"]
+        E6["📝 atualizar_documentacao_gramatica()<br/>Update grammar documentation"]
     end
 
     %% Output Layer
@@ -57,6 +58,7 @@ graph TD
         F3["💾 registers.inc<br/>Assembly Headers"]
         F4["📋 tokens_gerados.txt<br/>Token Files"]
         F5["📖 Console Output<br/>Grammar Documentation"]
+        F6["📝 grammar_documentation.md<br/>Auto-Updated Grammar Reference"]
     end
 
     %% Sequential flow
@@ -78,9 +80,11 @@ graph TD
     E2 --> E3
     E3 --> E4
     E4 --> E5
+    E5 --> E6
 
     %% Output connections
     E5 --> F1
+    E6 --> F6
     B5 --> F2
     B6 --> F3
     B2 --> F4
@@ -98,8 +102,8 @@ graph TD
     class B1,B2,B3,B4,B5,B6 ra1Style
     class C1,C2 validationStyle
     class D1,D2 grammarStyle
-    class E1,E2,E3,E4,E5 parseStyle
-    class F1,F2,F3,F4,F5 outputStyle
+    class E1,E2,E3,E4,E5,E6 parseStyle
+    class F1,F2,F3,F4,F5,F6 outputStyle
 ```
 
 ## Detailed Four-Phase Processing Flow
@@ -180,16 +184,18 @@ flowchart TB
         C["🔍 reconhecerToken()<br/>• DIRECT token recognition<br/>• Not through lerTokens!<br/>• Build tokens_por_linha"]
         D["🔍 parsear_todas_linhas()<br/>• Stack-based LL(1) parsing<br/>• Use parsing table<br/>• Generate derivation steps"]
         E["🌳 gerar_e_salvar_todas_arvores()<br/>• Convert derivations to trees<br/>• ASCII visualization<br/>• Save arvore_output.txt"]
+        F["📝 atualizar_documentacao_gramatica()<br/>• Extract latest syntax tree<br/>• Update grammar_documentation.md<br/>• Add timestamp"]
 
         A --> B
         B --> C
         C --> D
         D --> E
+        E --> F
     end
 
     classDef parseNode fill:#fce4ec,stroke:#e91e63,stroke-width:2px
 
-    class A,B,C,D,E parseNode
+    class A,B,C,D,E,F parseNode
 ```
 
 ## Integration Between RA1 and RA2
@@ -288,6 +294,8 @@ sequenceDiagram
         Parser->>Parser: Generate derivations
         Main->>Parser: gerar_e_salvar_todas_arvores(derivations)
         Parser->>Output: Save trees to arvore_output.txt
+        Main->>Main: atualizar_documentacao_gramatica()
+        Main->>Output: Update grammar_documentation.md with latest tree
 
         Main->>User: Display complete success report
     end
