@@ -43,6 +43,7 @@ flowchart TD
         D3["🔍 reconhecerToken(elemento, 1, 1)<br/>Return: Optional[Token]<br/>• Direct token recognition<br/>• Build tokens_por_linha"]
         D4["🔍 parsear_todas_linhas(tabela_ll1, tokens_por_linha)<br/>Return: List[List[str]]<br/>• Parse all token lines<br/>• Generate derivations"]
         D5["🌳 gerar_e_salvar_todas_arvores(derivacoes, arquivo)<br/>Return: bool<br/>• Generate syntax trees<br/>• Save arvore_output.txt"]
+        D6["📝 atualizar_documentacao_gramatica()<br/>Return: None<br/>• Update grammar_documentation.md<br/>• Extract latest syntax tree<br/>• Add timestamp"]
     end
 
     %% Sequential flow
@@ -63,6 +64,7 @@ flowchart TD
     D2 --> D3
     D3 --> D4
     D4 --> D5
+    D5 --> D6
 
     %% Data flow (corrected)
     B1 -.->|"source_content"| B2
@@ -85,7 +87,7 @@ flowchart TD
     class B1,B2,B3,B4,B5,B6 ra1Func
     class C1,C1a validationFunc
     class C2,C3 grammarFunc
-    class D1,D2,D3,D4,D5 parseFunc
+    class D1,D2,D3,D4,D5,D6 parseFunc
 ```
 
 ## Detailed RA2 Function Interfaces
@@ -186,21 +188,26 @@ graph LR
         E["📁 exportar_arvore_ascii(arvore: NoArvore, nome_arquivo: str)<br/>Parameters:<br/>• arvore: Tree root<br/>• nome_arquivo: Output filename<br/>Return: None<br/>Functionality:<br/>• Generate ASCII representation<br/>• Save to file and outputs/RA2/"]
 
         F["📁 gerar_e_salvar_todas_arvores(derivacoes_por_linha: List[List[str]], nome_arquivo: str)<br/>Parameters:<br/>• derivacoes_por_linha: All derivations<br/>• nome_arquivo: Output filename<br/>Return: bool - Success status<br/>Functionality:<br/>• Process all derivations<br/>• Generate comprehensive output<br/>• Handle errors gracefully"]
+
+        G["📝 atualizar_documentacao_gramatica()<br/>Parameters: None<br/>Return: None<br/>Functionality:<br/>• Update grammar_documentation.md<br/>• Extract latest syntax tree<br/>• Add timestamp to documentation"]
     end
 
     A --> B
     D --> C
     D --> E
     F --> D
+    F --> G
     B -.->|"derivations"| F
 
     classDef parseFunc fill:#fce4ec,stroke:#e91e63,stroke-width:2px
     classDef treeFunc fill:#e8f5e8,stroke:#4caf50,stroke-width:2px
     classDef dataClass fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    classDef docFunc fill:#f1f8e9,stroke:#388e3c,stroke-width:2px
 
     class A,B parseFunc
     class D,E,F treeFunc
     class C dataClass
+    class G docFunc
 ```
 
 ## Data Structure Specifications
@@ -288,6 +295,7 @@ classDiagram
 | **gerarArvore.py** | `gerarArvore` | `derivacao: List[str]` | `NoArvore` | Generate syntax tree from derivation |
 | | `exportar_arvore_ascii` | `arvore: NoArvore, nome_arquivo: str` | `None` | Export single tree to ASCII file |
 | | `gerar_e_salvar_todas_arvores` | `derivacoes_por_linha: List[List[str]], nome_arquivo: str` | `bool` | Export all trees to arvore_output.txt (line 237) |
+| **AnalisadorSintatico.py** | `atualizar_documentacao_gramatica` | None | `None` | Update grammar_documentation.md with latest syntax tree (line 331) |
 
 ## Error Handling Specifications
 
