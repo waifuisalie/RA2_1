@@ -1,11 +1,14 @@
-# RA2_1 - Analisador Sintático LL(1)
+# Analisador Sintático LL(1) - Fase 2
 
-**Instituição:** Pontifícia Universidade Católica do Paraná (PUCPR)  
-**Disciplina:** Linguagens Formais e Autômatos  
+## Informações Institucionais
+
+**Instituição:** Pontifícia Universidade Católica do Paraná (PUCPR)
+**Disciplina:** Linguagens Formais e Autômatos
 **Professor:** Frank Alcantara
-**Projeto:** Fase 2 - Analisador Sintático LL(1) para RPN
+**Ano:** 2025
 
-## Integrantes do Grupo (ordem alfabética)
+### Integrantes do Grupo
+
 - Breno Rossi Duarte - breno-rossi
 - Francisco Bley Ruthes - fbleyruthes
 - Rafael Olivare Piveta - RafaPiveta
@@ -13,323 +16,309 @@
 
 **Nome do grupo no Canvas:** RA2_1
 
+---
+
 ## Descrição do Projeto
 
-Este projeto implementa um analisador sintático LL(1) para uma linguagem simplificada baseada em Notação Polonesa Reversa (RPN). O sistema processa tokens gerados na Fase 1 e constrói uma árvore sintática validando a sintaxe segundo uma gramática LL(1) livre de conflitos.
+Analisador sintático descendente recursivo LL(1) para linguagem baseada em **notação polonesa reversa (RPN)**. O sistema integra o analisador léxico da Fase 1 com um parser sintático que constrói árvores de derivação e valida estruturas gramaticais.
 
-## Requisitos e Dependências
+### Características Principais
 
-- **Python**: 3.7 ou superior
-- **Módulos**: Todos os módulos são internos ao projeto (sem dependências externas)
-- **Estrutura**: Manter a estrutura de diretórios `src/RA1/` e `src/RA2/`
+- Parser LL(1) com análise preditiva
+- Suporte a expressões aritméticas, lógicas e relacionais em RPN
+- Operadores: `+`, `-`, `*`, `/`, `|`, `%`, `^`, `>`, `<`, `>=`, `<=`, `==`, `!=`, `&&`, `||`, `!`
+- Estruturas de controle: `FOR`, `WHILE`, `IFELSE`
+- Comandos especiais: `RES` (histórico) e variáveis
+- Geração de árvores sintáticas em formato ASCII
+- Cálculo automático de conjuntos FIRST e FOLLOW
+- Tabela de análise LL(1) construída dinamicamente
+
+---
 
 ## Compilação e Execução
 
+### Requisitos
+
+- Python 3.7 ou superior
+- Nenhuma dependência externa
+
+### Execução
+
 ```bash
-# Executar o analisador sintático (arquivos de teste no mesmo diretório)
 python AnalisadorSintatico.py teste1.txt
 python AnalisadorSintatico.py teste2.txt
 python AnalisadorSintatico.py teste3.txt
 ```
 
-### Saída do Programa
-- **Console**: Resultado da análise sintática e árvore de derivação
-- **Arquivo**: `outputs/RA2/arvore_output.txt` - Árvore sintática em formato ASCII
+### Arquivos de Saída
 
-## Depuração
+O programa gera a árvore sintática em dois locais:
+- **`arvore_output.txt`** - Na raiz do diretório
+- **`outputs/RA2/arvore_output.txt`** - No diretório de saídas
 
-### Tipos de Erro
-- **Erro Léxico**: Token não reconhecido ou malformado
-- **Erro Sintático**: Estrutura não conforme à gramática LL(1)
-- **Erro de Arquivo**: Arquivo de teste não encontrado
-
-### Dicas de Depuração
-1. **Verificar parênteses**: Toda expressão deve estar entre `(` e `)`
-2. **Conferir operadores**: Use operadores suportados: `+`, `-`, `*`, `/`, `%`, `^`, `>`, `<`, `>=`, `<=`, `==`, `!=`, `&&`, `||`, `!`
-3. **Validar sintaxe RPN**: Operandos antes dos operadores: `(3 4 +)`
-4. **Testar estruturas**: Use keywords corretas: `FOR`, `WHILE`, `IFELSE`
-
-## Características da Linguagem
-
-### Operadores Aritméticos
-- **Adição**: `(3 4 +)` → 7
-- **Subtração**: `(10 4 -)` → 6
-- **Multiplicação**: `(2 3 *)` → 6
-- **Divisão**: `(9 2 /)` → 4.5
-- **Módulo**: `(10 3 %)` → 1
-- **Potência**: `(2 3 ^)` → 8
-
-### Operadores de Comparação
-- **Maior**: `(5 3 >)` → verdadeiro
-- **Menor**: `(3 5 <)` → verdadeiro
-- **Maior ou igual**: `(5 5 >=)` → verdadeiro
-- **Menor ou igual**: `(3 5 <=)` → verdadeiro
-- **Igual**: `(5 5 ==)` → verdadeiro
-- **Diferente**: `(5 3 !=)` → verdadeiro
-
-### Operadores Lógicos
-- **E lógico**: `((A 5 >) (B 0 >) &&)` → verdadeiro se A > 5 AND B > 0
-- **OU lógico**: `((A 0 ==) (B 0 ==) ||)` → verdadeiro se A == 0 OR B == 0
-- **NÃO lógico**: `((A 5 >) !)` → verdadeiro se NOT (A > 5)
-
-### Comandos Especiais
-- **Armazenamento**: `(42 X)` → armazena 42 na variável X
-- **Recuperação**: `(X)` → recupera valor armazenado em X
-- **Histórico**: `(5 RES)` → resultado de 5 operações anteriores
-
-### Expressões Aninhadas
-```
-((A B +) (C D *) /)        # (A+B) / (C*D)
-(((X Y *) Z +) W -)        # ((X*Y) + Z) - W
-((3 4 +) (5 6 *) >)        # (3+4) > (5*6)
-```
-
-## Estruturas de Controle
-
-### Estrutura FOR
-**Sintaxe**: `(FOR (início)(fim)(incremento)(corpo))`
-
-**Exemplo**:
-```
-(FOR (1)(10)(2)(((P 1 +) P)((P 2 *) Q)))
-```
-- Inicia P=1, vai até 10, incremento de 2
-- Corpo: P = P + 1, Q = P * 2
-
-### Estrutura WHILE
-**Sintaxe**: `(WHILE (condição)(corpo))`
-
-**Exemplo**:
-```
-(WHILE (X 5 <)(((X 1 +) X)((X 2 *) Y)))
-```
-- Enquanto X < 5
-- Corpo: X = X + 1, Y = X * 2
-
-### Estrutura IF-ELSE
-**Sintaxe**: `(IFELSE (condição)(bloco_então)(bloco_senão))`
-
-**Exemplos**:
-```
-(IFELSE ((A B >) (C D <=) &&)(1)(0))
-```
-- Se (A > B) AND (C <= D), então 1, senão 0
+Ambos contêm a árvore sintática em formato ASCII:
 
 ```
-(IFELSE (M 0 >)((M N))((0 N)))
-```
-- Se M > 0, então N = M, senão N = 0
-
-### Precedência e Aninhamento
-- Estruturas podem ser aninhadas sem limite
-- Parênteses determinam precedência
-- Avaliação segue ordem postfixa (RPN)
-
-## Arquitetura do Analisador Sintático LL(1)
-
-### Funções Principais (RA2)
-
-#### **`construirGramatica()`**
-- **Responsabilidade**: Constrói a estrutura completa da gramática LL(1)
-- **Funcionalidade**:
-  - Define regras de produção para RPN, comandos especiais e estruturas de controle
-  - Calcula conjuntos FIRST e FOLLOW automaticamente
-  - Gera tabela de análise LL(1) livre de conflitos
-  - Valida que a gramática é LL(1) sem ambiguidades
-- **Retorna**: Estrutura de dados com gramática, FIRST, FOLLOW e tabela LL(1)
-
-#### **`lerTokens(arquivo)`**
-- **Responsabilidade**: Lê e valida tokens do arquivo de entrada
-- **Funcionalidade**:
-  - Processa arquivos de teste linha por linha
-  - Reconhece tokens da Fase 1 (números, operadores básicos)
-  - Adiciona tokens RA2 (FOR, WHILE, IFELSE, operadores relacionais/lógicos)
-  - Valida sintaxe básica e estrutura de parênteses
-- **Retorna**: Lista de tokens estruturados para análise sintática
-
-#### **`gerarArvore(derivacao)`**
-- **Responsabilidade**: Converte derivação do parser em árvore sintática
-- **Funcionalidade**:
-  - Transforma sequência de derivações em estrutura de árvore
-  - Gera representação ASCII para visualização
-  - Salva resultado em `outputs/RA2/arvore_output.txt`
-  - Suporta aninhamento complexo de estruturas de controle
-- **Retorna**: Árvore sintática em formato texto
-
-### Funções de Análise Gramática
-
-#### **`calcularFirst()`**
-- **Funcionalidade**: Calcula conjuntos FIRST para todos os símbolos da gramática
-- **Algoritmo**: Implementa algoritmo clássico de FIRST com mapeamento de tokens reais
-- **Uso**: Base para construção da tabela LL(1)
-
-#### **`calcularFollow()`**
-- **Funcionalidade**: Calcula conjuntos FOLLOW para não-terminais
-- **Dependência**: Utiliza conjuntos FIRST previamente calculados
-- **Uso**: Completa informações necessárias para tabela LL(1)
-
-#### **`construirTabelaLL1()`**
-- **Funcionalidade**: Constrói tabela de análise LL(1) livre de conflitos
-- **Validação**: Detecta e reporta conflitos FIRST/FIRST e FIRST/FOLLOW
-- **Resultado**: Tabela determinística para parsing
-
-#### **`configuracaoGramatica.py`**
-- **Conteúdo**: Gramática LL(1) corrigida com padrão de continuação
-- **Inovação**: Usa não-terminais intermediários (AFTER_VAR_OP) para eliminar conflitos
-- **Status**: Matematicamente provada como LL(1) compliant
-
-### Estrutura de Classes
-
-#### **`NoArvore`**
-- **Funcionalidade**: Representa nós da árvore sintática
-- **Métodos**:
-  - `adicionar_filho()`: Adiciona nós filhos
-  - `desenhar_ascii()`: Gera representação visual ASCII
-- **Uso**: Construção de árvores sintáticas hierárquicas
-
-### Integração das Funções
-1. **lerTokens()** → processa arquivo de entrada
-2. **construirGramatica()** → prepara estruturas de análise
-3. **Parser interno** → realiza análise sintática descendente
-4. **gerarArvore()** → produz árvore sintática final
-
-## Especificação Técnica da Gramática LL(1)
-
-### Regras de Produção (EBNF)
-
-```ebnf
-PROGRAM → LINHA PROGRAM_PRIME
-PROGRAM_PRIME → LINHA PROGRAM_PRIME | ε
-LINHA → ABRE_PARENTESES CONTENT FECHA_PARENTESES
-
-CONTENT → NUMERO_REAL AFTER_NUM
-        | VARIAVEL AFTER_VAR
-        | ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR
-        | FOR FOR_STRUCT
-        | WHILE WHILE_STRUCT
-        | IFELSE IFELSE_STRUCT
-
-AFTER_NUM → NUMERO_REAL OPERATOR
-         | VARIAVEL AFTER_VAR_OP
-         | ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR
-         | RES
-
-AFTER_VAR_OP → OPERATOR | ε
-
-AFTER_VAR → NUMERO_REAL OPERATOR
-         | VARIAVEL OPERATOR
-         | ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR
-         | ε
-
-AFTER_EXPR → NUMERO_REAL OPERATOR
-          | VARIAVEL OPERATOR
-          | ABRE_PARENTESES EXPR FECHA_PARENTESES OPERATOR
-
-EXPR → NUMERO_REAL AFTER_NUM
-     | VARIAVEL AFTER_VAR
-     | ABRE_PARENTESES EXPR FECHA_PARENTESES AFTER_EXPR
-
-OPERATOR → ARITH_OP | COMP_OP | LOGIC_OP
-ARITH_OP → SOMA | SUBTRACAO | MULTIPLICACAO | DIVISAO | RESTO | POTENCIA
-COMP_OP → MENOR | MAIOR | IGUAL | MENOR_IGUAL | MAIOR_IGUAL | DIFERENTE
-LOGIC_OP → AND | OR | NOT
-
-FOR_STRUCT → NUMERO_REAL NUMERO_REAL VARIAVEL LINHA
-WHILE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA
-IFELSE_STRUCT → ABRE_PARENTESES EXPR FECHA_PARENTESES LINHA LINHA
+LINHA 1:
+==================================================
+PROGRAM
+├── LINHA
+│   ├── (
+│   ├── CONTENT
+│   │   ├── NUMERO_REAL
+│   │   └── AFTER_NUM
+│   │       ├── NUMERO_REAL
+│   │       └── OPERATOR
+│   │           └── +
+│   └── )
+└── PROGRAM_PRIME
+    └── ε
 ```
 
-### Símbolos da Gramática
+---
 
-#### Símbolos Terminais
-```
-NUMERO_REAL, VARIAVEL, ABRE_PARENTESES, FECHA_PARENTESES, RES
-FOR, WHILE, IFELSE
-SOMA, SUBTRACAO, MULTIPLICACAO, DIVISAO, RESTO, POTENCIA
-MENOR, MAIOR, MENOR_IGUAL, MAIOR_IGUAL, IGUAL, DIFERENTE
-AND, OR, NOT, FIM
-```
-
-#### Símbolos Não-Terminais
-```
-PROGRAM, PROGRAM_PRIME, LINHA, CONTENT
-AFTER_NUM, AFTER_VAR_OP, AFTER_VAR, AFTER_EXPR, EXPR
-OPERATOR, ARITH_OP, COMP_OP, LOGIC_OP
-FOR_STRUCT, WHILE_STRUCT, IFELSE_STRUCT
-```
-
-### Conjuntos FIRST
+## Estrutura do Projeto
 
 ```
-FIRST(PROGRAM) = {ABRE_PARENTESES}
-FIRST(PROGRAM_PRIME) = {ABRE_PARENTESES, ε}
-FIRST(LINHA) = {ABRE_PARENTESES}
-FIRST(CONTENT) = {NUMERO_REAL, VARIAVEL, ABRE_PARENTESES, FOR, WHILE, IFELSE}
-FIRST(AFTER_NUM) = {NUMERO_REAL, VARIAVEL, ABRE_PARENTESES, RES}
-FIRST(AFTER_VAR_OP) = {SOMA, SUBTRACAO, MULTIPLICACAO, DIVISAO, RESTO, POTENCIA,
-                       MENOR, MAIOR, IGUAL, MENOR_IGUAL, MAIOR_IGUAL, DIFERENTE,
-                       AND, OR, NOT, ε}
-FIRST(AFTER_VAR) = {NUMERO_REAL, VARIAVEL, ABRE_PARENTESES, ε}
-FIRST(AFTER_EXPR) = {NUMERO_REAL, VARIAVEL, ABRE_PARENTESES}
-FIRST(EXPR) = {NUMERO_REAL, VARIAVEL, ABRE_PARENTESES}
-FIRST(OPERATOR) = {SOMA, SUBTRACAO, MULTIPLICACAO, DIVISAO, RESTO, POTENCIA,
-                  MENOR, MAIOR, IGUAL, MENOR_IGUAL, MAIOR_IGUAL, DIFERENTE,
-                  AND, OR, NOT}
-FIRST(ARITH_OP) = {SOMA, SUBTRACAO, MULTIPLICACAO, DIVISAO, RESTO, POTENCIA}
-FIRST(COMP_OP) = {MENOR, MAIOR, IGUAL, MENOR_IGUAL, MAIOR_IGUAL, DIFERENTE}
-FIRST(LOGIC_OP) = {AND, OR, NOT}
-FIRST(FOR_STRUCT) = {NUMERO_REAL}
-FIRST(WHILE_STRUCT) = {ABRE_PARENTESES}
-FIRST(IFELSE_STRUCT) = {ABRE_PARENTESES}
+RA2_1/
+├── AnalisadorSintatico.py              # Programa principal - integra RA1 + RA2
+├── teste1.txt                          # Arquivo de teste básico (na raiz)
+├── teste2.txt                          # Arquivo de teste intermediário (na raiz)
+├── teste3.txt                          # Arquivo de teste avançado (na raiz)
+├── teste4_incorreto.txt                # Arquivo de teste com erros sintáticos
+├── arvore_output.txt                   # Saída da última execução
+├── grammar_documentation.md            # Documentação da gramática completa
+├── LICENSE                             # Licença do projeto
+├── README.md                           # Este arquivo
+│
+├── src/                                # Código-fonte
+│   ├── RA1/                           # Fase 1 - Analisador Léxico
+│   │   └── functions/
+│   │       ├── python/                # Funções Python do analisador léxico
+│   │       │   ├── __init__.py
+│   │       │   ├── analisador_lexico.py    # Tokenização e análise léxica
+│   │       │   ├── tokens.py               # Definições de tipos de tokens
+│   │       │   ├── io_utils.py             # Utilitários de I/O
+│   │       │   ├── rpn_calc.py             # Calculadora RPN
+│   │       │   ├── validarExpressao.py     # Validação de expressões
+│   │       │   └── exibirResultados.py     # Exibição de resultados
+│   │       └── assembly/              # Geração de código Assembly RISC-V
+│   │           ├── __init__.py
+│   │           ├── builder.py              # Construtor principal
+│   │           ├── header.py               # Cabeçalho assembly
+│   │           ├── footer.py               # Rodapé assembly
+│   │           ├── data_section.py         # Seção .data
+│   │           ├── code_section.py         # Seção .text
+│   │           ├── operations.py           # Operações aritméticas
+│   │           ├── registers.py            # Gerenciamento de registradores
+│   │           ├── routines.py             # Rotinas auxiliares
+│   │           └── io.py                   # I/O assembly
+│   │
+│   └── RA2/                           # Fase 2 - Analisador Sintático LL(1)
+│       └── functions/
+│           └── python/                # Funções do parser LL(1)
+│               ├── __init__.py
+│               ├── lerTokens.py            # Leitura e processamento de tokens
+│               ├── construirGramatica.py   # Construção da gramática LL(1)
+│               ├── parsear.py              # Parser descendente recursivo
+│               ├── gerarArvore.py          # Geração de árvore sintática
+│               ├── configuracaoGramatica.py # Configuração da gramática
+│               ├── calcularFirst.py        # Cálculo dos conjuntos FIRST
+│               ├── calcularFollow.py       # Cálculo dos conjuntos FOLLOW
+│               └── construirTabelaLL1.py   # Construção da tabela LL(1)
+│
+├── inputs/                             # Arquivos de entrada para testes
+│   ├── RA1/                           # Entradas da Fase 1
+│   │   ├── float/                     # Testes com ponto flutuante
+│   │   │   ├── teste1.txt
+│   │   │   ├── teste2.txt
+│   │   │   ├── teste3.txt
+│   │   │   └── teste_parenteses_completo.txt
+│   │   └── int/                       # Testes para assembly (inteiros)
+│   │       ├── teste1_assembly.txt
+│   │       ├── teste2_assembly.txt
+│   │       ├── teste3_assembly.txt
+│   │       └── teste_parenteses_completo.txt
+│   └── RA2/                           # Entradas da Fase 2
+│       ├── teste1.txt                      # Operações básicas
+│       ├── teste2.txt                      # Estruturas de controle
+│       ├── teste3.txt                      # Casos complexos
+│       └── teste4_incorreto.txt            # Casos com erros
+│
+├── outputs/                            # Arquivos de saída gerados
+│   ├── RA1/                           # Saídas do analisador léxico
+│   │   ├── tokens/
+│   │   │   └── tokens_gerados.txt          # Tokens gerados
+│   │   └── assembly/
+│   │       ├── programa_completo.S         # Código assembly RISC-V
+│   │       └── registers.inc               # Include de registradores
+│   └── RA2/                           # Saídas do analisador sintático
+│       └── arvore_output.txt               # Árvore sintática gerada
+│
+├── docs/                               # Documentação completa
+│   ├── RA1/                           # Documentação da Fase 1
+│   │   └── Github/
+│   │       └── README.md                   # README original do RA1
+│   └── RA2/                           # Documentação da Fase 2
+│       ├── Github/
+│       │   └── README.md                   # README específico do RA2
+│       └── documents/                 # Documentação técnica detalhada
+│           ├── 01_Grammar_Fundamentals.md
+│           ├── 02_LL1_Parsing_and_Syntax_Analysis.md
+│           ├── 03_FIRST_FOLLOW_Sets_Calculation.md
+│           ├── 04_LL1_Table_Construction_and_Conflict_Resolution.md
+│           ├── 05_Control_Structure_Syntax_Design.md
+│           ├── 06_Complete_FIRST_FOLLOW_Calculation.md
+│           ├── 07_LL1_Table_and_Conflict_Resolution.md
+│           ├── 08_Grammar_Validation_and_Final_Specification.md
+│           ├── grammar_analysis.md         # Análise completa da gramática
+│           └── grammar_calculations.md     # Cálculos matemáticos detalhados
+│
+└── flowcharts/                         # Diagramas e fluxogramas
+    ├── RA1/                           # Diagramas da Fase 1
+    │   ├── Divisao_Inteira_e_Modulo.jpeg
+    │   ├── Divisao_Real.jpeg
+    │   ├── Multiplicacao_Inteira.jpeg
+    │   ├── Multiplicacao_Real.jpeg
+    │   ├── Potenciacao_Inteira_e_Real.jpeg
+    │   ├── Soma_Inteira.jpeg
+    │   ├── Soma_Real.jpeg
+    │   ├── Subtracao_Inteira.jpeg
+    │   └── Subtracao_Real.jpeg
+    └── RA2/                           # Diagramas da Fase 2
+        ├── RA2_Architecture_Overview.md    # Visão geral da arquitetura
+        └── RA2_Function_Interfaces.md      # Interfaces entre funções
 ```
 
-### Conjuntos FOLLOW
+---
+
+## Sintaxe da Linguagem
+
+### Notação Polonesa Reversa (RPN)
+
+A linguagem utiliza RPN, onde operadores aparecem após operandos:
 
 ```
-FOLLOW(PROGRAM) = {FIM}
-FOLLOW(PROGRAM_PRIME) = {FIM}
-FOLLOW(LINHA) = {ABRE_PARENTESES, FIM}
-FOLLOW(CONTENT) = {FECHA_PARENTESES}
-FOLLOW(AFTER_NUM) = {FECHA_PARENTESES}
-FOLLOW(AFTER_VAR_OP) = {FECHA_PARENTESES}
-FOLLOW(AFTER_VAR) = {FECHA_PARENTESES}
-FOLLOW(AFTER_EXPR) = {FECHA_PARENTESES}
-FOLLOW(EXPR) = {FECHA_PARENTESES}
-FOLLOW(OPERATOR) = {FECHA_PARENTESES}
-FOLLOW(ARITH_OP) = {FECHA_PARENTESES}
-FOLLOW(COMP_OP) = {FECHA_PARENTESES}
-FOLLOW(LOGIC_OP) = {FECHA_PARENTESES}
-FOLLOW(FOR_STRUCT) = {FECHA_PARENTESES}
-FOLLOW(WHILE_STRUCT) = {FECHA_PARENTESES}
-FOLLOW(IFELSE_STRUCT) = {FECHA_PARENTESES}
+(operando1 operando2 operador)
 ```
 
-### Tabela de Análise LL(1)
+### Operadores Suportados
 
-| Non-Terminal | ( | ) | NUM | VAR | FOR | WHILE | IFELSE | RES | OPERATORS | $ |
-|-------------|---|---|-----|-----|-----|-------|--------|-----|-----------|---|
-| PROGRAM | 1 | - | - | - | - | - | - | - | - | - |
-| PROGRAM_PRIME | 2 | - | - | - | - | - | - | - | - | 3 |
-| LINHA | 4 | - | - | - | - | - | - | - | - | - |
-| CONTENT | 7 | - | 5 | 6 | 8 | 9 | 10 | - | - | - |
-| AFTER_NUM | 13 | - | 11 | 12 | - | - | - | 14 | - | - |
-| AFTER_VAR_OP | - | 16 | - | - | - | - | - | - | 15 | - |
-| AFTER_VAR | 19 | 20 | 17 | 18 | - | - | - | - | - | - |
-| AFTER_EXPR | 23 | - | 21 | 22 | - | - | - | - | - | - |
-| EXPR | 26 | - | 24 | 25 | - | - | - | - | - | - |
-| OPERATOR | - | - | - | - | - | - | - | - | 27,28,29 | - |
-| FOR_STRUCT | - | - | 45 | - | - | - | - | - | - | - |
-| WHILE_STRUCT | 46 | - | - | - | - | - | - | - | - | - |
-| IFELSE_STRUCT | 47 | - | - | - | - | - | - | - | - | - |
+**Aritméticos:**
+- `+` Adição
+- `-` Subtração
+- `*` Multiplicação
+- `/` Divisão inteira
+- `|` Divisão real
+- `%` Resto (módulo)
+- `^` Potenciação
 
-**Legenda**: NUM=NUMERO_REAL, VAR=VARIAVEL, OPERATORS=todos os operadores
+**Comparação:**
+- `>`, `<`, `>=`, `<=`, `==`, `!=`
 
-### Validação LL(1) - Status
+**Lógicos:**
+- `&&` AND
+- `||` OR
+- `!` NOT
 
-✅ **Sem conflitos FIRST/FIRST**: Todas as produções têm conjuntos FIRST disjuntos
-✅ **Sem conflitos FIRST/FOLLOW**: Produções ε satisfazem condições LL(1)
-✅ **Sem recursão à esquerda**: Apenas recursão à direita
-✅ **Determinística**: Decisão com lookahead = 1
-✅ **Tabela completa**: Cada célula contém no máximo uma produção
+### Exemplos
 
-**Resultado**: Gramática matematicamente validada como LL(1) compliant
+```
+(3 4 +)                              → 7
+((A B +) (C D *) /)                  → (A+B) / (C*D)
+((5 3 >) (2 1 >) &&)                 → (5>3) AND (2>1)
+(42 X)                               → armazena 42 em X
+```
+
+### Estruturas de Controle
+
+**FOR - Laço de Repetição:**
+```
+(FOR (início)(fim)(incremento)(corpo))
+```
+
+**WHILE - Laço Condicional:**
+```
+(WHILE (condição)(corpo))
+```
+
+**IFELSE - Estrutura Condicional:**
+```
+(IFELSE (condição)(bloco_então)(bloco_senão))
+```
+
+---
+
+## Funções Principais
+
+### 1. `lerTokens(arquivo)`
+Lê arquivo de tokens da Fase 1 e processa estruturas de controle.
+
+### 2. `construirGramatica()`
+Define gramática LL(1) completa e constrói tabelas de análise (FIRST, FOLLOW, tabela LL(1)).
+
+### 3. `parsear(tokens, tabela_ll1)`
+Parser descendente recursivo com detecção de erros sintáticos.
+
+### 4. `gerarArvore(derivacao)`
+Converte derivação em árvore sintática e salva em arquivo.
+
+---
+
+## Gramática LL(1)
+
+### Status de Validação
+
+✅ Sem conflitos FIRST/FIRST
+✅ Sem conflitos FIRST/FOLLOW
+✅ Sem recursão à esquerda
+✅ Determinística com lookahead = 1
+✅ Tabela LL(1) completa e sem ambiguidades
+
+### Documentação Técnica Completa
+
+Para visualizar a gramática completa, conjuntos FIRST/FOLLOW e tabela LL(1), consulte:
+
+- **`docs/RA2/documents/grammar_analysis.md`** - Análise completa da gramática
+- **`docs/RA2/documents/grammar_calculations.md`** - Demonstrações matemáticas detalhadas
+
+---
+
+## Tratamento de Erros
+
+O analisador detecta e reporta:
+
+- **Erros léxicos:** Tokens não reconhecidos, formato inválido
+- **Erros sintáticos:** Token inesperado, estrutura gramatical inválida
+- **Erros de estrutura:** Parênteses desbalanceados, expressões incompletas
+
+**Exemplo de mensagem de erro:**
+```
+ERRO SINTÁTICO na linha 3:
+Token encontrado: '+'
+Token esperado: 'NUMERO_REAL', 'VARIAVEL', ou '('
+Contexto: dentro de CONTENT
+```
+
+---
+
+## Arquivos de Teste
+
+### teste1.txt
+
+### teste2.txt
+
+### teste3.txt
+
+### teste4_incorreto.txt
+Casos com funções incorretos.
+
+---
+
+## Integração com RA1
+
+O projeto reutiliza o analisador léxico da Fase 1:
+- String/vetor de tokens como entrada
+- Formato de tokens já definido
+- Mesma lógica RPN e operadores
+- Novos tokens para estruturas de controle
