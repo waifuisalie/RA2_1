@@ -52,7 +52,11 @@ python AnalisadorSintatico.py teste3.txt
 
 ### Arquivos de Saída
 
-**`outputs/RA2/arvore_output.txt`** - Contém a árvore sintática em formato ASCII:
+O programa gera a árvore sintática em dois locais:
+- **`arvore_output.txt`** - Na raiz do diretório
+- **`outputs/RA2/arvore_output.txt`** - No diretório de saídas
+
+Ambos contêm a árvore sintática em formato ASCII:
 
 ```
 LINHA 1:
@@ -307,26 +311,10 @@ Operações básicas, expressões simples, variáveis
 Estruturas de controle, expressões aninhadas, operadores lógicos
 
 ### teste3.txt
-Casos avançados, aninhamento profundo, casos de erro sintático
+Casos avançados, aninhamento profundo.
 
----
-
-## Módulos do Código
-
-### AnalisadorSintatico.py
-Programa principal que coordena análise léxica (RA1) e sintática (RA2).
-
-### src/RA2/configuracaoGramatica.py
-Definição completa da gramática LL(1) em formato BNF/EBNF.
-
-### src/RA2/first_follow.py
-Cálculo de conjuntos NULLABLE, FIRST e FOLLOW com algoritmos de ponto fixo.
-
-### src/RA2/parser.py
-Motor do parser LL(1) com tabela de análise preditiva.
-
-### src/RA2/arvore_sintatica.py
-Estrutura de árvore sintática e visualização ASCII.
+### teste4_incorreto.txt
+Casos com funções incorretos.
 
 ---
 
