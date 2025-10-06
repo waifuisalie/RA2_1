@@ -305,13 +305,10 @@ Contexto: dentro de CONTENT
 ## Arquivos de Teste
 
 ### teste1.txt
-Operações básicas, expressões simples, variáveis
 
 ### teste2.txt
-Estruturas de controle, expressões aninhadas, operadores lógicos
 
 ### teste3.txt
-Casos avançados, aninhamento profundo.
 
 ### teste4_incorreto.txt
 Casos com funções incorretos.
